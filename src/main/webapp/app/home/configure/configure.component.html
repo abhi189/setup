@@ -1,0 +1,25 @@
+<main>
+    <section class="content-container" [ngSwitch]="currentScreen">
+        <jhi-location-services
+            *ngSwitchCase="services"
+            [services]="data.services"
+            (onItemSelected)="handleItemSelected($event)"
+        ></jhi-location-services>
+        <jhi-location-stores
+            *ngSwitchDefault
+            [stores]="data.stores"
+            [storeSelected]="storeSelected"
+            (onItemSelected)="handleItemSelected($event)"
+        ></jhi-location-stores>
+    </section>
+    <div class="action-bar">
+        <button [hidden]="!showPreviousButton" class="btn previous" 
+            [disabled]="!isPreviousEnabled"
+            (click)="handlePreviousClick()"
+        >Previous</button>
+        <button [hidden]="!showNextButton" class="btn next"
+            [disabled]="!isNextEnabled"
+            (click)="handleNextClick()"
+        >Next</button>
+    </div>
+</main>

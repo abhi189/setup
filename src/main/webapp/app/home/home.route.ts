@@ -1,12 +1,13 @@
-import { Route } from '@angular/router';
+import { Routes } from '@angular/router';
+import { ConfigureComponent } from './configure/configure.component';
 
-import { HomeComponent } from './';
-
-export const HOME_ROUTE: Route = {
-    path: '',
-    component: HomeComponent,
-    data: {
-        authorities: [],
-        pageTitle: 'Welcome, Java Hipster!'
+export const ModulesRoutes: Routes = [
+    {
+        path: '',
+        data: {
+            authorities: [],
+            pageTitle: 'Configure your Store'
+        },
+        component: ConfigureComponent
     }
-};
+];

@@ -13,12 +13,11 @@ import { NotificationInterceptor } from './blocks/interceptor/notification.inter
 import { InstallersetupwebSharedModule } from 'app/shared';
 import { InstallersetupwebCoreModule } from 'app/core';
 import { InstallersetupwebAppRoutingModule } from './app-routing.module';
-import { InstallersetupwebHomeModule } from './home/home.module';
-import { InstallersetupwebAccountModule } from './account/account.module';
-import { InstallersetupwebEntityModule } from './entities/entity.module';
+import { HomeModule } from './home/home.module';
+
 import * as moment from 'moment';
 // jhipster-needle-angular-add-module-import JHipster will add new module here
-import { JhiMainComponent, NavbarComponent, FooterComponent, PageRibbonComponent, ErrorComponent } from './layouts';
+import { JhiMainComponent, ErrorComponent } from './layouts';
 
 @NgModule({
     imports: [
@@ -31,13 +30,11 @@ import { JhiMainComponent, NavbarComponent, FooterComponent, PageRibbonComponent
         }),
         InstallersetupwebSharedModule.forRoot(),
         InstallersetupwebCoreModule,
-        InstallersetupwebHomeModule,
-        InstallersetupwebAccountModule,
         // jhipster-needle-angular-add-module JHipster will add new module here
-        InstallersetupwebEntityModule,
+        HomeModule,
         InstallersetupwebAppRoutingModule
     ],
-    declarations: [JhiMainComponent, NavbarComponent, ErrorComponent, PageRibbonComponent, FooterComponent],
+    declarations: [JhiMainComponent, ErrorComponent],
     providers: [
         {
             provide: HTTP_INTERCEPTORS,

@@ -1,0 +1,21 @@
+<div class="stores-container">
+    <div class="header">Select the location you need to configure</div>
+    <div class="stores-list">
+        <div class="stores-list-item" 
+            *ngFor="let store of stores;" 
+            [ngClass]="{'selected': store.id === storeSelected.id}"
+            (click)=setSelectedStore(store)
+        >
+            <div class="store-id">{{store.id}}</div>
+            <div class="store-address">{{store.address}}</div>
+            <div class="store-status">
+                <span *ngIf="store.online">
+                    <img src="../../../../../content/images/online.png" alt="online status" />
+                </span>
+                <span *ngIf="!store.online">
+                    <img src="../../../../../content/images/offline.png" alt="offline status" />
+                </span>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,12 +1,16 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { ConfigureComponent } from './configure/configure.component';
+import { ModulesRoutes } from './home.route';
 
-import { InstallersetupwebSharedModule } from 'app/shared';
-import { HOME_ROUTE, HomeComponent } from './';
+import { Stores } from './configure/components/stores/stores.component';
 
 @NgModule({
-    imports: [InstallersetupwebSharedModule, RouterModule.forChild([HOME_ROUTE])],
-    declarations: [HomeComponent],
+    imports: [CommonModule, FormsModule, RouterModule.forChild(ModulesRoutes)],
+    declarations: [ConfigureComponent, Stores],
+    exports: [Stores],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class InstallersetupwebHomeModule {}
+export class HomeModule {}
