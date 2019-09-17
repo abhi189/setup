@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { LoginService } from '../../core/login/login.service';
 
 @Component({
     selector: 'jhi-configure',
@@ -73,16 +74,35 @@ export class ConfigureComponent implements OnInit {
         configure: ''
     };
 
-    constructor() {}
+    public allScreens: Array<string> = [];
+
+    constructor(private loginService: LoginService) {}
 
     ngOnInit(): void {
         this.currentScreen = 'location';
         this.showNextButton = true;
+        this.allScreens = Object.keys(this.steps);
     }
 
-    getNextStep() {}
+    getNextStep() {
+        let currentScreenIndex = this.allScreens.indexOf(this.currentScreen);
 
-    handleItemSelected(store: any) {
+        if (currentScreenIndex < this.allScreens.length - 1) {
+            currentScreenIndex = currentScreenIndex + 1;
+        }
+        return this.allScreens[currentScreenIndex];
+    }
+
+    getPreviousStep() {
+        let currentScreenIndex = this.allScreens.indexOf(this.currentScreen);
+
+        if (currentScreenIndex > 0) {
+            currentScreenIndex = currentScreenIndex - 1;
+        }
+        return this.allScreens[currentScreenIndex];
+    }
+
+    handleItemSelected(store) {
         this.storeSelected = store;
         this.updateForm({ store });
     }
@@ -96,26 +116,49 @@ export class ConfigureComponent implements OnInit {
     }
 
     handleButtonState() {
-        if (this.validateFormData()) {
+        if (this.validateScreenData()) {
             this.isNextEnabled = true;
         } else {
             this.isNextEnabled = false;
         }
     }
 
-    validateFormData() {
+    validateScreenData() {
         switch (this.currentScreen) {
             case 'location': {
                 if (this.formData['store']) return true;
             }
-            case 'service': {
+            case 'services': {
+                if (this.formData['services']) return true;
             }
             default:
                 return true;
         }
     }
 
-    handlePreviousClick() {}
+    handlePreviousClick() {
+        this.currentScreen = this.getPreviousStep();
+        this.isNextEnabled = true;
+        if (this.allScreens.indexOf(this.currentScreen) === 0) {
+            this.showPreviousButton = false;
+        } else {
+            this.showPreviousButton = true;
+        }
+        console.log('Previous: ', this.currentScreen);
+    }
 
-    handleNextClick() {}
+    handleNextClick() {
+        if (this.validateScreenData()) {
+            this.currentScreen = this.getNextStep();
+            this.isNextEnabled = false;
+            if (this.allScreens.indexOf(this.currentScreen) === this.allScreens.length - 1) {
+            }
+            this.showPreviousButton = this.isPreviousEnabled = true;
+        }
+        console.log('Next: ', this.currentScreen);
+    }
+
+    handleLogout() {
+        this.loginService.logout();
+    }
 }

@@ -1,7 +1,15 @@
 <main>
+    <nav class="navbar">
+        <div class="nav-item logo">
+            <img class="" src="https://d3rbhwp8vebia6.cloudfront.net/img/Budderfly-logo-dark-large-300x138 .png" alt="budderfly installer logo" />
+        </div>
+        <div class="nav-item">
+            <button class="btn-logout" (click)="handleLogout()">logout</button>
+        </div>
+    </nav>
     <section class="content-container" [ngSwitch]="currentScreen">
         <jhi-location-services
-            *ngSwitchCase="services"
+            *ngSwitchCase="'services'"
             [services]="data.services"
             (onItemSelected)="handleItemSelected($event)"
         ></jhi-location-services>
