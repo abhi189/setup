@@ -6,11 +6,12 @@ import { ConfigureComponent } from './configure/configure.component';
 import { ModulesRoutes } from './home.route';
 
 import { Stores } from './configure/components/stores/stores.component';
+import { Services } from './configure/components/services/services.component';
 
 @NgModule({
     imports: [CommonModule, FormsModule, RouterModule.forChild(ModulesRoutes)],
-    declarations: [ConfigureComponent, Stores],
-    exports: [Stores],
+    declarations: [ConfigureComponent, Stores, Services],
+    exports: [Stores, Services],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class HomeModule {}

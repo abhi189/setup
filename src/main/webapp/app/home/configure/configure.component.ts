@@ -82,6 +82,7 @@ export class ConfigureComponent implements OnInit {
                 online: false
             }
         ],
+        services: []
     };
 
     steps = {

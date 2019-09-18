@@ -13,11 +13,6 @@
           "type": "image/png"
       },
       {
-          "src": "./content/images/jhipster_family_member_1_head-384.png",
-          "sizes": "384x384",
-          "type": "image/png"
-      },
-      {
           "src": "./content/images/jhipster_family_member_1_head-512.png",
           "sizes": "512x512",
           "type": "image/png"
