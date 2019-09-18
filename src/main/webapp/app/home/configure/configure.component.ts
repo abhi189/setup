@@ -18,54 +18,70 @@ export class ConfigureComponent implements OnInit {
     public data = {
         stores: [
             {
-                id: 1,
-                address: 'address field for 1',
-                city: 'illinois',
+                id: 'SUBW-7383',
+                address: '2 Trap Falls Rd',
+                city: 'Shelton',
+                state: 'MA',
+                zip: '06088',
                 online: false
             },
             {
-                id: 2,
-                address: 'address field for 2',
-                city: 'sample2',
+                id: 'SUBW-3434',
+                address: '2 Trap Falls Rd',
+                city: 'Shelton',
+                state: 'MA',
+                zip: '06088',
                 online: true
             },
             {
-                id: 3,
-                address: 'address field for 3',
-                city: 'sample2',
+                id: 'OLYM-8393',
+                address: '2 Trap Falls Rd',
+                city: 'Shelton',
+                state: 'MA',
+                zip: '06088',
                 online: true
             },
             {
-                id: 4,
-                address: 'address field for 4',
-                city: 'sample3',
+                id: 'KFC-2322',
+                address: '2 Trap Falls Rd',
+                city: 'Shelton',
+                state: 'MA',
+                zip: '06088',
                 online: false
             },
             {
-                id: 1,
-                address: 'address field for 1',
-                city: 'illinois',
+                id: 'OLYM-3232',
+                address: '2 Trap Falls Rd',
+                city: 'Shelton',
+                state: 'MA',
+                zip: '06088',
                 online: false
             },
             {
-                id: 2,
-                address: 'address field for 2',
-                city: 'sample2',
+                id: 'SUBW-3433',
+                address: '2 Trap Falls Rd',
+                city: 'Shelton',
+                state: 'MA',
+                zip: '06088',
                 online: true
             },
             {
-                id: 3,
-                address: 'address field for 3',
-                city: 'sample2',
+                id: 'SUBW-9302',
+                address: '2 Trap Falls Rd',
+                city: 'Shelton',
+                state: 'MA',
+                zip: '06088',
                 online: true
             },
             {
-                id: 4,
-                address: 'address field for 4',
-                city: 'sample3',
+                id: 'KFC-3398',
+                address: '2 Trap Falls Rd',
+                city: 'Shelton',
+                state: 'MA',
+                zip: '06088',
                 online: false
             }
-        ]
+        ],
     };
 
     steps = {
