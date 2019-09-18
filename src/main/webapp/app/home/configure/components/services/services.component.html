@@ -3,7 +3,7 @@
     <div class="services-list">
         <div class="services-list-item" 
             *ngFor="let service of services;" 
-            [ngClass]="{'selected': service.id === serviceSelected.id}"
+            [ngClass]="{'selected': serviceSelected && service.id === serviceSelected.id}"
             (click)=setSelectedService(service)
         >
             <div class="service-id">{{service.id}}</div>

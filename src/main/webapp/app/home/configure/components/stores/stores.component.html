@@ -3,7 +3,7 @@
     <div class="stores-list">
         <div class="stores-list-item" 
             *ngFor="let store of stores;" 
-            [ngClass]="{'selected': store.id === storeSelected.id}"
+            [ngClass]="{'selected': storeSelected && store.id === storeSelected.id}"
             (click)=setSelectedStore(store)
         >
             <div class="store-id">{{store.id}}</div>

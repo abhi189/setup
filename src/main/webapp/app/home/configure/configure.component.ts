@@ -128,15 +128,14 @@ export class ConfigureComponent implements OnInit {
         return this.allScreens[currentScreenIndex];
     }
 
-    handleItemSelected(store) {
-        this.storeSelected = store;
-        this.updateForm({ store });
+    handleItemSelected(data) {
+        this.updateForm(data);
     }
 
-    updateForm(data) {
+    updateForm({ name, value }) {
         this.formData = {
             ...this.formData,
-            ...data
+            [name]: value
         };
         this.handleButtonState();
     }
@@ -155,7 +154,7 @@ export class ConfigureComponent implements OnInit {
                 if (this.formData['store']) return true;
             }
             case 'services': {
-                if (this.formData['services']) return true;
+                if (this.formData['service']) return true;
             }
             default:
                 return true;

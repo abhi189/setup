@@ -33,6 +33,6 @@ export class Stores implements OnInit {
     }
 
     setSelectedStore(store: any) {
-        this.onItemSelected.next(store);
+        this.onItemSelected.next({ name: 'store', value: store });
     }
 }

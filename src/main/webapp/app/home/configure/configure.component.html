@@ -13,12 +13,13 @@
         <jhi-location-services
             *ngSwitchCase="'services'"
             [services]="data.services"
+            [serviceSelected]="formData.service"
             (onItemSelected)="handleItemSelected($event)"
         ></jhi-location-services>
         <jhi-location-stores
             *ngSwitchDefault
             [stores]="data.stores"
-            [storeSelected]="storeSelected"
+            [storeSelected]="formData.store"
             (onItemSelected)="handleItemSelected($event)"
         ></jhi-location-stores>
     </section>
