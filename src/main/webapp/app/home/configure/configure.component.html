@@ -4,7 +4,9 @@
             <img class="" src="https://d3rbhwp8vebia6.cloudfront.net/img/Budderfly-logo-dark-large-300x138 .png" alt="budderfly installer logo" />
         </div>
         <div class="nav-item">
-            <button class="btn-logout" (click)="handleLogout()">logout</button>
+            <button class="btn-logout" (click)="handleLogout()">
+                <img src="../../../content/images/logout.png" alt="Installer Web logout" />
+            </button>
         </div>
     </nav>
     <section class="content-container" [ngSwitch]="currentScreen">
