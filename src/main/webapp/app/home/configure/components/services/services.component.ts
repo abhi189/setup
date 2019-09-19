@@ -1,9 +1,10 @@
-import { Component, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, SimpleChanges } from '@angular/core';
 
 @Component({
     templateUrl: './services.component.html',
     styleUrls: ['./services.component.scss'],
-    selector: 'jhi-location-services'
+    selector: 'jhi-location-services',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Services {
     @Input() services: Array<any>;

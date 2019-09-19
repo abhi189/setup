@@ -1,0 +1,12 @@
+<div class="connections-container">
+    <div class="header">Select connection type at the location</div>
+    <div class="connections-list">
+        <div class="connections-list-item" 
+            *ngFor="let connection of connections;" 
+            [ngClass]="{'selected': connectionSelected && connection.id === connectionSelected.id}"
+            (click)=setSelectedConnection(connection)
+        >
+            <div class="connection-type">{{connection.type}}</div>
+        </div>
+    </div>
+</div>

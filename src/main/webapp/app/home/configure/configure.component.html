@@ -16,6 +16,17 @@
             [serviceSelected]="formData.service"
             (onItemSelected)="handleItemSelected($event)"
         ></jhi-location-services>
+        <jhi-location-connections
+            *ngSwitchCase="'connections'"
+            [connections]="data.connections"
+            [connectionSelected]="formData.connection"
+            (onItemSelected)="handleItemSelected($event)"
+        ></jhi-location-connections>
+        <jhi-location-configure
+            *ngSwitchCase="'configure'"
+            [configuration]="formData"
+            (onItemSelected)="handleItemSelected($event)"
+        ></jhi-location-configure>
         <jhi-location-stores
             *ngSwitchDefault
             [stores]="data.stores"

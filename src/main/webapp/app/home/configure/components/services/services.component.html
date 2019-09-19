@@ -1,5 +1,5 @@
 <div class="services-container">
-    <div class="header">Select the location you need to configure</div>
+    <div class="header">Select service type at the location</div>
     <div class="services-list">
         <div class="services-list-item" 
             *ngFor="let service of services;" 
@@ -7,8 +7,7 @@
             (click)=setSelectedService(service)
         >
             <div class="service-id">{{service.id}}</div>
-            <div class="service-address">{{service.address}}</div>
-            <div class="service-address">{{service.city}}, {{service.state}} {{service.zip}}</div>
+            <div class="service-address">{{service.city}}</div>
         </div>
     </div>
 </div>

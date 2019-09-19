@@ -91,12 +91,23 @@ export class ConfigureComponent implements OnInit {
                 id: 2,
                 phase: 3
             }
+        ],
+        connections: [
+            {
+                id: 1,
+                type: 'WYE'
+            },
+            {
+                id: 2,
+                type: 'Delta'
+            }
         ]
     };
 
     steps = {
         location: '',
         services: '',
+        connections: '',
         configure: ''
     };
 
@@ -116,6 +127,9 @@ export class ConfigureComponent implements OnInit {
         if (currentScreenIndex < this.allScreens.length - 1) {
             currentScreenIndex = currentScreenIndex + 1;
         }
+        if (this.currentScreen === 'services' && this.formData.service.id === 1) {
+            currentScreenIndex += 1;
+        }
         return this.allScreens[currentScreenIndex];
     }
 
@@ -124,6 +138,9 @@ export class ConfigureComponent implements OnInit {
 
         if (currentScreenIndex > 0) {
             currentScreenIndex = currentScreenIndex - 1;
+        }
+        if (this.currentScreen === 'configure' && this.formData.service.id === 1) {
+            currentScreenIndex -= 1;
         }
         return this.allScreens[currentScreenIndex];
     }
@@ -156,6 +173,12 @@ export class ConfigureComponent implements OnInit {
             case 'services': {
                 if (this.formData['service']) return true;
             }
+            case 'connections': {
+                if (this.formData['connection']) return true;
+            }
+            case 'configure': {
+                if (this.formData['configure']) return true;
+            }
             default:
                 return true;
         }
@@ -169,7 +192,7 @@ export class ConfigureComponent implements OnInit {
         } else {
             this.showPreviousButton = true;
         }
-        console.log('Previous: ', this.currentScreen);
+        this.handleButtonState();
     }
 
     handleNextClick() {
@@ -180,7 +203,6 @@ export class ConfigureComponent implements OnInit {
             }
             this.showPreviousButton = this.isPreviousEnabled = true;
         }
-        console.log('Next: ', this.currentScreen);
     }
 
     handleLogout() {
