@@ -84,11 +84,11 @@ export class ConfigureComponent implements OnInit {
         ],
         services: [
             {
-                id: 1,
+                id: 'Three Phase 120/208 or 277/480',
                 phase: 5
             },
             {
-                id: 2,
+                id: 'Split Phase 120/240',
                 phase: 3
             }
         ],
