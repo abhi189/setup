@@ -8,12 +8,12 @@ import { ModulesRoutes } from './home.route';
 import { Stores } from './configure/components/stores/stores.component';
 import { Services } from './configure/components/services/services.component';
 import { Connections } from './configure/components/connections/connection.component';
-import { Configure } from './configure/components/configure/configure.component';
+import { ConfigurationComponent } from './configure/components/configure/configure.component';
 
 @NgModule({
     imports: [CommonModule, FormsModule, RouterModule.forChild(ModulesRoutes)],
-    declarations: [ConfigureComponent, Stores, Services, Connections, Configure],
-    exports: [Stores, Services, Connections, Configure],
+    declarations: [ConfigureComponent, Stores, Services, Connections, ConfigurationComponent],
+    exports: [Stores, Services, Connections, ConfigurationComponent],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class HomeModule {}

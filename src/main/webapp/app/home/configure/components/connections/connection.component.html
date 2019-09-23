@@ -6,6 +6,9 @@
             [ngClass]="{'selected': connectionSelected && connection.id === connectionSelected.id}"
             (click)=setSelectedConnection(connection)
         >
+            <div class="connection-image">
+                <img [src]="connection.imageUrl" alt="connection.type" />
+            </div>
             <div class="connection-type">{{connection.type}}</div>
         </div>
     </div>

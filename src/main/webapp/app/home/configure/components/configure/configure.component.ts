@@ -6,18 +6,10 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, Simple
     selector: 'jhi-location-configure',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Configure {
+export class ConfigurationComponent {
     @Input() configures: Array<any> = [];
 
     constructor() {}
-
-    ngOnChanges(changes: SimpleChanges): void {
-        const { configures } = changes;
-
-        if (configures && configures.currentValue !== configures.previousValue) {
-            this.configures = configures.currentValue;
-        }
-    }
 
     hanldeAddConfiguration() {}
 }

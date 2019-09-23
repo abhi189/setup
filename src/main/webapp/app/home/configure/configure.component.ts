@@ -84,22 +84,28 @@ export class ConfigureComponent implements OnInit {
         ],
         services: [
             {
-                id: 'Three Phase 120/208 or 277/480',
-                phase: 5
+                id: 1,
+                phase: 5,
+                content: 'Three Phase 120/208 or 277/480',
+                imageUrl: '../../../../content/images/split-phase.png'
             },
             {
-                id: 'Split Phase 120/240',
-                phase: 3
+                id: 2,
+                phase: 3,
+                content: 'Split Phase 120/240',
+                imageUrl: '../../../../content/images/three-phase.png'
             }
         ],
         connections: [
             {
                 id: 1,
-                type: 'WYE'
+                type: 'WYE',
+                imageUrl: '../../../../content/images/wye.png'
             },
             {
                 id: 2,
-                type: 'Delta'
+                type: 'Delta',
+                imageUrl: '../../../../content/images/delta.png'
             }
         ]
     };
@@ -168,16 +174,28 @@ export class ConfigureComponent implements OnInit {
     validateScreenData() {
         switch (this.currentScreen) {
             case 'location': {
-                if (this.formData['store']) return true;
+                if (this.formData['store']) {
+                    return true;
+                }
+                break;
             }
             case 'services': {
-                if (this.formData['service']) return true;
+                if (this.formData['service']) {
+                    return true;
+                }
+                break;
             }
             case 'connections': {
-                if (this.formData['connection']) return true;
+                if (this.formData['connection']) {
+                    return true;
+                }
+                break;
             }
             case 'configure': {
-                if (this.formData['configure']) return true;
+                if (this.formData['configure']) {
+                    return true;
+                }
+                break;
             }
             default:
                 return true;

@@ -6,8 +6,10 @@
             [ngClass]="{'selected': serviceSelected && service.id === serviceSelected.id}"
             (click)=setSelectedService(service)
         >
-            <div class="service-id">{{service.id}}</div>
-            <div class="service-address">{{service.city}}</div>
+            <div class="service-image">
+                <img [src]="service.imageUrl" alt="services.phase" /> 
+            </div>
+            <div class="service-id">{{service.content}}</div>
         </div>
     </div>
 </div>
