@@ -87,25 +87,25 @@ export class ConfigureComponent implements OnInit {
                 id: 1,
                 phase: 5,
                 content: 'Three Phase 120/208 or 277/480',
-                imageUrl: '../../../../content/images/split-phase.png'
+                imageUrl: '../../../../../content/images/split-phase.png'
             },
             {
                 id: 2,
                 phase: 3,
                 content: 'Split Phase 120/240',
-                imageUrl: '../../../../content/images/three-phase.png'
+                imageUrl: '../../../../../content/images/three-phase.png'
             }
         ],
         connections: [
             {
                 id: 1,
                 type: 'WYE',
-                imageUrl: '../../../../content/images/wye.png'
+                imageUrl: '../../../../../content/images/wye.png'
             },
             {
                 id: 2,
                 type: 'Delta',
-                imageUrl: '../../../../content/images/delta.png'
+                imageUrl: '../../../../../content/images/delta.png'
             }
         ]
     };
