@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, OnChanges, EventEmitter, ChangeDetectionStrategy, SimpleChanges } from '@angular/core';
 
 @Component({
     templateUrl: './services.component.html',
@@ -6,7 +6,7 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, Simple
     selector: 'jhi-location-services',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Services {
+export class Services implements OnChanges {
     @Input() services: Array<any>;
     @Input() serviceSelected: any = {};
     @Output() onItemSelected = new EventEmitter();

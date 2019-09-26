@@ -1,0 +1,77 @@
+.navbar {
+    background: #fff;
+    box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.1);
+    height: 60px;
+    align-items: center;
+    position: relative;
+    justify-content: center;
+    .nav-item {
+        &.logo {
+            width: 160px;
+        }
+    }
+    .btn-logout {
+        position: absolute;
+        right: 10px;
+        background: transparent;
+        border: none;
+        width: 50px;
+        outline: none;
+        box-shadow: none;
+        font-size: 12px;
+        top: 50%;
+        color: rgba(0, 0, 0, 0.5);
+        transform: translateY(-50%);
+        transition: 200ms all ease-in;
+        &:hover {
+            cursor: pointer;
+        }
+        img {
+            transition: 100ms all ease-in;
+        }
+    }
+}
+.content-container {
+    height: calc(100vh - 140px);
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    overflow-y: auto;
+    max-width: 720px;
+    margin: 0 auto;
+    @media screen and (min-width: 600px) {
+    }
+}
+.action-bar {
+    height: 80px;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    padding: 0 1em;
+    justify-content: space-between;
+    max-width: 720px;
+    margin: 0 auto;
+    .btn {
+        background: #68c721;
+        transition: background 0.1s ease;
+        height: 40px;
+        color: #fff;
+        border-radius: 20px;
+        width: 120px;
+        font-weight: 600;
+        font-size: 14px;
+        letter-spacing: 1px;
+        &:hover {
+            transform: translateY(-1px);
+        }
+        &.previous {
+            background: transparent;
+            color: #666;
+            border: 1px solid #999;
+            margin-right: auto;
+        }
+        &.next {
+            margin-left: auto;
+        }
+    }
+}

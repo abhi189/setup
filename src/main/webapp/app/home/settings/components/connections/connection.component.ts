@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, Output, OnChanges, EventEmitter, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
     templateUrl: './connection.component.html',
@@ -6,7 +6,7 @@ import { Component, Input, Output, EventEmitter, SimpleChanges, ChangeDetectionS
     selector: 'jhi-location-connections',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Connections {
+export class Connections implements OnChanges {
     @Input() connections: Array<any>;
     @Input() connectionSelected: any = {};
     @Output() onItemSelected = new EventEmitter();

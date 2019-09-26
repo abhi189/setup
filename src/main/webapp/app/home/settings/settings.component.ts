@@ -1,20 +1,12 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, SimpleChanges, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { LoginService } from '../../core/login/login.service';
 
 @Component({
-    templateUrl: './configure.component.html',
-    styleUrls: ['./configure.component.scss'],
-    selector: 'jhi-location-configure',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'jhi-settings',
+    templateUrl: './settings.component.html',
+    styleUrls: ['./settings.component.scss']
 })
-export class ConfigurationComponent implements OnInit {
-    @Input() configures: Array<any> = [];
-    public steps: any = {
-        devices: '',
-        phases: '',
-        ctType: '',
-        ctSetup: '',
-        ctPhases: ''
-    };
+export class SettingsComponent implements OnInit {
     public showNextButton: boolean;
     public currentScreen: string;
     public showPreviousButton: boolean;
@@ -117,13 +109,22 @@ export class ConfigurationComponent implements OnInit {
             }
         ]
     };
+
+    steps = {
+        location: '',
+        services: '',
+        connections: '',
+        configure: ''
+    };
+
     public allScreens: Array<string> = [];
 
-    constructor() {}
+    constructor(private loginService: LoginService) {}
 
     ngOnInit(): void {
+        this.currentScreen = 'location';
         this.showNextButton = true;
-        this.allScreens = Object.keys(this.steps);
+        this.allScreens = this.currentScreen === 'configure' ? Object.keys(this.steps.configure) : Object.keys(this.steps);
     }
 
     getNextStep() {
@@ -172,32 +173,26 @@ export class ConfigurationComponent implements OnInit {
 
     validateScreenData() {
         switch (this.currentScreen) {
-            case 'devices': {
-                if (this.formData['device']) {
+            case 'location': {
+                if (this.formData['store']) {
                     return true;
                 }
                 break;
             }
-            case 'ctTypes': {
-                if (this.formData['ctType']) {
+            case 'services': {
+                if (this.formData['service']) {
                     return true;
                 }
                 break;
             }
-            case 'phases': {
-                if (this.formData['phase']) {
+            case 'connections': {
+                if (this.formData['connection']) {
                     return true;
                 }
                 break;
             }
-            case 'ctSetup': {
-                if (this.formData['ctSetup']) {
-                    return true;
-                }
-                break;
-            }
-            case 'ctPhases': {
-                if (this.formData['ctPhase']) {
+            case 'configure': {
+                if (this.formData['configure']) {
                     return true;
                 }
                 break;
@@ -229,7 +224,7 @@ export class ConfigurationComponent implements OnInit {
         }
     }
 
-    hanldeAddConfiguration() {
-        this.currentScreen = 'devices';
+    handleLogout() {
+        this.loginService.logout();
     }
 }

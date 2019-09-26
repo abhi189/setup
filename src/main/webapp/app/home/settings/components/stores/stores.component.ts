@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, SimpleChanges, ChangeDetectionStrategy, OnChanges } from '@angular/core';
 
 @Component({
     templateUrl: './stores.component.html',
@@ -6,7 +6,7 @@ import { Component, Input, Output, EventEmitter, OnInit, SimpleChanges, ChangeDe
     selector: 'jhi-location-stores',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Stores implements OnInit {
+export class Stores implements OnInit, OnChanges {
     @Input() stores: Array<any>;
     @Input() storeSelected: any = {};
     @Output() onItemSelected = new EventEmitter();

@@ -1,0 +1,47 @@
+<main>
+    <nav class="navbar">
+        <div class="nav-item logo">
+            <img class="" src="https://d3rbhwp8vebia6.cloudfront.net/img/Budderfly-logo-dark-large-300x138 .png" alt="budderfly installer logo" />
+        </div>
+        <div class="nav-item">
+            <button class="btn-logout" (click)="handleLogout()">
+                <img src="../../../content/images/logout.png" alt="Installer Web logout" />
+            </button>
+        </div>
+    </nav>
+    <section class="content-container" [ngSwitch]="currentScreen">
+        <jhi-location-services
+            *ngSwitchCase="'services'"
+            [services]="data.services"
+            [serviceSelected]="formData.service"
+            (onItemSelected)="handleItemSelected($event)"
+        ></jhi-location-services>
+        <jhi-location-connections
+            *ngSwitchCase="'connections'"
+            [connections]="data.connections"
+            [connectionSelected]="formData.connection"
+            (onItemSelected)="handleItemSelected($event)"
+        ></jhi-location-connections>
+        <jhi-location-configure
+            *ngSwitchCase="'configure'"
+            [configuration]="formData"
+            (onItemSelected)="handleItemSelected($event)"
+        ></jhi-location-configure>
+        <jhi-location-stores
+            *ngSwitchDefault
+            [stores]="data.stores"
+            [storeSelected]="formData.store"
+            (onItemSelected)="handleItemSelected($event)"
+        ></jhi-location-stores>
+    </section>
+    <div class="action-bar">
+        <button [hidden]="!showPreviousButton" class="btn previous" 
+            [disabled]="!isPreviousEnabled"
+            (click)="handlePreviousClick()"
+        >Previous</button>
+        <button [hidden]="!showNextButton" class="btn next"
+            [disabled]="!isNextEnabled"
+            (click)="handleNextClick()"
+        >{{configurationDone ? 'Done' : 'Next'}}</button>
+    </div>
+</main>
