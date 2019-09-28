@@ -11,5 +11,5 @@ export class Ctphases {
 
     constructor() {}
 
-    hanldeAddConfiguration() {}
+    handleAddConfiguration() {}
 }

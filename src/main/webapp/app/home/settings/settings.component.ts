@@ -218,7 +218,7 @@ export class SettingsComponent implements OnInit {
             this.currentScreen = this.getNextStep();
             this.isNextEnabled = false;
             if (this.allScreens.indexOf(this.currentScreen) === this.allScreens.length - 1) {
-                this.configurationDone = true;
+                // this.configurationDone = true;
             }
             this.showPreviousButton = this.isPreviousEnabled = true;
         }

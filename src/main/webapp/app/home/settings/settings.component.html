@@ -9,39 +9,43 @@
             </button>
         </div>
     </nav>
-    <section class="content-container" [ngSwitch]="currentScreen">
-        <jhi-location-services
-            *ngSwitchCase="'services'"
-            [services]="data.services"
-            [serviceSelected]="formData.service"
-            (onItemSelected)="handleItemSelected($event)"
-        ></jhi-location-services>
-        <jhi-location-connections
-            *ngSwitchCase="'connections'"
-            [connections]="data.connections"
-            [connectionSelected]="formData.connection"
-            (onItemSelected)="handleItemSelected($event)"
-        ></jhi-location-connections>
+    <div *ngIf="currentScreen === 'configure'">
         <jhi-location-configure
-            *ngSwitchCase="'configure'"
             [configuration]="formData"
             (onItemSelected)="handleItemSelected($event)"
         ></jhi-location-configure>
-        <jhi-location-stores
-            *ngSwitchDefault
-            [stores]="data.stores"
-            [storeSelected]="formData.store"
-            (onItemSelected)="handleItemSelected($event)"
-        ></jhi-location-stores>
-    </section>
-    <div class="action-bar">
-        <button [hidden]="!showPreviousButton" class="btn previous" 
-            [disabled]="!isPreviousEnabled"
-            (click)="handlePreviousClick()"
-        >Previous</button>
-        <button [hidden]="!showNextButton" class="btn next"
-            [disabled]="!isNextEnabled"
-            (click)="handleNextClick()"
-        >{{configurationDone ? 'Done' : 'Next'}}</button>
     </div>
+    <div *ngIf="currentScreen !== 'configure'">       
+        <section class="content-container" [ngSwitch]="currentScreen">
+            <jhi-location-services
+                *ngSwitchCase="'services'"
+                [services]="data.services"
+                [serviceSelected]="formData.service"
+                (onItemSelected)="handleItemSelected($event)"
+            ></jhi-location-services>
+            <jhi-location-connections
+                *ngSwitchCase="'connections'"
+                [connections]="data.connections"
+                [connectionSelected]="formData.connection"
+                (onItemSelected)="handleItemSelected($event)"
+            ></jhi-location-connections>
+            <jhi-location-stores
+                *ngSwitchDefault
+                [stores]="data.stores"
+                [storeSelected]="formData.store"
+                (onItemSelected)="handleItemSelected($event)"
+            ></jhi-location-stores>
+        </section>
+        <div class="action-bar">
+            <button [hidden]="!showPreviousButton" class="btn previous" 
+                [disabled]="!isPreviousEnabled"
+                (click)="handlePreviousClick()"
+            >Previous</button>
+            <button [hidden]="!showNextButton" class="btn next"
+                [disabled]="!isNextEnabled"
+                (click)="handleNextClick()"
+            >{{configurationDone ? 'Done' : 'Next'}}</button>
+        </div>
+    </div>
+
 </main>

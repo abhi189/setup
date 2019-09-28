@@ -11,5 +11,5 @@ export class Cttypes {
 
     constructor() {}
 
-    hanldeAddConfiguration() {}
+    handleAddConfiguration() {}
 }

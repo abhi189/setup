@@ -1,12 +1,15 @@
-<div class="configure-container">
-    <div class="header">Load configure</div>
-    <div class="configure-list">
-        <div *ngIf="configures.length">
-            <div *ngFor="let configure of configures"></div>
+<div class="services-container">
+        <div class="header">Select service type at the location</div>
+        <div class="services-list">
+            <div class="services-list-item" 
+                *ngFor="let service of devices;" 
+                [ngClass]="{'selected': deviceSelected && service.id === deviceSelected.id}"
+                (click)=setSelectedService(service)
+            >
+                <div class="service-image">
+                    <img [src]="service.imageUrl" alt="services.phase" /> 
+                </div>
+                <div class="service-id">{{service.content}}</div>
+            </div>
         </div>
     </div>
-    <div class="configure-add" (click)="hanldeAddConfiguration()">
-        <div>+</div>
-        <div>Add New Configuration</div>
-    </div>
-</div>

@@ -11,5 +11,5 @@ export class Ctsetup {
 
     constructor() {}
 
-    hanldeAddConfiguration() {}
+    handleAddConfiguration() {}
 }

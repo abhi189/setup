@@ -7,9 +7,10 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, Simple
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Devices {
-    @Input() configures: Array<any> = [];
-
+    @Input() devices: Array<any> = [];
+    @Input() deviceSelected;
+    @Output() 
     constructor() {}
 
-    hanldeAddConfiguration() {}
+    handleAddConfiguration() {}
 }

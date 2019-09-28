@@ -1,15 +1,3 @@
-<div *ngIf="!currentScreen" class="configure-container">
-    <div class="header">Load configure</div>
-    <div class="configure-list">
-        <div *ngIf="configures.length">
-            <div *ngFor="let configure of configures"></div>
-        </div>
-    </div>
-    <div class="configure-add" (click)="hanldeAddConfiguration()">
-        <div>+</div>
-        <div>Add New Configuration</div>
-    </div>
-</div>
 <section class="content-container" [ngSwitch]="currentScreen">
     <jhi-configure-devices
         *ngSwitchCase="'devices'"
@@ -41,6 +29,18 @@
         [ctPhaseSelected]="formData.ctPhase"
         (onItemSelected)="handleItemSelected($event)"
     ></jhi-configure-ctPhase>
+    <div *ngSwitchDefault class="configure-container">
+        <div class="header">Load configure</div>
+        <div class="configure-list">
+            <div *ngIf="configures.length">
+                <div *ngFor="let configure of configures"></div>
+            </div>
+        </div>
+        <div class="configure-add" (click)="handleAddConfiguration($event)">
+            <div>+</div>
+            <div>Add New Configuration</div>
+        </div>
+    </div>
 </section>
 <div class="action-bar">
     <button [hidden]="!showPreviousButton" class="btn previous" 

@@ -229,7 +229,8 @@ export class ConfigurationComponent implements OnInit {
         }
     }
 
-    hanldeAddConfiguration() {
+    handleAddConfiguration(event) {
         this.currentScreen = 'devices';
+        event.stopPropagation();
     }
 }
