@@ -31,14 +31,17 @@
         }
     }
 }
-.content-container {
-    height: calc(100vh - 140px);
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-    overflow-y: auto;
-    max-width: 720px;
-    margin: 0 auto;
+.configure-container {
+        padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    .header {
+        color: rgba(0, 0, 0, 0.8);
+        font-size: 1.2em;
+        font-weight: 600;
+        line-height: 1.4em;
+        margin-bottom: 24px;
+    }
     @media screen and (min-width: 600px) {
     }
 }
@@ -101,4 +104,6 @@
         }
     }
 }
+
+
 

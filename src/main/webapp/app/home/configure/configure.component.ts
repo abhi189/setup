@@ -115,7 +115,67 @@ export class ConfigurationComponent implements OnInit {
                 type: 'Delta',
                 imageUrl: '../../../../../content/images/delta.png'
             }
-        ]
+        ],
+        devices: [
+            {
+                id: 1,
+                type: 'HVAC Unit 1',
+            },
+            {
+                id: 2,
+                type: 'HVAC Unit 2',
+            },
+            {
+                id: 3,
+                type: 'Main',
+            },
+            {
+                id: 4,
+                type: 'Cooler',
+            },
+            {
+                id: 5,
+                type: 'Bread Oven',
+            },
+            {
+                id: 6,
+                type: 'Speed Oven',
+            },
+            {
+                id: 7,
+                type: 'HVAC Unit 1',
+            },
+            {
+                id: 8,
+                type: 'HVAC Unit 2',
+            },
+            {
+                id: 9,
+                type: 'Main',
+            },
+            {
+                id: 10,
+                type: 'Cooler',
+            },
+            {
+                id: 11,
+                type: 'Bread Oven',
+            },
+            {
+                id: 12,
+                type: 'Speed Oven',
+            }
+        ],
+        phases: [
+            {
+                id: 1,
+                type: 'WYE',
+            },
+            {
+                id: 2,
+                type: 'Delta',
+            }
+        ],
     };
     public allScreens: Array<string> = [];
 

@@ -7,9 +7,25 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, Simple
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Cttypes {
-    @Input() configures: Array<any> = [];
+    @Input() ctType: Array<any>;
+    @Input() ctTypeSelected: any = {};
+    @Output() onItemSelected = new EventEmitter();
 
     constructor() {}
 
-    handleAddConfiguration() {}
+    ngOnChanges(changes: SimpleChanges): void {
+        const { ctTypes, ctTypeSelected } = changes;
+
+        if (ctTypes && ctTypes.currentValue !== ctTypes.previousValue) {
+            this.ctType = ctTypes.currentValue;
+        }
+
+        if (ctTypeSelected && ctTypeSelected.currentValue !== ctTypeSelected.previousValue) {
+            this.ctTypeSelected = ctTypeSelected.currentValue;
+        }
+    }
+
+    setSelectedCttypes(device: any) {
+        this.onItemSelected.next({ name: 'ctType', value: ctType });
+    }
 }

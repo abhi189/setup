@@ -1,15 +1,12 @@
-<div class="services-container">
-        <div class="header">Select service type at the location</div>
-        <div class="services-list">
-            <div class="services-list-item" 
-                *ngFor="let service of devices;" 
-                [ngClass]="{'selected': deviceSelected && service.id === deviceSelected.id}"
-                (click)=setSelectedService(service)
+    <div class="devices-container">
+        <div class="header">Select device type at the location</div>
+        <div class="devices-list">
+            <div class="devices-list-item" 
+                *ngFor="let device of devices" 
+                [ngClass]="{'selected': deviceSelected && device.id === deviceSelected.id}"
+                (click)=setSelectedDevice(device)
             >
-                <div class="service-image">
-                    <img [src]="service.imageUrl" alt="services.phase" /> 
-                </div>
-                <div class="service-id">{{service.content}}</div>
+                <div class="connection-type">{{device.type}}</div>
             </div>
         </div>
     </div>
