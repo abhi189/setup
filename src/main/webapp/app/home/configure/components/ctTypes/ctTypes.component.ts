@@ -25,7 +25,7 @@ export class Cttypes {
         }
     }
 
-    setSelectedCttypes(device: any) {
+    setSelectedCttypes(ctType: any) {
         this.onItemSelected.next({ name: 'ctType', value: ctType });
     }
 }
