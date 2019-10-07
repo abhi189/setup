@@ -13,13 +13,13 @@ import { ConfigurationComponent } from './configure/configure.component';
 import { Devices } from './configure/components/device/device.component';
 import { Phases } from './configure/components/phases/phases.component';
 import { Cttypes } from './configure/components/ctTypes/ctTypes.component';
-import { Ctsetup } from './configure/components/ctSetup/ctSetup.component';
-import { Ctphases } from './configure/components/ctPhases/ctPhases.component';
+import { CtSetup } from './configure/components/ctSetup/ctSetup.component';
+import { CtPhase } from './configure/components/ctPhases/ctPhases.component';
 
 @NgModule({
     imports: [CommonModule, FormsModule, RouterModule.forChild(ModulesRoutes)],
-    declarations: [SettingsComponent, Stores, Services, Connections, ConfigurationComponent, Devices, Phases, Ctphases, Ctsetup, Cttypes],
-    exports: [Stores, Services, Connections, ConfigurationComponent, Devices, Phases, Ctphases, Ctsetup, Cttypes],
+    declarations: [SettingsComponent, Stores, Services, Connections, ConfigurationComponent, Devices, Phases, CtPhase, CtSetup, Cttypes],
+    exports: [Stores, Services, Connections, ConfigurationComponent, Devices, Phases, CtPhase, CtSetup, Cttypes],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class HomeModule {}

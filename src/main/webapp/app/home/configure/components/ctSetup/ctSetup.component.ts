@@ -6,10 +6,26 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, Simple
     selector: 'jhi-configure-ctSetup',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Ctsetup {
-    @Input() configures: Array<any> = [];
+export class CtSetup {
+    @Input() ctSetup: Array<any>;
+    @Input() ctSetupSelected: any = {};
+    @Output() onItemSelected = new EventEmitter();
 
     constructor() {}
 
-    handleAddConfiguration() {}
+    ngOnChanges(changes: SimpleChanges): void {
+        const { ctSetups, ctSetupSelected } = changes;
+
+        if (ctSetups && ctSetups.currentValue !== ctSetups.previousValue) {
+            this.ctSetup = ctSetups.currentValue;
+        }
+
+        if (ctSetupSelected && ctSetupSelected.currentValue !== ctSetupSelected.previousValue) {
+            this.ctSetupSelected = ctSetupSelected.currentValue;
+        }
+    }
+
+    setSelectedctSetup(ctSetup: any) {
+        this.onItemSelected.next({ name: 'ctSetup', value: ctSetup });
+    }
 }

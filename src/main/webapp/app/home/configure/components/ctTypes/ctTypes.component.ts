@@ -7,7 +7,7 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, Simple
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Cttypes {
-    @Input() ctType: Array<any>;
+    @Input() ctTypes: Array<any>;
     @Input() ctTypeSelected: any = {};
     @Output() onItemSelected = new EventEmitter();
 
@@ -17,7 +17,7 @@ export class Cttypes {
         const { ctTypes, ctTypeSelected } = changes;
 
         if (ctTypes && ctTypes.currentValue !== ctTypes.previousValue) {
-            this.ctType = ctTypes.currentValue;
+            this.ctTypes = ctTypes.currentValue;
         }
 
         if (ctTypeSelected && ctTypeSelected.currentValue !== ctTypeSelected.previousValue) {
@@ -25,7 +25,7 @@ export class Cttypes {
         }
     }
 
-    setSelectedCttypes(ctType: any) {
+    setSelectedCtType(ctType: any) {
         this.onItemSelected.next({ name: 'ctType', value: ctType });
     }
 }

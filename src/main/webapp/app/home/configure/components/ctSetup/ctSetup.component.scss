@@ -1,4 +1,4 @@
-.configure-container {
+.ctSetups-container {
     padding: 30px 20px;
     display: flex;
     flex-direction: column;
@@ -9,19 +9,25 @@
         line-height: 1.4em;
         margin-bottom: 24px;
     }
-    .configure-list {
+    .ctSetups-list {
         display: flex;
         flex: 1;
         flex-direction: column;
-        .connections-list-item {
+        .ctSetups-list-item {
             position: relative;
             background: rgba(255, 255, 255, 0.9);
             margin: 10px;
-            padding: 10px;
+            padding: 20px;
             transition: 200ms all ease-in;
             border-radius: 4px;
             border: 2px solid transparent;
             box-shadow: 0px 4px 2px 0px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            .service-image {
+                width: 100px;
+                margin-right: 10px;
+            }
             &.selected {
                 border: 2px solid #68c721;
                 box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.05);
@@ -34,35 +40,28 @@
                 transform: scale(1.02);
                 cursor: pointer;
             }
+            .ctSetup-id {
+                color: rgba(0, 0, 0, 0.8);
+            }
+            .ctSetup-address {
+                font-weight: normal;
+                margin: 10px 0;
+                color: rgba(0, 0, 0, 0.8);
+            }
+            .ctSetup-status {
+                position: absolute;
+                right: 10px;
+                width: 50px;
+                height: 50px;
+                top: 50%;
+                transform: translateY(-50%);
+                span {
+                    display: inline-block;
+                }
+            }
         }
     }
     @media screen and (max-width: 600px) {
         padding: 30px 10px;
-    }
-    .configure-add {
-        flex: 1;
-        justify-content: center;
-        flex-direction: column;
-        display: flex;
-        align-items: center;
-        div {
-            cursor: pointer;
-            &:first-child {
-                font-size: 50px;
-                color: #fff;
-                line-height: 50px;
-                text-align: center;
-                width: 60px;
-                height: 60px;
-                border-radius: 50%;
-                background: #14653b;
-            }
-            &:last-child {
-                font-size: 14px;
-                font-weight: bold;
-                color: rgba(0, 0, 0, 0.8);
-                margin-top: 12px;
-            }
-        }
     }
 }

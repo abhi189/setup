@@ -95,25 +95,25 @@ export class ConfigurationComponent implements OnInit {
                 id: 1,
                 phase: 5,
                 content: 'Three Phase 120/208 or 277/480',
-                imageUrl: '../../../../../content/images/split-phase.png'
+                imageUrl: 'https://d3rbhwp8vebia6.cloudfront.net/installersetupweb/Three-phase.png'
             },
             {
                 id: 2,
                 phase: 3,
                 content: 'Split Phase 120/240',
-                imageUrl: '../../../../../content/images/three-phase.png'
+                imageUrl: 'https://d3rbhwp8vebia6.cloudfront.net/installersetupweb/Split-Phase.png'
             }
         ],
         connections: [
             {
                 id: 1,
                 type: 'WYE',
-                imageUrl: '../../../../../content/images/wye.png'
+                imageUrl: 'https://d3rbhwp8vebia6.cloudfront.net/installersetupweb/wye.png'
             },
             {
                 id: 2,
                 type: 'Delta',
-                imageUrl: '../../../../../content/images/delta.png'
+                imageUrl: 'https://d3rbhwp8vebia6.cloudfront.net/installersetupweb/delta.png'
             }
         ],
         devices: [
@@ -169,11 +169,69 @@ export class ConfigurationComponent implements OnInit {
         phases: [
             {
                 id: 1,
-                type: 'WYE',
+                type: '1',
             },
             {
                 id: 2,
-                type: 'Delta',
+                type: '2',
+            },
+            {
+                id: 3,
+                type: '3',
+            }
+        ],
+        ctTypes: [
+            {
+                id: 1,
+                type: 'SCT02-T10/50A',
+            },
+            {
+                id: 2,
+                type: 'SCT02-T16/100A',
+            },
+            {
+                id: 3,
+                type: 'SCT02-T24/200A',
+            }
+        ],
+        ctSetup: [
+            {
+                id: 1,
+                type: 'CT Input: A',
+            },
+            {
+                id: 2,
+                type: 'CT Input: B',
+            },
+            {
+                id: 3,
+                type: 'CT Input: C',
+            },
+            {
+                id: 4,
+                type: 'CT Input: D',
+            },
+            {
+                id: 5,
+                type: 'CT Input: E',
+            },
+            {
+                id: 6,
+                type: 'CT Input: F',
+            }
+        ],
+        ctPhase: [
+            {
+                id: 1,
+                type: 'L1',
+            },
+            {
+                id: 2,
+                type: 'L2',
+            },
+            {
+                id: 3,
+                type: 'L3',
             }
         ],
     };
@@ -215,6 +273,7 @@ export class ConfigurationComponent implements OnInit {
     }
 
     updateForm({ name, value }) {
+        console.log('Form: ', name, value);
         this.formData = {
             ...this.formData,
             [name]: value
@@ -238,7 +297,7 @@ export class ConfigurationComponent implements OnInit {
                 }
                 break;
             }
-            case 'ctTypes': {
+            case 'ctType': {
                 if (this.formData['ctType']) {
                     return true;
                 }
@@ -279,6 +338,7 @@ export class ConfigurationComponent implements OnInit {
     }
 
     handleNextClick() {
+        console.log('Curr Screen: ', this.currentScreen);
         if (this.validateScreenData()) {
             this.currentScreen = this.getNextStep();
             this.isNextEnabled = false;
