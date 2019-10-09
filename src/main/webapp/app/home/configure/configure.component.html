@@ -41,8 +41,9 @@
         <div>Add New Configuration</div>
     </div>
     <div *ngIf="configurations.length" class="config-list">
+        <h4>Configured Items</h4>
         <div *ngFor="let conf of configurations" class="config-list-item">
-            <strong>{{conf.device.type}}</strong> configuration is done.
+            <strong>{{conf.device.type}}</strong> <br />configuration is done.
         </div>
     </div>
     </div>
