@@ -40,6 +40,11 @@
         <div>+</div>
         <div>Add New Configuration</div>
     </div>
+    <div *ngIf="configurations.length" class="config-list">
+        <div *ngFor="let conf of configurations" class="config-list-item">
+            <strong>{{conf.device.type}}</strong> configuration is done.
+        </div>
+    </div>
     </div>
 </section>
 <div class="action-bar">

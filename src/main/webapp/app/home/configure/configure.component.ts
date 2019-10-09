@@ -22,6 +22,7 @@ export class ConfigurationComponent implements OnInit {
     public isPreviousEnabled: boolean;
     public formData: any = {};
     public storeSelected: any = {};
+    public configurations: any = [];
     public configurationDone: boolean;
     public data = {
         stores: [
@@ -119,121 +120,121 @@ export class ConfigurationComponent implements OnInit {
         devices: [
             {
                 id: 1,
-                type: 'HVAC Unit 1',
+                type: 'HVAC Unit 1'
             },
             {
                 id: 2,
-                type: 'HVAC Unit 2',
+                type: 'HVAC Unit 2'
             },
             {
                 id: 3,
-                type: 'Main',
+                type: 'Main'
             },
             {
                 id: 4,
-                type: 'Cooler',
+                type: 'Cooler'
             },
             {
                 id: 5,
-                type: 'Bread Oven',
+                type: 'Bread Oven'
             },
             {
                 id: 6,
-                type: 'Speed Oven',
+                type: 'Speed Oven'
             },
             {
                 id: 7,
-                type: 'HVAC Unit 1',
+                type: 'HVAC Unit 1'
             },
             {
                 id: 8,
-                type: 'HVAC Unit 2',
+                type: 'HVAC Unit 2'
             },
             {
                 id: 9,
-                type: 'Main',
+                type: 'Main'
             },
             {
                 id: 10,
-                type: 'Cooler',
+                type: 'Cooler'
             },
             {
                 id: 11,
-                type: 'Bread Oven',
+                type: 'Bread Oven'
             },
             {
                 id: 12,
-                type: 'Speed Oven',
+                type: 'Speed Oven'
             }
         ],
         phases: [
             {
                 id: 1,
-                type: '1',
+                type: '1'
             },
             {
                 id: 2,
-                type: '2',
+                type: '2'
             },
             {
                 id: 3,
-                type: '3',
+                type: '3'
             }
         ],
         ctTypes: [
             {
                 id: 1,
-                type: 'SCT02-T10/50A',
+                type: 'SCT02-T10/50A'
             },
             {
                 id: 2,
-                type: 'SCT02-T16/100A',
+                type: 'SCT02-T16/100A'
             },
             {
                 id: 3,
-                type: 'SCT02-T24/200A',
+                type: 'SCT02-T24/200A'
             }
         ],
         ctSetup: [
             {
                 id: 1,
-                type: 'CT Input: A',
+                type: 'CT Input: A'
             },
             {
                 id: 2,
-                type: 'CT Input: B',
+                type: 'CT Input: B'
             },
             {
                 id: 3,
-                type: 'CT Input: C',
+                type: 'CT Input: C'
             },
             {
                 id: 4,
-                type: 'CT Input: D',
+                type: 'CT Input: D'
             },
             {
                 id: 5,
-                type: 'CT Input: E',
+                type: 'CT Input: E'
             },
             {
                 id: 6,
-                type: 'CT Input: F',
+                type: 'CT Input: F'
             }
         ],
         ctPhase: [
             {
                 id: 1,
-                type: 'L1',
+                type: 'L1'
             },
             {
                 id: 2,
-                type: 'L2',
+                type: 'L2'
             },
             {
                 id: 3,
-                type: 'L3',
+                type: 'L3'
             }
-        ],
+        ]
     };
     public allScreens: Array<string> = [];
 
@@ -329,6 +330,7 @@ export class ConfigurationComponent implements OnInit {
     handlePreviousClick() {
         this.currentScreen = this.getPreviousStep();
         this.isNextEnabled = true;
+        this.configurationDone = false;
         if (this.allScreens.indexOf(this.currentScreen) === 0) {
             this.showPreviousButton = false;
         } else {
@@ -342,12 +344,25 @@ export class ConfigurationComponent implements OnInit {
         if (this.validateScreenData()) {
             this.currentScreen = this.getNextStep();
             this.isNextEnabled = false;
+            if (this.configurationDone) {
+                this.handleDoneClick();
+                return;
+            }
             if (this.allScreens.indexOf(this.currentScreen) === this.allScreens.length - 1) {
                 this.configurationDone = true;
             }
             this.showPreviousButton = this.isPreviousEnabled = true;
         }
+        this.handleButtonState();
     }
+
+    handleDoneClick = () => {
+        this.currentScreen = 'configure';
+        this.configurations = [...this.configurations, this.formData];
+        this.formData = {};
+        this.configurationDone = false;
+        this.showPreviousButton = false;
+    };
 
     handleAddConfiguration(event) {
         this.currentScreen = 'devices';
