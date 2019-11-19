@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ModulesRoutes } from './home.route';
+import { ZXingScannerModule } from '@zxing/ngx-scanner';
 
 import { SettingsComponent } from './settings/settings.component';
 import { Stores } from './settings/components/stores/stores.component';
@@ -17,7 +18,7 @@ import { CtSetup } from './configure/components/ctSetup/ctSetup.component';
 import { CtPhase } from './configure/components/ctPhases/ctPhases.component';
 
 @NgModule({
-    imports: [CommonModule, FormsModule, RouterModule.forChild(ModulesRoutes)],
+    imports: [CommonModule, FormsModule, RouterModule.forChild(ModulesRoutes), ZXingScannerModule],
     declarations: [SettingsComponent, Stores, Services, Connections, ConfigurationComponent, Devices, Phases, CtPhase, CtSetup, Cttypes],
     exports: [Stores, Services, Connections, ConfigurationComponent, Devices, Phases, CtPhase, CtSetup, Cttypes],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]

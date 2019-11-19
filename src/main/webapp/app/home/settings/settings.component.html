@@ -15,6 +15,16 @@
             (onItemSelected)="handleItemSelected($event)"
         ></jhi-location-configure>
     </div>
+    <zxing-scanner [torch]="torchEnabled" [(device)]="currentDevice" (scanSuccess)="onCodeResult($event)"
+    [formats]="['QR_CODE', 'EAN_13', 'CODE_128', 'DATA_MATRIX']" [tryHarder]="tryHarder" (permissionResponse)="onHasPermission($event)"
+    (camerasFound)="onCamerasFound($event)" (torchCompatible)="onTorchCompatible($event)"></zxing-scanner>
+    <section class="results" *ngIf="qrResultString">
+        <div>
+        <small>Result</small>
+        <strong>{{ qrResultString }}</strong>
+        </div>
+    </section>
+    <button (click)="enableScan()">scan</button>
     <div *ngIf="currentScreen !== 'configure'">       
         <section class="content-container" [ngSwitch]="currentScreen">
             <jhi-location-services

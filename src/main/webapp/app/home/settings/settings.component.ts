@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LoginService } from '../../core/login/login.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
     selector: 'jhi-settings',
@@ -117,9 +118,54 @@ export class SettingsComponent implements OnInit {
         configure: ''
     };
 
+    availableDevices: MediaDeviceInfo[];
+    currentDevice: MediaDeviceInfo = null;
+    hasDevices: boolean;
+    hasPermission: boolean;
+
+    qrResultString: string;
+
+    torchEnabled = false;
+    torchAvailable$ = new BehaviorSubject<boolean>(false);
+    tryHarder = false;
+    startReading: boolean;
     public allScreens: Array<string> = [];
 
     constructor(private loginService: LoginService) {}
+
+    onCamerasFound(devices: MediaDeviceInfo[]): void {
+        this.availableDevices = devices;
+        this.hasDevices = Boolean(devices && devices.length);
+    }
+
+    onCodeResult(resultString: string) {
+        this.qrResultString = resultString;
+    }
+
+    onDeviceSelectChange(selected: string) {
+        const device = this.availableDevices.find(x => x.deviceId === selected);
+        this.currentDevice = device || null;
+    }
+
+    onHasPermission(has: boolean) {
+        this.hasPermission = has;
+    }
+
+    onTorchCompatible(isCompatible: boolean): void {
+        this.torchAvailable$.next(isCompatible || false);
+    }
+
+    toggleTorch(): void {
+        this.torchEnabled = !this.torchEnabled;
+    }
+
+    enableTorch(): void {
+        this.startReading = true;
+    }
+
+    toggleTryHarder(): void {
+        this.tryHarder = !this.tryHarder;
+    }
 
     ngOnInit(): void {
         this.currentScreen = 'location';
