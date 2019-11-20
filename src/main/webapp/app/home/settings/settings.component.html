@@ -9,6 +9,20 @@
             </button>
         </div>
     </nav>
+
+    <div class="qr-scanner-class" style="width: 400px; height: 400px; margin: 0 auto;">
+        <qr-scanner
+            [debug]="false"
+            [canvasWidth]="400" 
+            [canvasHeight]="400" 
+            [stopAfterScan]="true"
+            [updateTime]="1000">
+        </qr-scanner>
+    </div>
+    <button (click)="startScanning(); scanClicked=true">scan</button>
+    <div *ngIf="qrCode">
+        Code: {{ qrCode }}
+    </div>
     <div *ngIf="currentScreen === 'configure'">
         <jhi-location-configure
             [configuration]="formData"

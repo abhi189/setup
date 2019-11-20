@@ -7,6 +7,8 @@ import { NgbDatepickerConfig } from '@ng-bootstrap/ng-bootstrap';
 import { Ng2Webstorage } from 'ngx-webstorage';
 import { NgJhipsterModule } from 'ng-jhipster';
 
+import { NgQrScannerModule } from 'angular2-qrscanner';
+
 import { AuthExpiredInterceptor } from './blocks/interceptor/auth-expired.interceptor';
 import { ErrorHandlerInterceptor } from './blocks/interceptor/errorhandler.interceptor';
 import { NotificationInterceptor } from './blocks/interceptor/notification.interceptor';
@@ -28,6 +30,7 @@ import { JhiMainComponent, ErrorComponent } from './layouts';
             alertAsToast: false,
             alertTimeout: 5000
         }),
+        NgQrScannerModule,
         InstallersetupwebSharedModule.forRoot(),
         InstallersetupwebCoreModule,
         // jhipster-needle-angular-add-module JHipster will add new module here

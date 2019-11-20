@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { LoginService } from '../../core/login/login.service';
+import { QrScannerComponent } from 'angular2-qrscanner';
 
 @Component({
     selector: 'jhi-settings',
     templateUrl: './settings.component.html',
-    styleUrls: ['./settings.component.scss']
+    styleUrls: ['./settings.component.scss'],
+    encapsulation: ViewEncapsulation.None
 })
 export class SettingsComponent implements OnInit {
     public showNextButton: boolean;
@@ -117,6 +119,8 @@ export class SettingsComponent implements OnInit {
         configure: ''
     };
 
+    public qrCode: any;
+    @ViewChild(QrScannerComponent) qrScannerComponent: QrScannerComponent;
     public allScreens: Array<string> = [];
 
     constructor(private loginService: LoginService) {}
@@ -125,6 +129,39 @@ export class SettingsComponent implements OnInit {
         this.currentScreen = 'location';
         this.showNextButton = true;
         this.allScreens = this.currentScreen === 'configure' ? Object.keys(this.steps.configure) : Object.keys(this.steps);
+    }
+
+    startScanning(): void {
+        // if (!this.qrScannerComponent) return;
+
+        this.qrScannerComponent.getMediaDevices().then(devices => {
+            console.log(devices);
+            const videoDevices: MediaDeviceInfo[] = [];
+            for (const device of devices) {
+                if (device.kind.toString() === 'videoinput') {
+                    videoDevices.push(device);
+                }
+            }
+            if (videoDevices.length > 0) {
+                let choosenDev;
+                for (const dev of videoDevices) {
+                    if (dev.label.includes('front')) {
+                        choosenDev = dev;
+                        break;
+                    }
+                }
+                if (choosenDev) {
+                    this.qrScannerComponent.chooseCamera.next(choosenDev);
+                } else {
+                    this.qrScannerComponent.chooseCamera.next(videoDevices[0]);
+                }
+            }
+        });
+
+        this.qrScannerComponent.capturedQr.subscribe(result => {
+            this.qrCode = result;
+            console.log(result);
+        });
     }
 
     getNextStep() {
