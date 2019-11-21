@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { LoginService } from '../../core/login/login.service';
 import { BehaviorSubject } from 'rxjs';
+import { BrowserQRCodeReader, BrowserCodeReader, BrowserBarcodeReader } from '@zxing/library';
+import { ZXingScannerComponent } from '@zxing/ngx-scanner';
 
 @Component({
     selector: 'jhi-settings',
@@ -123,15 +125,23 @@ export class SettingsComponent implements OnInit {
     hasDevices: boolean;
     hasPermission: boolean;
 
-    qrResultString: string;
+    qrResultString: string = '';
 
     torchEnabled = false;
     torchAvailable$ = new BehaviorSubject<boolean>(false);
     tryHarder = false;
-    startReading: boolean;
     public allScreens: Array<string> = [];
-
+    public codeReader: any;
     constructor(private loginService: LoginService) {}
+
+    ngOnInit(): void {
+        this.currentScreen = 'location';
+        this.showNextButton = true;
+        this.allScreens = this.currentScreen === 'configure' ? Object.keys(this.steps.configure) : Object.keys(this.steps);
+        this.codeReader = new BrowserQRCodeReader();
+
+        // const reader = new ZXingScannerComponent();
+    }
 
     onCamerasFound(devices: MediaDeviceInfo[]): void {
         this.availableDevices = devices;
@@ -155,22 +165,44 @@ export class SettingsComponent implements OnInit {
         this.torchAvailable$.next(isCompatible || false);
     }
 
-    toggleTorch(): void {
-        this.torchEnabled = !this.torchEnabled;
+    startScanning(type): void {
+        switch (type) {
+            case 'qr':
+                this.codeReader = new BrowserQRCodeReader();
+            case 'bar':
+                this.codeReader = new BrowserBarcodeReader();
+        }
+        this.startReading(type);
     }
 
-    enableTorch(): void {
-        this.startReading = true;
+    startReading(type): void {
+        this.codeReader
+            .listVideoInputDevices()
+            .then(videoInputDevices => {
+                this.scanDocument(videoInputDevices, type);
+            })
+            .catch(err => console.error(err));
     }
 
-    toggleTryHarder(): void {
-        this.tryHarder = !this.tryHarder;
+    scanDocument(devices: any = [], type): void {
+        const firstDeviceId = devices.length ? devices[0].deviceId : undefined;
+        let decoder = this.codeReader.decodeFromInputVideoDevice(firstDeviceId, 'video');
+
+        if (type === 'bar') {
+            decoder = this.codeReader.decodeOnceFromVideoDevice(firstDeviceId, 'video');
+        }
+
+        decoder
+            .then(result => {
+                this.qrResultString = result;
+            })
+            .catch(err => console.error(err));
     }
 
-    ngOnInit(): void {
-        this.currentScreen = 'location';
-        this.showNextButton = true;
-        this.allScreens = this.currentScreen === 'configure' ? Object.keys(this.steps.configure) : Object.keys(this.steps);
+    stopScanning(): void {
+        this.codeReader.reset();
+        if (this.qrResultString) {
+        }
     }
 
     getNextStep() {

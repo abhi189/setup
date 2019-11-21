@@ -42,6 +42,18 @@
     @media screen and (min-width: 600px) {
     }
 }
+.scanner-div {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+    button {
+        width: 80px;
+        margin: 10px;
+        text-align: center;
+        display: inline-flex;
+    }
+}
 .action-bar {
     height: 80px;
     background: transparent;
