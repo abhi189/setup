@@ -19,8 +19,7 @@
     <div class="scanner-div">
         <video id="video" width="300" height="200" style="border: 1px solid gray"></video>
         <div class="">
-            <button (click)="startScanning('qr')">scan qr code</button>
-            <button (click)="startScanning('bar')">scan bar code</button>
+            <button (click)="startScanning('qr')">scan</button>
         </div>
         <button (click)="stopScanning()">stop</button>
         <input [value]="qrResultString" placeholder="Pleace enter qr" />

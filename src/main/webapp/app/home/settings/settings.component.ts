@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { LoginService } from '../../core/login/login.service';
 import { BehaviorSubject } from 'rxjs';
-import { BrowserQRCodeReader, BrowserCodeReader, BrowserBarcodeReader } from '@zxing/library';
+import { BrowserMultiFormatReader } from '@zxing/library';
 import { ZXingScannerComponent } from '@zxing/ngx-scanner';
 
 @Component({
@@ -138,7 +138,7 @@ export class SettingsComponent implements OnInit {
         this.currentScreen = 'location';
         this.showNextButton = true;
         this.allScreens = this.currentScreen === 'configure' ? Object.keys(this.steps.configure) : Object.keys(this.steps);
-        this.codeReader = new BrowserQRCodeReader();
+        this.codeReader = new BrowserMultiFormatReader();
 
         // const reader = new ZXingScannerComponent();
     }
@@ -166,12 +166,6 @@ export class SettingsComponent implements OnInit {
     }
 
     startScanning(type): void {
-        switch (type) {
-            case 'qr':
-                this.codeReader = new BrowserQRCodeReader();
-            case 'bar':
-                this.codeReader = new BrowserBarcodeReader();
-        }
         this.startReading(type);
     }
 
@@ -186,15 +180,11 @@ export class SettingsComponent implements OnInit {
 
     scanDocument(devices: any = [], type): void {
         const firstDeviceId = devices.length ? devices[0].deviceId : undefined;
-        let decoder = this.codeReader.decodeFromInputVideoDevice(firstDeviceId, 'video');
-
-        if (type === 'bar') {
-            decoder = this.codeReader.decodeOnceFromVideoDevice(firstDeviceId, 'video');
-        }
-
-        decoder
+        this.codeReader
+            .decodeFromInputVideoDevice(firstDeviceId, 'video')
             .then(result => {
                 this.qrResultString = result;
+                this.stopScanning();
             })
             .catch(err => console.error(err));
     }
