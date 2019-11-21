@@ -1,0 +1,12 @@
+<div class="ctTypes-container">
+    <div class="header">Select the CT Type</div>
+    <div class="ctTypes-list">
+        <div class="ctTypes-list-item" 
+            *ngFor="let ctType of ctTypes" 
+            [ngClass]="{'selected': ctTypeSelected && ctType.id === ctTypeSelected.id}"
+            (click)=setSelectedCtType(ctType)
+        >
+            <div class="connection-type">{{ctType.type}}</div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,15 @@
+<div class="controllers-container">
+    <div class="header">Select equipment to assign/configure</div>
+    <div class="controllers-list">
+        <div class="controllers-list-item" 
+            *ngFor="let controller of controllers;" 
+            [ngClass]="{'selected': controllerSelected && controller.id === controllerSelected.id}"
+            (click)=setSelectedController(controller)
+        >
+            <div class="controller-image">
+                <img [src]="controller.imageUrl" alt="controller.content" />
+            </div>
+            <div class="controller-type">{{controller.content}}</div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,12 @@
+<div class="phases-container">
+    <div class="header">Select the number of phases on this load</div>
+    <div class="phases-list">
+        <div class="phases-list-item" 
+            *ngFor="let phase of phases" 
+            [ngClass]="{'selected': phaseSelected && phase.id === phaseSelected.id}"
+            (click)=setSelectedPhase(phase)
+        >
+            <div class="connection-type">{{phase.type}}</div>
+        </div>
+    </div>
+</div>

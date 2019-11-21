@@ -1,47 +1,60 @@
-<main>
-    <nav class="navbar">
-        <div class="nav-item logo">
-            <img class="" src="https://d3rbhwp8vebia6.cloudfront.net/img/Budderfly-logo-dark-large-300x138 .png" alt="budderfly installer logo" />
-        </div>
-        <div class="nav-item">
-            <button class="btn-logout" (click)="handleLogout()">
-                <img src="../../../content/images/logout.png" alt="Installer Web logout" />
-            </button>
-        </div>
-    </nav>
-    <section class="content-container" [ngSwitch]="currentScreen">
-        <jhi-location-services
-            *ngSwitchCase="'services'"
-            [services]="data.services"
-            [serviceSelected]="formData.service"
-            (onItemSelected)="handleItemSelected($event)"
-        ></jhi-location-services>
-        <jhi-location-connections
-            *ngSwitchCase="'connections'"
-            [connections]="data.connections"
-            [connectionSelected]="formData.connection"
-            (onItemSelected)="handleItemSelected($event)"
-        ></jhi-location-connections>
-        <jhi-location-configure
-            *ngSwitchCase="'configure'"
-            [configuration]="formData"
-            (onItemSelected)="handleItemSelected($event)"
-        ></jhi-location-configure>
-        <jhi-location-stores
-            *ngSwitchDefault
-            [stores]="data.stores"
-            [storeSelected]="formData.store"
-            (onItemSelected)="handleItemSelected($event)"
-        ></jhi-location-stores>
-    </section>
-    <div class="action-bar">
-        <button [hidden]="!showPreviousButton" class="btn previous" 
-            [disabled]="!isPreviousEnabled"
-            (click)="handlePreviousClick()"
-        >Previous</button>
-        <button [hidden]="!showNextButton" class="btn next"
-            [disabled]="!isNextEnabled"
-            (click)="handleNextClick()"
-        >Next</button>
+<section class="content-container" [ngSwitch]="currentScreen">
+    <jhi-configure-devices
+        *ngSwitchCase="'devices'"
+        [devices]="data.devices"
+        [deviceSelected]="formData.device"
+        (onItemSelected)="handleItemSelected($event)"
+    ></jhi-configure-devices>
+    <jhi-configure-phases
+        *ngSwitchCase="'phases'"
+        [phases]="data.phases"
+        [phaseSelected]="formData.phase"
+        (onItemSelected)="handleItemSelected($event)"
+    ></jhi-configure-phases>
+    <jhi-configure-ctTypes
+        *ngSwitchCase="'ctType'"
+        [ctTypes]="data.ctTypes"
+        [ctTypeSelected]="formData.ctType"
+        (onItemSelected)="handleItemSelected($event)"
+    ></jhi-configure-ctTypes>
+    <jhi-configure-ctSetup
+        *ngSwitchCase="'ctSetup'"
+        [ctSetup]="data.ctSetup"
+        [ctSetupSelected]="formData.ctSetup"
+        (onItemSelected)="handleItemSelected($event)"
+    ></jhi-configure-ctSetup>
+    <jhi-configure-ctPhase
+        *ngSwitchCase="'ctPhases'"
+        [ctPhase]="data.ctPhase"
+        [ctPhaseSelected]="formData.ctPhase"
+        (onItemSelected)="handleItemSelected($event)"
+    ></jhi-configure-ctPhase>
+    <div *ngSwitchDefault class="configure-container">
+            <div class="header">Load configure</div>
+            <div class="configure-list">
+                <div *ngIf="configures.length">
+                    <div *ngFor="let configure of configures"></div>
+                </div>
+            </div>
+    <div class="configure-add" (click)="handleAddConfiguration($event)">
+        <div>+</div>
+        <div>Add New Configuration</div>
     </div>
-</main>
+    <div *ngIf="configurations.length" class="config-list">
+        <h4>Configured Items</h4>
+        <div *ngFor="let conf of configurations" class="config-list-item">
+            <strong>{{conf.device.type}}</strong> <br />configuration is done.
+        </div>
+    </div>
+    </div>
+</section>
+<div class="action-bar">
+    <button [hidden]="!showPreviousButton" class="btn previous" 
+        [disabled]="!isPreviousEnabled"
+        (click)="handlePreviousClick()"
+    >Previous</button>
+    <button [hidden]="!showNextButton" class="btn next"
+        [disabled]="!isNextEnabled"
+        (click)="handleNextClick()"
+    >{{configurationDone ? 'Done' : 'Next'}}</button>
+</div>

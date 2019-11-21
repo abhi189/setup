@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { ConfigureComponent } from './configure/configure.component';
+import { SettingsComponent } from './settings/settings.component';
 
 export const ModulesRoutes: Routes = [
     {
@@ -8,6 +8,6 @@ export const ModulesRoutes: Routes = [
             authorities: [],
             pageTitle: 'Configure your Store'
         },
-        component: ConfigureComponent
+        component: SettingsComponent
     }
 ];

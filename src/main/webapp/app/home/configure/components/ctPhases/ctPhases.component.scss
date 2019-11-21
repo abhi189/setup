@@ -1,4 +1,4 @@
-.services-container {
+.ctPhases-container {
     padding: 30px 20px;
     display: flex;
     flex-direction: column;
@@ -9,19 +9,25 @@
         line-height: 1.4em;
         margin-bottom: 24px;
     }
-    .services-list {
+    .ctPhases-list {
         display: flex;
         flex: 1;
         flex-direction: column;
-        .services-list-item {
+        .ctPhases-list-item {
             position: relative;
             background: rgba(255, 255, 255, 0.9);
             margin: 10px;
-            padding: 13px;
+            padding: 20px;
             transition: 200ms all ease-in;
             border-radius: 4px;
             border: 2px solid transparent;
             box-shadow: 0px 4px 2px 0px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            .service-image {
+                width: 100px;
+                margin-right: 10px;
+            }
             &.selected {
                 border: 2px solid #68c721;
                 box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.05);
@@ -34,15 +40,15 @@
                 transform: scale(1.02);
                 cursor: pointer;
             }
-            .service-id {
+            .ctPhase-id {
                 color: rgba(0, 0, 0, 0.8);
             }
-            .service-address {
+            .ctPhase-address {
                 font-weight: normal;
                 margin: 10px 0;
                 color: rgba(0, 0, 0, 0.8);
             }
-            .service-status {
+            .ctPhase-status {
                 position: absolute;
                 right: 10px;
                 width: 50px;

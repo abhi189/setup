@@ -28,14 +28,14 @@ export class LoginService {
     }
 
     logout() {
-        this.authServerProvider.logout()
-        .subscribe(
-        () => {
-            this.accountService.authenticate(null);
-            location.href='/';
-        }, err => {
-            
-        })
-
+        this.authServerProvider.logout().subscribe(
+            () => {
+                this.accountService.authenticate(null);
+                location.href = '/';
+            },
+            err => {
+                console.log('Error: ', err);
+            }
+        );
     }
 }

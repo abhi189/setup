@@ -1,0 +1,43 @@
+<section class="content-container" [ngSwitch]="currentScreen">
+    <jhi-location-controller
+        *ngSwitchCase="'controllers'"
+        [controllers]="data.controllers"
+        [controllerSelected]="formData.controller"
+        (onItemSelected)="handleItemSelected($event)"
+    ></jhi-location-controller>
+    <jhi-location-fc
+        *ngSwitchCase="'fcs'"
+        (setMacAddress)="keyDownMac($event)"
+        [fcs]="data.fcs"
+        [fcSelected]="formData.fc"
+    ></jhi-location-fc>
+    <div *ngSwitchDefault class="configure-container">
+            <div class="header">Install Equipment</div>
+            <div class="configure-list">
+                <div *ngIf="fcontrollers.length">
+                    <div *ngFor="let fcontroller of fcontrollers"></div>
+                </div>
+            </div>
+    <div class="configure-add" (click)="handleAddConfiguration($event)">
+        <div>+</div>
+        <div>Add New Equipment</div>
+    </div>
+    <div *ngIf="fcontrollers.length" class="config-list">
+        <h4>Installed Equipment</h4>
+        <div *ngFor="let conf of fcontrollers" class="config-list-item">
+            <img class="fc-image" [src]="conf.fc.imageUrl" alt="conf.fc.macAddress" />
+            <strong>{{conf.fc.macAddress}}</strong> <br />Facility controller configured.
+        </div>
+    </div>
+    </div>
+</section>
+<div class="action-bar">
+    <button [hidden]="!showPreviousButton" class="btn previous" 
+        [disabled]="!isPreviousEnabled"
+        (click)="handlePreviousClick()"
+    >Previous</button>
+    <button [hidden]="!showNextButton" class="btn next"
+        [disabled]="!isNextEnabled"
+        (click)="handleNextClick()"
+    >{{configurationDone ? 'Done' : 'Next'}}</button>
+</div>

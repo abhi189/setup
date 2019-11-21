@@ -1,0 +1,12 @@
+<div class="ctSetups-container">
+    <div class="header">CT Setup</div>
+    <div class="ctSetups-list">
+        <div class="ctSetups-list-item" 
+            *ngFor="let ctSetup of ctSetup" 
+            [ngClass]="{'selected': ctSetupSelected && ctSetup.id === ctSetupSelected.id}"
+            (click)=setSelectedctSetup(ctSetup)
+        >
+            <div class="connection-type">{{ctSetup.type}}</div>
+        </div>
+    </div>
+</div>

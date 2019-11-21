@@ -1,20 +1,12 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, SimpleChanges, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { LoginService } from '../../core/login/login.service';
 
 @Component({
-    templateUrl: './configure.component.html',
-    styleUrls: ['./configure.component.scss'],
-    selector: 'jhi-location-configure',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'jhi-settings',
+    templateUrl: './settings.component.html',
+    styleUrls: ['./settings.component.scss']
 })
-export class ConfigurationComponent implements OnInit {
-    @Input() configures: Array<any> = [];
-    public steps: any = {
-        devices: '',
-        phases: '',
-        ctType: '',
-        ctSetup: '',
-        ctPhases: ''
-    };
+export class SettingsComponent implements OnInit {
     public showNextButton: boolean;
     public currentScreen: string;
     public showPreviousButton: boolean;
@@ -22,7 +14,6 @@ export class ConfigurationComponent implements OnInit {
     public isPreviousEnabled: boolean;
     public formData: any = {};
     public storeSelected: any = {};
-    public configurations: any = [];
     public configurationDone: boolean;
     public data = {
         stores: [
@@ -91,15 +82,34 @@ export class ConfigurationComponent implements OnInit {
                 online: false
             }
         ],
-        services: [
+
+        controllers: [
+            {
+                id: 3,
+                content: 'Facility Controller',
+                imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/FC.png'
+            },
+            {
+                id: 2,
+                content: 'Network Router',
+                imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/Router.png'
+            },
             {
                 id: 1,
+                content: 'Smappee Meter',
+                imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/Smappee.png'
+            }
+        ],
+
+        services: [
+            {
+                id: 2,
                 phase: 5,
                 content: 'Three Phase 120/208 or 277/480',
                 imageUrl: 'https://d3rbhwp8vebia6.cloudfront.net/installersetupweb/Three-phase.png'
             },
             {
-                id: 2,
+                id: 1,
                 phase: 3,
                 content: 'Split Phase 120/240',
                 imageUrl: 'https://d3rbhwp8vebia6.cloudfront.net/installersetupweb/Split-Phase.png'
@@ -116,133 +126,25 @@ export class ConfigurationComponent implements OnInit {
                 type: 'Delta',
                 imageUrl: 'https://d3rbhwp8vebia6.cloudfront.net/installersetupweb/delta.png'
             }
-        ],
-        devices: [
-            {
-                id: 1,
-                type: 'HVAC Unit 1'
-            },
-            {
-                id: 2,
-                type: 'HVAC Unit 2'
-            },
-            {
-                id: 3,
-                type: 'Main'
-            },
-            {
-                id: 4,
-                type: 'Cooler'
-            },
-            {
-                id: 5,
-                type: 'Bread Oven'
-            },
-            {
-                id: 6,
-                type: 'Speed Oven'
-            },
-            {
-                id: 7,
-                type: 'HVAC Unit 1'
-            },
-            {
-                id: 8,
-                type: 'HVAC Unit 2'
-            },
-            {
-                id: 9,
-                type: 'Main'
-            },
-            {
-                id: 10,
-                type: 'Cooler'
-            },
-            {
-                id: 11,
-                type: 'Bread Oven'
-            },
-            {
-                id: 12,
-                type: 'Speed Oven'
-            }
-        ],
-        phases: [
-            {
-                id: 1,
-                type: '1'
-            },
-            {
-                id: 2,
-                type: '2'
-            },
-            {
-                id: 3,
-                type: '3'
-            }
-        ],
-        ctTypes: [
-            {
-                id: 1,
-                type: 'SCT02-T10/50A'
-            },
-            {
-                id: 2,
-                type: 'SCT02-T16/100A'
-            },
-            {
-                id: 3,
-                type: 'SCT02-T24/200A'
-            }
-        ],
-        ctSetup: [
-            {
-                id: 1,
-                type: 'CT Input: A'
-            },
-            {
-                id: 2,
-                type: 'CT Input: B'
-            },
-            {
-                id: 3,
-                type: 'CT Input: C'
-            },
-            {
-                id: 4,
-                type: 'CT Input: D'
-            },
-            {
-                id: 5,
-                type: 'CT Input: E'
-            },
-            {
-                id: 6,
-                type: 'CT Input: F'
-            }
-        ],
-        ctPhase: [
-            {
-                id: 1,
-                type: 'L1'
-            },
-            {
-                id: 2,
-                type: 'L2'
-            },
-            {
-                id: 3,
-                type: 'L3'
-            }
         ]
     };
+
+    steps = {
+        location: '',
+        controllers: '',
+        services: '',
+        connections: '',
+        configure: ''
+    };
+
     public allScreens: Array<string> = [];
 
-    constructor() {}
+    constructor(private loginService: LoginService) {}
 
     ngOnInit(): void {
+        this.currentScreen = 'location';
         this.showNextButton = true;
-        this.allScreens = Object.keys(this.steps);
+        this.allScreens = this.currentScreen === 'controllers' ? Object.keys(this.steps.controllers) : Object.keys(this.steps);
     }
 
     getNextStep() {
@@ -263,7 +165,7 @@ export class ConfigurationComponent implements OnInit {
         if (currentScreenIndex > 0) {
             currentScreenIndex = currentScreenIndex - 1;
         }
-        if (this.currentScreen === 'configure' && this.formData.service.id === 1) {
+        if (this.currentScreen === 'controllers' && this.formData.service.id === 1) {
             currentScreenIndex -= 1;
         }
         return this.allScreens[currentScreenIndex];
@@ -274,7 +176,6 @@ export class ConfigurationComponent implements OnInit {
     }
 
     updateForm({ name, value }) {
-        console.log('Form: ', name, value);
         this.formData = {
             ...this.formData,
             [name]: value
@@ -292,32 +193,32 @@ export class ConfigurationComponent implements OnInit {
 
     validateScreenData() {
         switch (this.currentScreen) {
-            case 'devices': {
-                if (this.formData['device']) {
+            case 'location': {
+                if (this.formData['store']) {
                     return true;
                 }
                 break;
             }
-            case 'ctType': {
-                if (this.formData['ctType']) {
+            case 'controllers': {
+                if (this.formData['controllers']) {
                     return true;
                 }
                 break;
             }
-            case 'phases': {
-                if (this.formData['phase']) {
+            case 'services': {
+                if (this.formData['service']) {
                     return true;
                 }
                 break;
             }
-            case 'ctSetup': {
-                if (this.formData['ctSetup']) {
+            case 'connections': {
+                if (this.formData['connection']) {
                     return true;
                 }
                 break;
             }
-            case 'ctPhases': {
-                if (this.formData['ctPhase']) {
+            case 'configure': {
+                if (this.formData['configure']) {
                     return true;
                 }
                 break;
@@ -330,7 +231,6 @@ export class ConfigurationComponent implements OnInit {
     handlePreviousClick() {
         this.currentScreen = this.getPreviousStep();
         this.isNextEnabled = true;
-        this.configurationDone = false;
         if (this.allScreens.indexOf(this.currentScreen) === 0) {
             this.showPreviousButton = false;
         } else {
@@ -340,32 +240,17 @@ export class ConfigurationComponent implements OnInit {
     }
 
     handleNextClick() {
-        console.log('Curr Screen: ', this.currentScreen);
         if (this.validateScreenData()) {
             this.currentScreen = this.getNextStep();
             this.isNextEnabled = false;
-            if (this.configurationDone) {
-                this.handleDoneClick();
-                return;
-            }
             if (this.allScreens.indexOf(this.currentScreen) === this.allScreens.length - 1) {
-                this.configurationDone = true;
+                // this.configurationDone = true;
             }
             this.showPreviousButton = this.isPreviousEnabled = true;
         }
-        this.handleButtonState();
     }
 
-    handleDoneClick = () => {
-        this.currentScreen = 'configure';
-        this.configurations = [...this.configurations, this.formData];
-        this.formData = {};
-        this.configurationDone = false;
-        this.showPreviousButton = false;
-    };
-
-    handleAddConfiguration(event) {
-        this.currentScreen = 'devices';
-        event.stopPropagation();
+    handleLogout() {
+        this.loginService.logout();
     }
 }

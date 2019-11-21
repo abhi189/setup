@@ -1,29 +1,29 @@
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, SimpleChanges, OnInit } from '@angular/core';
+import { AngularWaitBarrier } from 'blocking-proxy/built/lib/angular_wait_barrier';
 
 @Component({
-    templateUrl: './configure.component.html',
-    styleUrls: ['./configure.component.scss'],
-    selector: 'jhi-location-configure',
+    templateUrl: './Fcontrollers.component.html',
+    styleUrls: ['./Fcontrollers.component.scss'],
+    selector: 'jhi-controllers-config',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ConfigurationComponent implements OnInit {
-    @Input() configures: Array<any> = [];
+export class FcontrollerComponents implements OnInit {
+    @Input() fcontrollers: Array<any> = [];
     public steps: any = {
-        devices: '',
-        phases: '',
-        ctType: '',
-        ctSetup: '',
-        ctPhases: ''
+        controllers: '',
+        fcs: ''
     };
+    public fcs: Array<any> = [];
     public showNextButton: boolean;
     public currentScreen: string;
     public showPreviousButton: boolean;
     public isNextEnabled: boolean;
     public isPreviousEnabled: boolean;
     public formData: any = {};
-    public storeSelected: any = {};
-    public configurations: any = [];
-    public configurationDone: boolean;
+    public controllerSelected: any = {};
+    public controllersConf: any = [];
+    public controllersConfigured: boolean;
+    @Input() macAddress: string;
     public data = {
         stores: [
             {
@@ -89,6 +89,30 @@ export class ConfigurationComponent implements OnInit {
                 state: 'MA',
                 zip: '06088',
                 online: false
+            }
+        ],
+        controllers: [
+            {
+                id: 3,
+                content: 'Facility Controller',
+                imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/FC.png'
+            },
+            {
+                id: 2,
+                content: 'Network Router',
+                imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/Router.png'
+            },
+            {
+                id: 1,
+                content: 'Smappee Meter',
+                imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/Smappee.png'
+            }
+        ],
+        fcs: [
+            {
+                id: 1,
+                macAddress: '00:0a:95:9d:68:16',
+                imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/FC.png'
             }
         ],
         services: [
@@ -245,13 +269,17 @@ export class ConfigurationComponent implements OnInit {
         this.allScreens = Object.keys(this.steps);
     }
 
+    // keyDownMac($event) {
+    //     console.log(this.macAddress);
+    // }
+
     getNextStep() {
         let currentScreenIndex = this.allScreens.indexOf(this.currentScreen);
 
         if (currentScreenIndex < this.allScreens.length - 1) {
             currentScreenIndex = currentScreenIndex + 1;
         }
-        if (this.currentScreen === 'services' && this.formData.service.id === 1) {
+        if (this.currentScreen === 'controllers' && this.formData.controller.id === 1) {
             currentScreenIndex += 1;
         }
         return this.allScreens[currentScreenIndex];
@@ -292,32 +320,14 @@ export class ConfigurationComponent implements OnInit {
 
     validateScreenData() {
         switch (this.currentScreen) {
-            case 'devices': {
-                if (this.formData['device']) {
+            case 'controllers': {
+                if (this.formData['controller']) {
                     return true;
                 }
                 break;
             }
-            case 'ctType': {
-                if (this.formData['ctType']) {
-                    return true;
-                }
-                break;
-            }
-            case 'phases': {
-                if (this.formData['phase']) {
-                    return true;
-                }
-                break;
-            }
-            case 'ctSetup': {
-                if (this.formData['ctSetup']) {
-                    return true;
-                }
-                break;
-            }
-            case 'ctPhases': {
-                if (this.formData['ctPhase']) {
+            case 'fcs': {
+                if (this.formData['fc']) {
                     return true;
                 }
                 break;
@@ -330,7 +340,7 @@ export class ConfigurationComponent implements OnInit {
     handlePreviousClick() {
         this.currentScreen = this.getPreviousStep();
         this.isNextEnabled = true;
-        this.configurationDone = false;
+        this.controllersConfigured = false;
         if (this.allScreens.indexOf(this.currentScreen) === 0) {
             this.showPreviousButton = false;
         } else {
@@ -344,12 +354,12 @@ export class ConfigurationComponent implements OnInit {
         if (this.validateScreenData()) {
             this.currentScreen = this.getNextStep();
             this.isNextEnabled = false;
-            if (this.configurationDone) {
+            if (this.controllersConfigured) {
                 this.handleDoneClick();
                 return;
             }
             if (this.allScreens.indexOf(this.currentScreen) === this.allScreens.length - 1) {
-                this.configurationDone = true;
+                this.controllersConfigured = true;
             }
             this.showPreviousButton = this.isPreviousEnabled = true;
         }
@@ -358,14 +368,14 @@ export class ConfigurationComponent implements OnInit {
 
     handleDoneClick = () => {
         this.currentScreen = 'configure';
-        this.configurations = [...this.configurations, this.formData];
+        this.fcontrollers = [...this.fcontrollers, this.formData];
         this.formData = {};
-        this.configurationDone = false;
+        this.controllersConfigured = false;
         this.showPreviousButton = false;
     };
 
     handleAddConfiguration(event) {
-        this.currentScreen = 'devices';
+        this.currentScreen = 'controllers';
         event.stopPropagation();
     }
 }
