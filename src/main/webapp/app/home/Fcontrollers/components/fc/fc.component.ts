@@ -13,10 +13,9 @@ export class Fcs implements OnInit {
     public fcSelected: any = {};
     @Output() onItemSelected = new EventEmitter();
     @Output() setMacAddress = new EventEmitter<string>();
-    macAddress: string;
     public id: string;
     public codeReader: any;
-    public qrResultString: string = '';
+    public macAddress: string = '';
 
     constructor() {
         // const data = {
@@ -54,7 +53,7 @@ export class Fcs implements OnInit {
         this.codeReader
             .decodeFromInputVideoDevice(firstDeviceId, 'video')
             .then(result => {
-                this.qrResultString = result;
+                this.macAddress = result;
                 this.stopScanning();
             })
             .catch(err => console.error(err));
@@ -62,7 +61,7 @@ export class Fcs implements OnInit {
 
     stopScanning(): void {
         this.codeReader.reset();
-        if (this.qrResultString) {
+        if (this.macAddress) {
         }
     }
 
