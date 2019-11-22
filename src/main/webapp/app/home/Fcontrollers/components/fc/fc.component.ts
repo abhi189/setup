@@ -23,16 +23,12 @@ export class Fcs implements OnInit {
         // }
     }
 
-    // handleMacAddressChange(macAddress: string) {
-    //     this.setMacAddress.emit(macAddress);
-    // }
+    handleMacAddressChange(macAddress: string) {
+        this.setMacAddress.emit(macAddress);
+    }
 
     ngOnInit() {
         this.codeReader = new BrowserMultiFormatReader();
-    }
-
-    keyDownMac(macAddress) {
-        this.setMacAddress.emit(macAddress);
     }
 
     startScanning(type): void {
@@ -53,7 +49,8 @@ export class Fcs implements OnInit {
         this.codeReader
             .decodeFromInputVideoDevice(firstDeviceId, 'video')
             .then(result => {
-                this.macAddress = result;
+                console.log('Result: ', result);
+                this.macAddress = result.text;
                 this.stopScanning();
             })
             .catch(err => console.error(err));
@@ -64,8 +61,4 @@ export class Fcs implements OnInit {
         if (this.macAddress) {
         }
     }
-
-    // onChangeMacAddress (macAddress: string) {
-    //     this.fcSelected.macAddress = macAddress;
-    // }
 }
