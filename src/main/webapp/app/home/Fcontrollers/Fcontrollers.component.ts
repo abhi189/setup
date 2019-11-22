@@ -23,6 +23,7 @@ export class FcontrollerComponents implements OnInit {
     public controllerSelected: any = {};
     public controllersConf: any = [];
     public controllersConfigured: boolean;
+    public configurationDone: boolean;
     @Input() macAddress: string;
     public data = {
         stores: [
@@ -300,6 +301,8 @@ export class FcontrollerComponents implements OnInit {
     handleItemSelected(data) {
         this.updateForm(data);
     }
+
+    keyDownMac() {}
 
     updateForm({ name, value }) {
         console.log('Form: ', name, value);
