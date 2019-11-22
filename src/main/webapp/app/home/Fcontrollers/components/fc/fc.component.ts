@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnChanges, EventEmitter, SimpleChanges, ChangeDetectionStrategy, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, OnInit, ChangeDetectorRef } from '@angular/core';
 import { formArrayNameProvider } from '@angular/forms/src/directives/reactive_directives/form_group_name';
 import { BrowserMultiFormatReader } from '@zxing/library';
 
@@ -17,7 +17,7 @@ export class Fcs implements OnInit {
     public codeReader: any;
     public macAddress: string = '';
 
-    constructor() {
+    constructor(private cd: ChangeDetectorRef) {
         // const data = {
         //     macAddress: this.fcSelected.macAddress
         // }
@@ -52,6 +52,7 @@ export class Fcs implements OnInit {
                 console.log('Result: ', result);
                 this.macAddress = result.text;
                 this.stopScanning();
+                this.cd.detectChanges();
             })
             .catch(err => console.error(err));
     }
