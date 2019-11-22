@@ -2,6 +2,7 @@
     padding: 30px 20px;
     display: flex;
     flex-direction: column;
+    height: 100%;
     .header {
         color: rgba(0, 0, 0, 0.8);
         font-size: 1.2em;
@@ -63,5 +64,60 @@
     }
     @media screen and (max-width: 600px) {
         padding: 30px 10px;
+    }
+}
+.scanner-div {
+    height: 60%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+#macAddress {
+    height: 3rem;
+    border-radius: 4px;
+    padding: 0 10px;
+    font-size: 20;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+#video {
+    width: 100%;
+    height: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    overflow: hidden;
+}
+.input-conatiner {
+    display: flex;
+    flex-direction: column;
+    margin-top: 40px;
+}
+.action-container {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row-reverse;
+    button {
+        cursor: pointer;
+        transition: background 0.1s ease;
+        height: 40px;
+        color: #fff;
+        border-radius: 20px;
+        width: 200px;
+        font-weight: 600;
+        font-size: 14px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        &:last-child {
+            background: transparent;
+            color: #666;
+            border: 1px solid #999;
+        }
+        &:first-child {
+            margin-left: 20px;
+            background: #68c721;
+        }
     }
 }

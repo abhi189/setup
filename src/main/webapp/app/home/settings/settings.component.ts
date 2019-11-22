@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LoginService } from '../../core/login/login.service';
+import { SettingsService } from './settings.service';
 
 @Component({
     selector: 'jhi-settings',
@@ -139,12 +140,24 @@ export class SettingsComponent implements OnInit {
 
     public allScreens: Array<string> = [];
 
-    constructor(private loginService: LoginService) {}
+    constructor(private loginService: LoginService, private settingsService: SettingsService) {}
 
     ngOnInit(): void {
         this.currentScreen = 'location';
         this.showNextButton = true;
         this.allScreens = this.currentScreen === 'controllers' ? Object.keys(this.steps.controllers) : Object.keys(this.steps);
+        this.getStores();
+    }
+
+    getStores(): void {
+        this.settingsService.getStores('').subscribe(
+            res => {
+                console.log('Stores ', res);
+            },
+            err => {
+                console.log('Error fetching stores ', err);
+            }
+        );
     }
 
     getNextStep() {

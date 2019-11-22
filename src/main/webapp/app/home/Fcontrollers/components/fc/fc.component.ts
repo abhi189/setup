@@ -1,5 +1,6 @@
 import { Component, Input, Output, OnChanges, EventEmitter, SimpleChanges, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { formArrayNameProvider } from '@angular/forms/src/directives/reactive_directives/form_group_name';
+import { BrowserMultiFormatReader } from '@zxing/library';
 
 @Component({
     templateUrl: './fc.component.html',
@@ -14,6 +15,8 @@ export class Fcs implements OnInit {
     @Output() setMacAddress = new EventEmitter<string>();
     macAddress: string;
     public id: string;
+    public codeReader: any;
+    public qrResultString: string = '';
 
     constructor() {
         // const data = {
@@ -25,10 +28,42 @@ export class Fcs implements OnInit {
     //     this.setMacAddress.emit(macAddress);
     // }
 
-    ngOnInit() {}
+    ngOnInit() {
+        this.codeReader = new BrowserMultiFormatReader();
+    }
 
     keyDownMac(macAddress) {
         this.setMacAddress.emit(macAddress);
+    }
+
+    startScanning(type): void {
+        this.startReading(type);
+    }
+
+    startReading(type): void {
+        this.codeReader
+            .listVideoInputDevices()
+            .then(videoInputDevices => {
+                this.scanDocument(videoInputDevices, type);
+            })
+            .catch(err => console.error(err));
+    }
+
+    scanDocument(devices: any = [], type): void {
+        const firstDeviceId = devices.length ? devices[0].deviceId : undefined;
+        this.codeReader
+            .decodeFromInputVideoDevice(firstDeviceId, 'video')
+            .then(result => {
+                this.qrResultString = result;
+                this.stopScanning();
+            })
+            .catch(err => console.error(err));
+    }
+
+    stopScanning(): void {
+        this.codeReader.reset();
+        if (this.qrResultString) {
+        }
     }
 
     // onChangeMacAddress (macAddress: string) {

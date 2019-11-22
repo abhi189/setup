@@ -1,12 +1,14 @@
 <div class="fcs-container">
     <div class="header">Select Facility Controller to assign/configure</div>
-    <div class="fcs-list">
-
-            <label>MAC address<small>*</small></label>
-
-            <input type="text" id="macAddress" name="macAddress" #macAddress="ngModel" [(ngModel)]="fcSelected.macAddress" required>
-                   
-        </form>
+    <div class="scanner-div">
+        <video id="video" width="100%" height="60%"></video>
+        <div class="action-container">
+            <button (click)="startScanning('qr')">start scanning</button>
+            <button (click)="stopScanning()">stop scanning</button>
         </div>
     </div>
+    <div class="input-conatiner">
+        <label>MAC address<small>*</small></label>
+        <input type="text" id="macAddress" name="macAddress" #macAddress="ngModel" [(ngModel)]="fcSelected.macAddress">    
+    </div> 
 </div>
