@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
-// import { SERVER_API_URL } from '../../app.constants';
+import { SERVER_API_URL } from '../../app.constants';
 
-const SERVER_API_URL = 'https://qa1ms.budderfly.com/';
+// const SERVER_API_URL = 'https://qa1ms.budderfly.com/';
 
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
