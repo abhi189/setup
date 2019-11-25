@@ -137,7 +137,7 @@ export class SettingsComponent implements OnInit {
         connections: '',
         configure: ''
     };
-
+    public loadingStores: boolean;
     public allScreens: Array<string> = [];
 
     constructor(private loginService: LoginService, private settingsService: SettingsService) {}
@@ -150,14 +150,34 @@ export class SettingsComponent implements OnInit {
     }
 
     getStores(): void {
+        this.loadingStores = true;
         this.settingsService.getStores('').subscribe(
             res => {
+                this.loadingStores = false;
+                this.constructStores(res);
                 console.log('Stores ', res);
             },
             err => {
+                this.loadingStores = false;
                 console.log('Error fetching stores ', err);
             }
         );
+    }
+
+    constructStores(stores: any): void {
+        const finalStores = stores.map(store => {
+            const { budderflyId, customerName, address, storeNumber, city, state, zip, online } = store;
+            return {
+                id: budderflyId,
+                customerName,
+                address,
+                city,
+                state,
+                zip,
+                online
+            };
+        });
+        this.data.stores = Array.prototype.slice.call(finalStores);
     }
 
     getNextStep() {

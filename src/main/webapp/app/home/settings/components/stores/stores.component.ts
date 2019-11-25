@@ -9,6 +9,7 @@ import { Component, Input, Output, EventEmitter, OnInit, SimpleChanges, ChangeDe
 export class Stores implements OnInit, OnChanges {
     @Input() stores: Array<any>;
     @Input() storeSelected: any = {};
+    @Input() loading: boolean;
     @Output() onItemSelected = new EventEmitter();
 
     constructor() {

@@ -1,6 +1,9 @@
 <div class="stores-container">
     <div class="header">Select the location you need to configure</div>
-    <div class="stores-list">
+    <div *ngIf="loading">
+        loading...
+    </div>
+    <div *ngIf="!loading && stores.length" class="stores-list">
         <div class="stores-list-item" 
             *ngFor="let store of stores;" 
             [ngClass]="{'selected': storeSelected && store.id === storeSelected.id}"
