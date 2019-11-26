@@ -11,7 +11,8 @@
         <label>MAC address<small>*</small></label>
         <input type="text"
             placeholder="Please enter or Sacn QR code"
-            [value]="macAddress"
+            [(ngModel)]="macAddress"
+            (keyup)="onTextChange($event)"
         >    
     </div> 
 </div>

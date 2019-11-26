@@ -10,6 +10,18 @@ export class SettingsService {
     constructor(private http: HttpClient) {}
 
     getStores(login): Observable<HttpResponse<any>> {
-        return this.http.get(`${SERVER_API_URL}inventory/api/inventory-items/installer/sites/${login}`, { observe: 'response' });
+        return this.http.get(`${SERVER_API_URL}/inventory/api/inventory-items/installer/sites/${login}`, { observe: 'response' });
+    }
+
+    getConfiguredEquipments(budderflyId: any): Observable<HttpResponse<any>> {
+        return this.http.get(`${SERVER_API_URL}inventory/api/inventory-items?budderflyId.equals=${budderflyId}`, { observe: 'response' });
+    }
+
+    getUnConfiguredEquipments(): Observable<HttpResponse<any>> {
+        return this.http.get(`${SERVER_API_URL}inventory/api/inventory-item-types/`, { observe: 'response' });
+    }
+
+    createFCController(payload): Observable<any> {
+        return this.http.post(`/inventory/api/inventory-items`, payload);
     }
 }

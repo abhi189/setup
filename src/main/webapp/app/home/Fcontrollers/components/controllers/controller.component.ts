@@ -26,6 +26,6 @@ export class Controllers implements OnChanges {
     }
 
     setSelectedController(controller: any) {
-        this.onItemSelected.next({ name: 'controller', value: controller });
+        this.onItemSelected.next({ name: 'controller', value: controller.code });
     }
 }

@@ -7,9 +7,9 @@
     ></jhi-location-controller>
     <jhi-location-fc
         *ngSwitchCase="'fcs'"
-        (setMacAddress)="keyDownMac($event)"
         [fcs]="data.fcs"
         [fcSelected]="formData.fc"
+        (onItemSelected)="handleItemSelected($event)"
     ></jhi-location-fc>
     <div *ngSwitchDefault class="configure-container">
             <div class="header">Install Equipment</div>
@@ -25,8 +25,8 @@
     <div *ngIf="fcontrollers.length" class="config-list">
         <h4>Installed Equipment</h4>
         <div *ngFor="let conf of fcontrollers" class="config-list-item">
-            <img class="fc-image" [src]="conf.fc.imageUrl" alt="conf.fc.macAddress" />
-            <strong>{{conf.fc.macAddress}}</strong> <br />Facility controller configured.
+            <strong>{{conf.name}}</strong> <br />
+            <p class="red">{{conf.externalId || '-'}}</p>
         </div>
     </div>
     </div>

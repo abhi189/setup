@@ -52,6 +52,7 @@ export class Fcs implements OnInit {
                 console.log('Result: ', result);
                 this.macAddress = result.text;
                 this.stopScanning();
+                this.onItemSelected.next({ name: 'external_id', value: result.text})
                 this.cd.detectChanges();
             })
             .catch(err => console.error(err));
@@ -61,5 +62,14 @@ export class Fcs implements OnInit {
         this.codeReader.reset();
         if (this.macAddress) {
         }
+    }
+
+    onTextChange(event: any): void {
+        const value = event.target.value;
+
+        this.onItemSelected.next({ name: 'external_id', value: '' });
+        if (!value) return;
+        this.macAddress = value;
+        this.onItemSelected.next({ name: 'external_id', value });
     }
 }

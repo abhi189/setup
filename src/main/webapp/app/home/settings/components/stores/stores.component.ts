@@ -26,6 +26,7 @@ export class Stores implements OnInit, OnChanges {
 
         if (stores && stores.currentValue !== stores.previousValue) {
             this.stores = stores.currentValue;
+            console.log('Stores: ', this.stores);
         }
 
         if (storeSelected && storeSelected.currentValue !== storeSelected.previousValue) {

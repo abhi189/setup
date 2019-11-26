@@ -13,6 +13,7 @@
         <jhi-controllers-config
             [configuration]="formData"
             (onItemSelected)="handleItemSelected($event)"
+            (onPreviousScreenClick)="handleControllerPreviousClick($event)"
         ></jhi-controllers-config>
     </div>
     <div *ngIf="currentScreen !== 'controllers'">       

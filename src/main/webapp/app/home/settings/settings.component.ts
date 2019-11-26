@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { LoginService } from '../../core/login/login.service';
 import { SettingsService } from './settings.service';
+import { AccountService } from '../../core/auth/account.service';
 
 @Component({
     selector: 'jhi-settings',
@@ -17,72 +18,7 @@ export class SettingsComponent implements OnInit {
     public storeSelected: any = {};
     public configurationDone: boolean;
     public data = {
-        stores: [
-            {
-                id: 'SUBW-7383',
-                address: '2 Trap Falls Rd',
-                city: 'Shelton',
-                state: 'MA',
-                zip: '06088',
-                online: false
-            },
-            {
-                id: 'SUBW-3434',
-                address: '2 Trap Falls Rd',
-                city: 'Shelton',
-                state: 'MA',
-                zip: '06088',
-                online: true
-            },
-            {
-                id: 'OLYM-8393',
-                address: '2 Trap Falls Rd',
-                city: 'Shelton',
-                state: 'MA',
-                zip: '06088',
-                online: true
-            },
-            {
-                id: 'KFC-2322',
-                address: '2 Trap Falls Rd',
-                city: 'Shelton',
-                state: 'MA',
-                zip: '06088',
-                online: false
-            },
-            {
-                id: 'OLYM-3232',
-                address: '2 Trap Falls Rd',
-                city: 'Shelton',
-                state: 'MA',
-                zip: '06088',
-                online: false
-            },
-            {
-                id: 'SUBW-3433',
-                address: '2 Trap Falls Rd',
-                city: 'Shelton',
-                state: 'MA',
-                zip: '06088',
-                online: true
-            },
-            {
-                id: 'SUBW-9302',
-                address: '2 Trap Falls Rd',
-                city: 'Shelton',
-                state: 'MA',
-                zip: '06088',
-                online: true
-            },
-            {
-                id: 'KFC-3398',
-                address: '2 Trap Falls Rd',
-                city: 'Shelton',
-                state: 'MA',
-                zip: '06088',
-                online: false
-            }
-        ],
+        stores: [],
 
         controllers: [
             {
@@ -140,7 +76,11 @@ export class SettingsComponent implements OnInit {
     public loadingStores: boolean;
     public allScreens: Array<string> = [];
 
-    constructor(private loginService: LoginService, private settingsService: SettingsService) {}
+    constructor(
+        private loginService: LoginService,
+        private settingsService: SettingsService,
+        private accountService: AccountService,
+    ) {}
 
     ngOnInit(): void {
         this.currentScreen = 'location';
@@ -149,12 +89,18 @@ export class SettingsComponent implements OnInit {
         this.getStores();
     }
 
-    getStores(): void {
+    async getAccountDetails() {
+        const account = await  this.accountService.identity(true).then(account => account);
+        console.log('Account: ', account);
+    }
+
+    async getStores() {
+        const account = await  this.accountService.identity(true).then(account => account);
         this.loadingStores = true;
-        this.settingsService.getStores('').subscribe(
+        this.settingsService.getStores(account.login).subscribe(
             res => {
                 this.loadingStores = false;
-                this.constructStores(res);
+                this.constructStores(res.body);
                 console.log('Stores ', res);
             },
             err => {
@@ -178,6 +124,12 @@ export class SettingsComponent implements OnInit {
             };
         });
         this.data.stores = Array.prototype.slice.call(finalStores);
+    }
+
+    handleControllerPreviousClick(): void {
+        this.currentScreen = 'location';
+        this.showPreviousButton = false;
+        this.isNextEnabled = true;
     }
 
     getNextStep() {
