@@ -117,6 +117,28 @@ export class ConfigurationComponent implements OnInit {
                 imageUrl: 'https://d3rbhwp8vebia6.cloudfront.net/installersetupweb/delta.png'
             }
         ],
+        controllers: [
+            {
+                id: 4,
+                content: 'Facility Controller',
+                imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/FC.png'
+            },
+            {
+                id: 3,
+                content: 'Cellular Modem',
+                imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/Modem.png'
+            },
+            {
+                id: 2,
+                content: 'Network Router',
+                imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/Router.png'
+            },
+            {
+                id: 1,
+                content: 'Smappee Meter',
+                imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/Smappee.png'
+            }
+        ],
         devices: [
             {
                 id: 1,

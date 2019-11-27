@@ -6,10 +6,8 @@ import { ModulesRoutes } from './home.route';
 
 import { SettingsComponent } from './settings/settings.component';
 import { Stores } from './settings/components/stores/stores.component';
-import { Services } from './settings/components/services/services.component';
-import { Connections } from './settings/components/connections/connection.component';
 
-import { FcontrollerComponents } from './Fcontrollers/Fcontrollers.component';
+import { FcontrollersComponent } from './Fcontrollers/Fcontrollers.component';
 import { Controllers } from './Fcontrollers/components/controllers/controller.component';
 import { Fcs } from './Fcontrollers/components/fc/fc.component';
 
@@ -20,36 +18,42 @@ import { Cttypes } from './configure/components/ctTypes/ctTypes.component';
 import { CtSetup } from './configure/components/ctSetup/ctSetup.component';
 import { CtPhase } from './configure/components/ctPhases/ctPhases.component';
 
+import { MeterComponent } from './meter/meter.component';
+import { Services } from './meter/components/services/services.component';
+import { ConnectionsComponent } from './meter/components/connections/connection.component';
+
 @NgModule({
     imports: [CommonModule, FormsModule, RouterModule.forChild(ModulesRoutes)],
     declarations: [
         SettingsComponent,
         Fcs,
-        FcontrollerComponents,
+        FcontrollersComponent,
         Stores,
         Controllers,
         Services,
-        Connections,
+        ConnectionsComponent,
         ConfigurationComponent,
         Devices,
         Phases,
         CtPhase,
         CtSetup,
-        Cttypes
+        Cttypes,
+        MeterComponent
     ],
     exports: [
         Stores,
-        FcontrollerComponents,
+        FcontrollersComponent,
         Fcs,
         Controllers,
         Services,
-        Connections,
+        ConnectionsComponent,
         ConfigurationComponent,
         Devices,
         Phases,
         CtPhase,
         CtSetup,
-        Cttypes
+        Cttypes,
+        MeterComponent
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

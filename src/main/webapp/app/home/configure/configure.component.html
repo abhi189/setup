@@ -1,3 +1,4 @@
+<main>
 <section class="content-container" [ngSwitch]="currentScreen">
     <jhi-configure-devices
         *ngSwitchCase="'devices'"
@@ -29,13 +30,14 @@
         [ctPhaseSelected]="formData.ctPhase"
         (onItemSelected)="handleItemSelected($event)"
     ></jhi-configure-ctPhase>
-    <div *ngSwitchDefault class="configure-container">
-            <div class="header">Load configure</div>
+      <!-- <div *ngIf="currentScreen === 'configure'">   -->
+        <div class="configure-container" *ngSwitchDefault>
+            <div class="header">List of configuration</div>
             <div class="configure-list">
                 <div *ngIf="configures.length">
                     <div *ngFor="let configure of configures"></div>
-                </div>
             </div>
+        </div>
     <div class="configure-add" (click)="handleAddConfiguration($event)">
         <div>+</div>
         <div>Add New Configuration</div>

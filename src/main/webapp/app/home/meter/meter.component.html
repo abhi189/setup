@@ -1,0 +1,41 @@
+
+<main>
+        <!-- <div *ngIf="currentScreen !== 'configure'">  
+        <section class="content-container" [ngSwitch]="currentScreen" > -->
+        <!-- </section>
+        </div> -->
+            
+        <div *ngIf="currentScreen === 'configure'" [ngSwitch]="currentScreen">
+            <jhi-location-configure
+                [configuration]="formData"
+                (onItemSelected)="handleItemSelected($event)"
+            ></jhi-location-configure>
+        </div>
+
+        <div class="content-container" *ngIf="currentScreen !== 'configure'">       
+        <section [ngSwitch]="currentScreen">
+            <jhi-configure-services
+                *ngSwitchDefault
+                [services]="data.services"
+                [serviceSelected]="formData.service"
+                (onItemSelected)="handleItemSelected($event)"
+            ></jhi-configure-services>
+            <jhi-configure-connections
+                *ngSwitchCase="'connections'"
+                [connections]="data.connections"
+                [connectionSelected]="formData.connection"
+                (onItemSelected)="handleItemSelected($event)"
+            ></jhi-configure-connections>
+            
+            
+        <div class="action-bar">
+            <button [hidden]="!showPreviousButton" class="btn previous" 
+                [disabled]="!isPreviousEnabled"
+                (click)="handlePreviousClick()"
+            >Previous</button>
+            <button [hidden]="!showNextButton" class="btn next"
+                [disabled]="!isNextEnabled"
+                (click)="handleNextClick()"
+            >{{configurationDone ? 'Done' : 'Next'}}</button>
+        </div>
+        

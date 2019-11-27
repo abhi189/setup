@@ -69,8 +69,6 @@ export class SettingsComponent implements OnInit {
     steps = {
         location: '',
         controllers: '',
-        services: '',
-        connections: '',
         configure: ''
     };
     public loadingStores: boolean;
@@ -186,18 +184,6 @@ export class SettingsComponent implements OnInit {
             }
             case 'controllers': {
                 if (this.formData['controllers']) {
-                    return true;
-                }
-                break;
-            }
-            case 'services': {
-                if (this.formData['service']) {
-                    return true;
-                }
-                break;
-            }
-            case 'connections': {
-                if (this.formData['connection']) {
                     return true;
                 }
                 break;

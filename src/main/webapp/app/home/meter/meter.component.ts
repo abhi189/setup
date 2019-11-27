@@ -1,62 +1,91 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectorRef, ChangeDetectionStrategy, SimpleChanges, OnInit } from '@angular/core';
-import { AngularWaitBarrier } from 'blocking-proxy/built/lib/angular_wait_barrier';
-import { SettingsService } from '../settings/settings.service';
-import { forkJoin } from 'rxjs';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, SimpleChanges, OnInit } from '@angular/core';
 
 @Component({
-    templateUrl: './Fcontrollers.component.html',
-    styleUrls: ['./Fcontrollers.component.scss'],
-    selector: 'jhi-controllers-config',
+    templateUrl: './meter.component.html',
+    styleUrls: ['./meter.component.scss'],
+    selector: 'jhi-location-meter',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FcontrollersComponent implements OnInit {
-    @Input() fcontrollers: Array<any> = [];
+export class MeterComponent implements OnInit {
+    @Input() meter: Array<any> = [];
     public steps: any = {
-        controllers: '',
-        fcs: '',
+        connections: '',
         configure: ''
     };
-    public fcs: Array<any> = [];
     public showNextButton: boolean;
     public currentScreen: string;
     public showPreviousButton: boolean;
     public isNextEnabled: boolean;
     public isPreviousEnabled: boolean;
     public formData: any = {};
-    public controllerSelected: any = {};
-    public controllersConf: any = [];
-    public controllersConfigured: boolean;
+    public storeSelected: any = {};
+    public configurations: any = [];
     public configurationDone: boolean;
-    @Input() macAddress: string;
-    @Input() configuration: any;
-    @Output() onPreviousScreenClick = new EventEmitter();
     public data = {
-        stores: [],
-        controllers: [
+        stores: [
             {
-                id: 3,
-                content: 'Facility Controller',
-                imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/FC.png',
-                code: 'KE2'
+                id: 'SUBW-7383',
+                address: '2 Trap Falls Rd',
+                city: 'Shelton',
+                state: 'MA',
+                zip: '06088',
+                online: false
             },
             {
-                id: 2,
-                content: 'Network Router',
-                imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/Router.png',
-                code: 'NETWORK_ROUTER',
+                id: 'SUBW-3434',
+                address: '2 Trap Falls Rd',
+                city: 'Shelton',
+                state: 'MA',
+                zip: '06088',
+                online: true
             },
             {
-                id: 1,
-                content: 'Smappee Meter',
-                imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/Smappee.png',
-                code: 'SMAPPEE'
-            }
-        ],
-        fcs: [
+                id: 'OLYM-8393',
+                address: '2 Trap Falls Rd',
+                city: 'Shelton',
+                state: 'MA',
+                zip: '06088',
+                online: true
+            },
             {
-                id: 1,
-                macAddress: '00:0a:95:9d:68:16',
-                imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/FC.png'
+                id: 'KFC-2322',
+                address: '2 Trap Falls Rd',
+                city: 'Shelton',
+                state: 'MA',
+                zip: '06088',
+                online: false
+            },
+            {
+                id: 'OLYM-3232',
+                address: '2 Trap Falls Rd',
+                city: 'Shelton',
+                state: 'MA',
+                zip: '06088',
+                online: false
+            },
+            {
+                id: 'SUBW-3433',
+                address: '2 Trap Falls Rd',
+                city: 'Shelton',
+                state: 'MA',
+                zip: '06088',
+                online: true
+            },
+            {
+                id: 'SUBW-9302',
+                address: '2 Trap Falls Rd',
+                city: 'Shelton',
+                state: 'MA',
+                zip: '06088',
+                online: true
+            },
+            {
+                id: 'KFC-3398',
+                address: '2 Trap Falls Rd',
+                city: 'Shelton',
+                state: 'MA',
+                zip: '06088',
+                online: false
             }
         ],
         services: [
@@ -83,6 +112,28 @@ export class FcontrollersComponent implements OnInit {
                 id: 2,
                 type: 'Delta',
                 imageUrl: 'https://d3rbhwp8vebia6.cloudfront.net/installersetupweb/delta.png'
+            }
+        ],
+        controllers: [
+            {
+                id: 4,
+                content: 'Facility Controller',
+                imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/FC.png'
+            },
+            {
+                id: 3,
+                content: 'cellular Modem',
+                imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/Modem.png'
+            },
+            {
+                id: 2,
+                content: 'Network Router',
+                imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/Router.png'
+            },
+            {
+                id: 1,
+                content: 'Smappee Meter',
+                imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/Smappee.png'
             }
         ],
         devices: [
@@ -205,54 +256,13 @@ export class FcontrollersComponent implements OnInit {
         ]
     };
     public allScreens: Array<string> = [];
-    public loadingEquipment: boolean;
-    public apiControllers: Array<any> = [];
-    public apiControllersByCode: any = {};
 
-    constructor(
-        private settingsService: SettingsService,
-        private cd: ChangeDetectorRef,
-    ) {}
+    constructor() {}
 
     ngOnInit(): void {
-        this.showNextButton = this.showPreviousButton = this.isPreviousEnabled = true;
+        this.showNextButton = true;
         this.allScreens = Object.keys(this.steps);
-        this.getConfiguredEquipmentsAndUnconfigured();
     }
-
-    getConfiguredEquipmentsAndUnconfigured(): void {
-        this.loadingEquipment = true;
-        forkJoin(
-            this.settingsService.getConfiguredEquipments(this.configuration.store.id),
-            this.settingsService.getUnConfiguredEquipments()
-        ).subscribe(res => {
-            this.loadingEquipment = false;
-            this.constructControllers(res[0].body)
-            this.constructNewEquipments(res[1].body)
-        })
-    }
-
-    constructControllers(controllers): void {
-        this.fcontrollers = Array.prototype.slice.call(controllers);
-        this.cd.detectChanges();
-        console.log('Controllers: ', this.fcontrollers);
-    }
-
-    constructNewEquipments(unConfiguredConterollers): void {
-        this.apiControllers = Array.prototype.slice.call(unConfiguredConterollers);
-        this.apiControllersByCode = {};
-        this.apiControllers.map((controller) => {
-            const { code } = controller;
-            if (!this.apiControllersByCode[code]) {
-                this.apiControllersByCode[code] = Object.assign({}, controller);
-            }
-            return  Object.assign({}, controller);
-        })
-    }
-
-    // keyDownMac($event) {
-    //     console.log(this.macAddress);
-    // }
 
     getNextStep() {
         let currentScreenIndex = this.allScreens.indexOf(this.currentScreen);
@@ -260,7 +270,7 @@ export class FcontrollersComponent implements OnInit {
         if (currentScreenIndex < this.allScreens.length - 1) {
             currentScreenIndex = currentScreenIndex + 1;
         }
-        if (this.currentScreen === 'controllers' && this.formData.controller.id === 1) {
+        if (this.currentScreen === 'services' && this.formData.service.id === 1) {
             currentScreenIndex += 1;
         }
         return this.allScreens[currentScreenIndex];
@@ -282,9 +292,8 @@ export class FcontrollersComponent implements OnInit {
         this.updateForm(data);
     }
 
-    keyDownMac() {}
-
     updateForm({ name, value }) {
+        console.log('Form: ', name, value);
         this.formData = {
             ...this.formData,
             [name]: value
@@ -302,14 +311,14 @@ export class FcontrollersComponent implements OnInit {
 
     validateScreenData() {
         switch (this.currentScreen) {
-            case 'controllers': {
-                if (this.formData['controller']) {
+            case 'services': {
+                if (this.formData['service']) {
                     return true;
                 }
                 break;
             }
-            case 'fcs' || 'external_id': {
-                if (this.formData['external_id']) {
+            case 'connections': {
+                if (this.formData['connection']) {
                     return true;
                 }
                 break;
@@ -326,12 +335,12 @@ export class FcontrollersComponent implements OnInit {
     }
 
     handlePreviousClick() {
-        if (!this.currentScreen || this.allScreens.indexOf(this.currentScreen) === 0) {
-            this.onPreviousScreenClick.next();
+        this.currentScreen = this.getPreviousStep();
+        this.isNextEnabled = true;
+        this.configurationDone = false;
+        if (this.allScreens.indexOf(this.currentScreen) === 0) {
+            this.showPreviousButton = false;
         } else {
-            this.currentScreen = this.getPreviousStep();
-            this.isNextEnabled = this.isPreviousEnabled = true;
-            this.controllersConfigured = false;
             this.showPreviousButton = true;
         }
         this.handleButtonState();
@@ -342,46 +351,28 @@ export class FcontrollersComponent implements OnInit {
         if (this.validateScreenData()) {
             this.currentScreen = this.getNextStep();
             this.isNextEnabled = false;
-            if (this.controllersConfigured) {
+            if (this.configurationDone) {
                 this.handleDoneClick();
                 return;
             }
-            if (this.formData['external_id'] && this.allScreens.indexOf(this.currentScreen) === this.allScreens.length - 1) {
-                this.handleCreateFcController();
+            if (this.allScreens.indexOf(this.currentScreen) === this.allScreens.length - 1) {
+                this.configurationDone = true;
             }
             this.showPreviousButton = this.isPreviousEnabled = true;
         }
         this.handleButtonState();
     }
 
-    handleCreateFcController(): void {
-        const controller = this.apiControllersByCode[this.formData['controller']]
-        const payload = {
-            name: controller.name,
-            budderflyId: this.configuration.store.id,
-            inventoryItemTypeId: controller.id,
-            externalId: this.formData['external_id'],
-        }
-
-        this.settingsService.createFCController(payload)
-        .subscribe(res => {
-            console.log('Response: ', res);
-            this.controllersConfigured = true;
-        }, err => {
-            this.controllersConfigured = true;
-            console.log('Error: ', err)
-        });
-    }
-
     handleDoneClick = () => {
         this.currentScreen = 'configure';
+        this.configurations = [...this.configurations, this.formData];
         this.formData = {};
-        this.controllersConfigured = false;
+        this.configurationDone = false;
         this.showPreviousButton = false;
     };
 
     handleAddConfiguration(event) {
-        this.currentScreen = 'controllers';
+        this.currentScreen = 'devices';
         event.stopPropagation();
     }
 }

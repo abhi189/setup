@@ -1,0 +1,15 @@
+<div class="services-container">
+    <div class="header">Select service type at the location</div>
+    <div class="services-list">
+        <div class="services-list-item" 
+            *ngFor="let service of services;" 
+            [ngClass]="{'selected': serviceSelected && service.id === serviceSelected.id}"
+            (click)=setSelectedService(service)
+        >
+            <div class="service-image">
+                <img [src]="service.imageUrl" alt="services.phase" /> 
+            </div>
+            <div class="service-id">{{service.content}}</div>
+        </div>
+    </div>
+</div>

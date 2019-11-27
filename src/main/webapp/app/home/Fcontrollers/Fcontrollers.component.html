@@ -1,3 +1,12 @@
+<main>
+<div *ngIf="currentScreen === 'configure'" [ngSwitch]="currentScreen">
+    <jhi-location-meter
+        [configuration]="formData"
+        (onItemSelected)="handleItemSelected($event)"
+    ></jhi-location-meter>
+</div>
+
+<div *ngIf="currentScreen !== 'configure'">
 <section class="content-container" [ngSwitch]="currentScreen">
     <jhi-location-controller
         *ngSwitchCase="'controllers'"
@@ -39,5 +48,5 @@
     <button [hidden]="!showNextButton" class="btn next"
         [disabled]="!isNextEnabled"
         (click)="handleNextClick()"
-    >{{configurationDone ? 'Done' : 'Next'}}</button>
+    >{{controllersConfigured ? 'Done' : 'Next'}}</button>
 </div>

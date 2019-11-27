@@ -16,21 +16,14 @@
             (onPreviousScreenClick)="handleControllerPreviousClick($event)"
         ></jhi-controllers-config>
     </div>
+    <div *ngIf="currentScreen === 'configure'">
+        <jhi-location-configure
+            [configuration]="formData"
+            (onItemSelected)="handleItemSelected($event)"
+        ></jhi-location-configure>
+    </div>
     <div *ngIf="currentScreen !== 'controllers'">       
         <section class="content-container" [ngSwitch]="currentScreen">
-            <jhi-location-services
-                *ngSwitchCase="'services'"
-                [services]="data.services"
-                [loading]="loadingStores"
-                [serviceSelected]="formData.service"
-                (onItemSelected)="handleItemSelected($event)"
-            ></jhi-location-services>
-            <jhi-location-connections
-                *ngSwitchCase="'connections'"
-                [connections]="data.connections"
-                [connectionSelected]="formData.connection"
-                (onItemSelected)="handleItemSelected($event)"
-            ></jhi-location-connections>
             <jhi-location-stores
                 *ngSwitchDefault
                 [stores]="data.stores"
