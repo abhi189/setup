@@ -41,7 +41,7 @@ export class FcontrollersComponent implements OnInit {
                 id: 2,
                 content: 'Network Router',
                 imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/Router.png',
-                code: 'NETWORK_ROUTER',
+                code: 'NETWORK_ROUTER'
             },
             {
                 id: 1,
@@ -207,11 +207,11 @@ export class FcontrollersComponent implements OnInit {
     public apiControllers: Array<any> = [];
     public apiControllersByCode: any = {};
     public showError: boolean;
+    public deleteController: boolean;
+    public selectedController: any;
+    public showConfirmDelete: boolean;
 
-    constructor(
-        private settingsService: SettingsService,
-        private cd: ChangeDetectorRef,
-    ) {}
+    constructor(private settingsService: SettingsService, private cd: ChangeDetectorRef) {}
 
     ngOnInit(): void {
         this.showNextButton = this.showPreviousButton = this.isPreviousEnabled = true;
@@ -225,15 +225,18 @@ export class FcontrollersComponent implements OnInit {
         forkJoin(
             this.settingsService.getConfiguredEquipments(this.configuration.store.id),
             this.settingsService.getUnConfiguredEquipments()
-        ).subscribe(res => {
-            this.loadingEquipment = false;
-            this.constructControllers(res[0].body);
-            this.constructNewEquipments(res[1].body);
-            this.cd.detectChanges();
-        }, err => {
-            this.loadingEquipment = false;
-            this.showError = true;
-        });
+        ).subscribe(
+            res => {
+                this.loadingEquipment = false;
+                this.constructControllers(res[0].body);
+                this.constructNewEquipments(res[1].body);
+                this.cd.detectChanges();
+            },
+            err => {
+                this.loadingEquipment = false;
+                this.showError = true;
+            }
+        );
     }
 
     constructControllers(controllers): void {
@@ -244,12 +247,12 @@ export class FcontrollersComponent implements OnInit {
     constructNewEquipments(unConfiguredConterollers): void {
         this.apiControllers = Array.prototype.slice.call(unConfiguredConterollers);
         this.apiControllersByCode = {};
-        this.apiControllers.map((controller) => {
+        this.apiControllers.map(controller => {
             const { code } = controller;
             if (!this.apiControllersByCode[code]) {
                 this.apiControllersByCode[code] = Object.assign({}, controller);
             }
-            return  Object.assign({}, controller);
+            return Object.assign({}, controller);
         });
     }
 
@@ -347,7 +350,7 @@ export class FcontrollersComponent implements OnInit {
                 this.handleDoneClick();
                 return;
             }
-            if (currentScreen === 'configure' && (controller && (controller.code !== 'SMAPPEE'))) {
+            if (currentScreen === 'configure' && (controller && controller.code !== 'SMAPPEE')) {
                 this.handleCreateFcController('installers');
                 return;
             }
@@ -367,21 +370,46 @@ export class FcontrollersComponent implements OnInit {
             name: controller ? controller.name : 'NETWORK ROUTER',
             budderflyId: this.configuration.store.id,
             inventoryItemTypeId: controller ? controller.id : 5,
-            externalId: this.formData['external_id'],
+            externalId: this.formData['external_id']
         };
 
         this.createFcError = false;
-        this.settingsService.createFCController(payload)
-        .subscribe(res => {
-            this.currentScreen = nextScreen;
-            if (this.currentScreen === 'installers') {
-                this.getConfiguredEquipmentsAndUnconfigured();
+        this.settingsService.createFCController(payload).subscribe(
+            res => {
+                this.currentScreen = nextScreen;
+                if (this.currentScreen === 'installers') {
+                    this.getConfiguredEquipmentsAndUnconfigured();
+                }
+                this.cd.detectChanges();
+            },
+            err => {
+                this.createFcError = true;
+                this.cd.detectChanges();
             }
-            this.cd.detectChanges();
-        }, err => {
-            this.createFcError = true;
-            this.cd.detectChanges();
-        });
+        );
+    }
+
+    deleteFcController(controller) {
+        this.selectedController = controller;
+        this.showConfirmDelete = true;
+    }
+
+    cancelDelete() {
+        this.selectedController = undefined;
+        this.showConfirmDelete = false;
+    }
+
+    continueDelete() {
+        if (!this.selectedController) return;
+        this.deleteController = true;
+        this.settingsService.deleteFCController(this.selectedController.id).subscribe(
+            res => {
+                this.deleteController = false;
+            },
+            err => {
+                this.deleteController = false;
+            }
+        );
     }
 
     handleControllerPreviousClick(event) {

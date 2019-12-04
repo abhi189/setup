@@ -24,4 +24,8 @@ export class SettingsService {
     createFCController(payload): Observable<any> {
         return this.http.post(`/inventory/api/inventory-items`, payload);
     }
+
+    deleteFCController(payload): Observable<any> {
+        return this.http.delete(`inventory/api/inventory-items/${payload}}`);
+    }
 }
