@@ -17,6 +17,7 @@ export class SettingsComponent implements OnInit {
     public formData: any = {};
     public storeSelected: any = {};
     public configurationDone: boolean;
+    public showError: boolean;
     public data = {
         stores: [],
 
@@ -95,6 +96,7 @@ export class SettingsComponent implements OnInit {
     async getStores() {
         const account = await  this.accountService.identity(true).then(account => account);
         this.loadingStores = true;
+        this.showError = false;
         this.settingsService.getStores(account.login).subscribe(
             res => {
                 this.loadingStores = false;
@@ -103,6 +105,7 @@ export class SettingsComponent implements OnInit {
             },
             err => {
                 this.loadingStores = false;
+                this.showError = true;
                 console.log('Error fetching stores ', err);
             }
         );
@@ -124,7 +127,7 @@ export class SettingsComponent implements OnInit {
         this.data.stores = Array.prototype.slice.call(finalStores);
     }
 
-    handleControllerPreviousClick(): void {
+    handleControllerPreviousClick(event): void {
         this.currentScreen = 'location';
         this.showPreviousButton = false;
         this.isNextEnabled = true;

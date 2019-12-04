@@ -9,6 +9,7 @@
             <jhi-location-configure
                 [configuration]="formData"
                 (onItemSelected)="handleItemSelected($event)"
+                (onPreviousScreenClick)="handlePreviousScreenClick($event)"
             ></jhi-location-configure>
         </div>
 
@@ -26,7 +27,6 @@
                 [connectionSelected]="formData.connection"
                 (onItemSelected)="handleItemSelected($event)"
             ></jhi-configure-connections>
-            
             
         <div class="action-bar">
             <button [hidden]="!showPreviousButton" class="btn previous" 

@@ -3,41 +3,50 @@
     <jhi-location-meter
         [configuration]="formData"
         (onItemSelected)="handleItemSelected($event)"
+        (onPreviousScreenClick)="handleControllerPreviousClick($event)"
     ></jhi-location-meter>
 </div>
 
-<div *ngIf="currentScreen !== 'configure'">
+<div *ngIf="currentScreen !== 'configure'"></div>
 <section class="content-container" [ngSwitch]="currentScreen">
     <jhi-location-controller
         *ngSwitchCase="'controllers'"
-        [controllers]="data.controllers"
+        [controllers]="apiControllers"
         [controllerSelected]="formData.controller"
+        [formData]="formData"
         (onItemSelected)="handleItemSelected($event)"
     ></jhi-location-controller>
     <jhi-location-fc
         *ngSwitchCase="'fcs'"
         [fcs]="data.fcs"
         [fcSelected]="formData.fc"
+        [formData]="formData"
+        [errorMessage]="createFcError ? 'Something went wrong.' : ''"
         (onItemSelected)="handleItemSelected($event)"
     ></jhi-location-fc>
     <div *ngSwitchDefault class="configure-container">
-            <div class="header">Install Equipment</div>
-            <div class="configure-list">
-                <div *ngIf="fcontrollers.length">
-                    <div *ngFor="let fcontroller of fcontrollers"></div>
-                </div>
-            </div>
-    <div class="configure-add" (click)="handleAddConfiguration($event)">
-        <div>+</div>
-        <div>Add New Equipment</div>
-    </div>
-    <div *ngIf="fcontrollers.length" class="config-list">
-        <h4>Installed Equipment</h4>
-        <div *ngFor="let conf of fcontrollers" class="config-list-item">
-            <strong>{{conf.name}}</strong> <br />
-            <p class="red">{{conf.externalId || '-'}}</p>
+        <div class="header">Install Equipment</div>
+        
+        <div class="configure-add" (click)="handleAddConfiguration($event)">
+            <div>+</div>
+            <div>Add New Equipment</div>
         </div>
-    </div>
+        <h4>Installed Equipment</h4>
+        <div *ngIf="!fcontrollers.length && !showError" class="config-list" class="alert alert-primary">
+            No Equipments Installed
+        </div>
+        <div *ngIf="showError" class="alert alert-danger error">
+            Something went wrong. Please try again later
+        </div>
+        <div *ngIf="loadingEquipment" class="loading">
+            <div class="loader"></div>
+        </div>
+        <div *ngIf="!showError && fcontrollers.length" class="config-list">
+            <div *ngFor="let conf of fcontrollers" class="config-list-item">
+                <strong>{{conf.name}}</strong> <br />
+                <p class="red">{{conf.externalId || '-'}}</p>
+            </div>
+        </div>
     </div>
 </section>
 <div class="action-bar">

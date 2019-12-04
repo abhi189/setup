@@ -24,13 +24,13 @@ export class AuthExpiredInterceptor implements HttpInterceptor {
                 (err: any) => {
                     if (err instanceof HttpErrorResponse) {
                         if (err.status === 401) {
-                            if (this.accountService.isAuthenticated()) {
-                                this.accountService.authenticate(null);
-                                this.loginModalService.open();
-                            } else {
-                                this.loginService.logout();
-                                this.router.navigate(['/']);
-                            }
+                            window.location.href = '/'
+                            // if (this.accountService.isAuthenticated()) {
+                            //     this.accountService.authenticate(null);
+                            //     //this.loginModalService.open();
+                            // } else {
+                            //     window.location.href = '/';
+                            // }
                         }
                     }
                 }

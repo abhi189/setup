@@ -20,6 +20,7 @@
         <jhi-location-configure
             [configuration]="formData"
             (onItemSelected)="handleItemSelected($event)"
+            (onPreviousScreenClick)="handleControllerPreviousClick($event)"
         ></jhi-location-configure>
     </div>
     <div *ngIf="currentScreen !== 'controllers'">       
@@ -27,9 +28,11 @@
             <jhi-location-stores
                 *ngSwitchDefault
                 [stores]="data.stores"
+                [loading]="loadingStores"
                 [storeSelected]="formData.store"
                 (onItemSelected)="handleItemSelected($event)"
             ></jhi-location-stores>
+            <div class="alert alert-danger" *ngIf="showError">Something went wrong. Please try again later.</div>
         </section>
         <div class="action-bar">
             <button [hidden]="!showPreviousButton" class="btn previous" 

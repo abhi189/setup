@@ -12,6 +12,7 @@ export class MeterComponent implements OnInit {
         connections: '',
         configure: ''
     };
+    @Output() onPreviousScreenClick = new EventEmitter();
     public showNextButton: boolean;
     public currentScreen: string;
     public showPreviousButton: boolean;
@@ -282,7 +283,7 @@ export class MeterComponent implements OnInit {
         if (currentScreenIndex > 0) {
             currentScreenIndex = currentScreenIndex - 1;
         }
-        if (this.currentScreen === 'configure' && this.formData.service.id === 1) {
+        if (this.currentScreen === 'connections') {
             currentScreenIndex -= 1;
         }
         return this.allScreens[currentScreenIndex];
@@ -290,6 +291,10 @@ export class MeterComponent implements OnInit {
 
     handleItemSelected(data) {
         this.updateForm(data);
+    }
+
+    handlePreviousScreenClick(event) {
+        this.onPreviousScreenClick.next('stores');
     }
 
     updateForm({ name, value }) {
@@ -372,7 +377,7 @@ export class MeterComponent implements OnInit {
     };
 
     handleAddConfiguration(event) {
-        this.currentScreen = 'devices';
+        this.currentScreen = 'services';
         event.stopPropagation();
     }
 }

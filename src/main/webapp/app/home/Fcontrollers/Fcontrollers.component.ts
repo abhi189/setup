@@ -1,5 +1,4 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectorRef, ChangeDetectionStrategy, SimpleChanges, OnInit } from '@angular/core';
-import { AngularWaitBarrier } from 'blocking-proxy/built/lib/angular_wait_barrier';
+import { Component, Input, Output, EventEmitter, ChangeDetectorRef, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { SettingsService } from '../settings/settings.service';
 import { forkJoin } from 'rxjs';
 
@@ -12,6 +11,7 @@ import { forkJoin } from 'rxjs';
 export class FcontrollersComponent implements OnInit {
     @Input() fcontrollers: Array<any> = [];
     public steps: any = {
+        installers: '',
         controllers: '',
         fcs: '',
         configure: ''
@@ -23,10 +23,8 @@ export class FcontrollersComponent implements OnInit {
     public isNextEnabled: boolean;
     public isPreviousEnabled: boolean;
     public formData: any = {};
-    public controllerSelected: any = {};
-    public controllersConf: any = [];
     public controllersConfigured: boolean;
-    public configurationDone: boolean;
+    public createFcError: boolean;
     @Input() macAddress: string;
     @Input() configuration: any;
     @Output() onPreviousScreenClick = new EventEmitter();
@@ -37,7 +35,7 @@ export class FcontrollersComponent implements OnInit {
                 id: 3,
                 content: 'Facility Controller',
                 imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/FC.png',
-                code: 'KE2'
+                code: 'FACILITY_CONTROLLER_MHA'
             },
             {
                 id: 2,
@@ -208,6 +206,7 @@ export class FcontrollersComponent implements OnInit {
     public loadingEquipment: boolean;
     public apiControllers: Array<any> = [];
     public apiControllersByCode: any = {};
+    public showError: boolean;
 
     constructor(
         private settingsService: SettingsService,
@@ -222,20 +221,24 @@ export class FcontrollersComponent implements OnInit {
 
     getConfiguredEquipmentsAndUnconfigured(): void {
         this.loadingEquipment = true;
+        this.showError = false;
         forkJoin(
             this.settingsService.getConfiguredEquipments(this.configuration.store.id),
             this.settingsService.getUnConfiguredEquipments()
         ).subscribe(res => {
             this.loadingEquipment = false;
-            this.constructControllers(res[0].body)
-            this.constructNewEquipments(res[1].body)
-        })
+            this.constructControllers(res[0].body);
+            this.constructNewEquipments(res[1].body);
+            this.cd.detectChanges();
+        }, err => {
+            this.loadingEquipment = false;
+            this.showError = true;
+        });
     }
 
     constructControllers(controllers): void {
         this.fcontrollers = Array.prototype.slice.call(controllers);
         this.cd.detectChanges();
-        console.log('Controllers: ', this.fcontrollers);
     }
 
     constructNewEquipments(unConfiguredConterollers): void {
@@ -247,12 +250,8 @@ export class FcontrollersComponent implements OnInit {
                 this.apiControllersByCode[code] = Object.assign({}, controller);
             }
             return  Object.assign({}, controller);
-        })
+        });
     }
-
-    // keyDownMac($event) {
-    //     console.log(this.macAddress);
-    // }
 
     getNextStep() {
         let currentScreenIndex = this.allScreens.indexOf(this.currentScreen);
@@ -261,7 +260,7 @@ export class FcontrollersComponent implements OnInit {
             currentScreenIndex = currentScreenIndex + 1;
         }
         if (this.currentScreen === 'controllers' && this.formData.controller.id === 1) {
-            currentScreenIndex += 1;
+            // currentScreenIndex += 1;
         }
         return this.allScreens[currentScreenIndex];
     }
@@ -281,8 +280,6 @@ export class FcontrollersComponent implements OnInit {
     handleItemSelected(data) {
         this.updateForm(data);
     }
-
-    keyDownMac() {}
 
     updateForm({ name, value }) {
         this.formData = {
@@ -326,6 +323,7 @@ export class FcontrollersComponent implements OnInit {
     }
 
     handlePreviousClick() {
+        this.createFcError = false;
         if (!this.currentScreen || this.allScreens.indexOf(this.currentScreen) === 0) {
             this.onPreviousScreenClick.next();
         } else {
@@ -338,39 +336,57 @@ export class FcontrollersComponent implements OnInit {
     }
 
     handleNextClick() {
-        console.log('Curr Screen: ', this.currentScreen);
+        const { controller } = this.formData;
+
+        this.createFcError = false;
         if (this.validateScreenData()) {
-            this.currentScreen = this.getNextStep();
+            const currentScreen = this.getNextStep();
+
             this.isNextEnabled = false;
             if (this.controllersConfigured) {
                 this.handleDoneClick();
                 return;
             }
-            if (this.formData['external_id'] && this.allScreens.indexOf(this.currentScreen) === this.allScreens.length - 1) {
-                this.handleCreateFcController();
+            if (currentScreen === 'configure' && (controller && (controller.code !== 'SMAPPEE'))) {
+                this.handleCreateFcController('installers');
+                return;
             }
+            if (controller.code === 'SMAPPEE' && this.allScreens.indexOf(currentScreen) === this.allScreens.length - 1) {
+                this.handleCreateFcController('configure');
+                return;
+            }
+            this.currentScreen = currentScreen;
             this.showPreviousButton = this.isPreviousEnabled = true;
         }
         this.handleButtonState();
     }
 
-    handleCreateFcController(): void {
-        const controller = this.apiControllersByCode[this.formData['controller']]
+    handleCreateFcController(nextScreen): void {
+        const controller = this.apiControllersByCode[this.formData['controller']['code']];
         const payload = {
-            name: controller.name,
+            name: controller ? controller.name : 'NETWORK ROUTER',
             budderflyId: this.configuration.store.id,
-            inventoryItemTypeId: controller.id,
+            inventoryItemTypeId: controller ? controller.id : 5,
             externalId: this.formData['external_id'],
-        }
+        };
 
+        this.createFcError = false;
         this.settingsService.createFCController(payload)
         .subscribe(res => {
-            console.log('Response: ', res);
-            this.controllersConfigured = true;
+            this.currentScreen = nextScreen;
+            if (this.currentScreen === 'installers') {
+                this.getConfiguredEquipmentsAndUnconfigured();
+            }
+            this.cd.detectChanges();
         }, err => {
-            this.controllersConfigured = true;
-            console.log('Error: ', err)
+            this.createFcError = true;
+            this.cd.detectChanges();
         });
+    }
+
+    handleControllerPreviousClick(event) {
+        console.log('Event: ', event);
+        this.currentScreen = 'installers';
     }
 
     handleDoneClick = () => {

@@ -1,5 +1,5 @@
 <main>
-<section class="content-container" [ngSwitch]="currentScreen">
+    <section class="content-container" [ngSwitch]="currentScreen">
     <jhi-configure-devices
         *ngSwitchCase="'devices'"
         [devices]="data.devices"
@@ -30,7 +30,7 @@
         [ctPhaseSelected]="formData.ctPhase"
         (onItemSelected)="handleItemSelected($event)"
     ></jhi-configure-ctPhase>
-      <!-- <div *ngIf="currentScreen === 'configure'">   -->
+        <!-- <div *ngIf="currentScreen === 'configure'">   -->
         <div class="configure-container" *ngSwitchDefault>
             <div class="header">List of configuration</div>
             <div class="configure-list">
@@ -49,14 +49,16 @@
         </div>
     </div>
     </div>
-</section>
-<div class="action-bar">
+    </section>
+    <div class="action-bar">
     <button [hidden]="!showPreviousButton" class="btn previous" 
         [disabled]="!isPreviousEnabled"
         (click)="handlePreviousClick()"
     >Previous</button>
-    <button [hidden]="!showNextButton" class="btn next"
+    <button [hidden]="showDoneBtn || !showNextButton" class="btn next"
         [disabled]="!isNextEnabled"
         (click)="handleNextClick()"
     >{{configurationDone ? 'Done' : 'Next'}}</button>
-</div>
+    <div [hidden]="!showDoneBtn" class="btn next" (click)="onDoneClick()">Done</div>
+    </div>
+</main>

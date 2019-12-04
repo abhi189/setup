@@ -13,20 +13,16 @@ export class Stores implements OnInit, OnChanges {
     @Output() onItemSelected = new EventEmitter();
 
     constructor() {
-        console.log('Stores: ');
     }
 
     ngOnInit(): void {
-        console.log('Stores: ', this.storeSelected);
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log('Changes: ', changes);
         const { stores, storeSelected } = changes;
 
         if (stores && stores.currentValue !== stores.previousValue) {
             this.stores = stores.currentValue;
-            console.log('Stores: ', this.stores);
         }
 
         if (storeSelected && storeSelected.currentValue !== storeSelected.previousValue) {

@@ -16,6 +16,7 @@ export class Controllers implements OnChanges {
     ngOnChanges(changes: SimpleChanges): void {
         const { controllers, controllerSelected } = changes;
 
+        console.log('Controllers: ', controllers);
         if (controllers && controllers.currentValue !== controllers.previousValue) {
             this.controllers = controllers.currentValue;
         }
@@ -26,6 +27,6 @@ export class Controllers implements OnChanges {
     }
 
     setSelectedController(controller: any) {
-        this.onItemSelected.next({ name: 'controller', value: controller.code });
+        this.onItemSelected.next({ name: 'controller', value: controller });
     }
 }

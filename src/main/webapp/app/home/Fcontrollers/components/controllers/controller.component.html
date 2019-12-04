@@ -3,13 +3,10 @@
     <div class="controllers-list">
         <div class="controllers-list-item" 
             *ngFor="let controller of controllers;" 
-            [ngClass]="{'selected': controllerSelected && controller.code === controllerSelected}"
+            [ngClass]="{'selected': controllerSelected && controller.code === controllerSelected.code}"
             (click)=setSelectedController(controller)
         >
-            <div class="controller-image">
-                <img [src]="controller.imageUrl" alt="controller.content" />
-            </div>
-            <div class="controller-type">{{controller.content}}</div>
+            <div class="controller-type">{{controller.name}}</div>
         </div>
     </div>
 </div>

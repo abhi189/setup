@@ -8,6 +8,7 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, Simple
 })
 export class ConfigurationComponent implements OnInit {
     @Input() configures: Array<any> = [];
+    @Output() onPreviousScreenClick = new EventEmitter();
     public steps: any = {
         devices: '',
         phases: '',
@@ -259,11 +260,12 @@ export class ConfigurationComponent implements OnInit {
         ]
     };
     public allScreens: Array<string> = [];
-
+    public showDoneBtn: boolean;
     constructor() {}
 
     ngOnInit(): void {
-        this.showNextButton = true;
+        this.showNextButton = false;
+        this.showDoneBtn = true;
         this.allScreens = Object.keys(this.steps);
     }
 
@@ -362,7 +364,6 @@ export class ConfigurationComponent implements OnInit {
     }
 
     handleNextClick() {
-        console.log('Curr Screen: ', this.currentScreen);
         if (this.validateScreenData()) {
             this.currentScreen = this.getNextStep();
             this.isNextEnabled = false;
@@ -384,10 +385,20 @@ export class ConfigurationComponent implements OnInit {
         this.formData = {};
         this.configurationDone = false;
         this.showPreviousButton = false;
+        this.showDoneBtn = true;
     };
 
     handleAddConfiguration(event) {
         this.currentScreen = 'devices';
+        this.showDoneBtn = false;
+        this.showNextButton = true;
         event.stopPropagation();
     }
+
+    onDoneClick() {
+        this.onPreviousScreenClick.next('stores');
+    }
 }
+
+
+

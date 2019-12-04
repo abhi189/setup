@@ -1,7 +1,7 @@
 <div class="stores-container">
     <div class="header">Select the location you need to configure</div>
-    <div *ngIf="loading">
-        loading...
+    <div *ngIf="loading" class="loading">
+            <div class="loader"></div>
     </div>
     <div *ngIf="!loading && stores.length" class="stores-list">
         <div class="stores-list-item" 
