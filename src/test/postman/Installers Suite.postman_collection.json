@@ -1,0 +1,1220 @@
+{
+	"info": {
+		"_postman_id": "ef2e08e5-5c68-4b21-bda0-f43a7a93fb3f",
+		"name": "Installers Suite",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Sites screen",
+			"item": [
+				{
+					"name": "Get Account Details",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5924a074-4509-439a-b366-7ce7e54fdd5a",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"",
+									"var schema = {",
+									"    type: \"object\",",
+									"    properties:{",
+									"     \"id\": { \"type\":\"integer\" },",
+									"     \"login\": { \"type\":\"string\" },",
+									"     \"authorities\": { \"type\":\"array\" }",
+									"    }",
+									"};",
+									"",
+									"",
+									"pm.test('Response schema type nodes verification', function() {",
+									"  pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER_URL}}/authenticate/api/account",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"authenticate",
+								"api",
+								"account"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Sites and Status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "08ce624f-f15a-4978-8ee8-5f87f24073e1",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response not empty', function() {",
+									"  var jsonData = pm.response.json();",
+									"  pm.expect(jsonData.length).to.be.above(0);",
+									"  var budderflyId = jsonData[0].budderflyId;",
+									"  pm.expect(budderflyId).to.not.eql(null);",
+									"  pm.environment.set(\"BUDDERFLY_ID\", budderflyId);",
+									"});",
+									"",
+									"var schema = {",
+									"    \"type\": \"array\",",
+									"    \"items\": [{",
+									"        type: \"object\",",
+									"        properties:{",
+									"         \"budderflyId\": { \"type\":\"string\" },",
+									"         \"customerName\": { \"type\": [\"string\", \"null\"] },",
+									"         \"storeNumber\": { \"type\": [\"string\", \"null\"] },",
+									"         \"address\": { \"type\": [\"string\", \"null\"] },",
+									"         \"city\": { \"type\": [\"string\", \"null\"] },",
+									"         \"state\": { \"type\": [\"string\", \"null\"] },",
+									"         \"zip\": { \"type\": [\"string\", \"null\"] },",
+									"         \"online\": { \"type\":\"boolean\" },",
+									"         \"serviceType\": { \"type\": [\"string\", \"null\"] },",
+									"         \"connectionType\": { \"type\": [\"string\", \"null\"] }",
+									"        }",
+									"    }]",
+									"};",
+									"",
+									"pm.test('Response schema verification', function() {",
+									"  var valid = tv4.validate(pm.response.json(), schema);",
+									"  pm.expect(valid).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER_URL}}/inventory/api/inventory-items/installer/sites/{{USER_LOGIN}}",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"inventory",
+								"api",
+								"inventory-items",
+								"installer",
+								"sites",
+								"{{USER_LOGIN}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "POST Inventory Item Types",
+			"item": [
+				{
+					"name": "Create Inventory Item Type FC",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e1b6fad0-bf6e-43bb-a3bc-d8d0623a951a",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Inventory Item was created\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var id = jsonData.id;",
+									"    pm.expect(id).not.eql(null);",
+									"    pm.environment.set(\"fc_inventory_item_type_id\", id);",
+									"    console.log(\"Inventory Item Type Created: \", JSON.stringify(jsonData));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d225e841-e762-420d-9f9b-32d08ae3d7ad",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"POSTMAN FACILITY CONTROLLER\",\n    \"code\": \"FACILITY_CONTROLLER_MHA\"\n}"
+						},
+						"url": {
+							"raw": "{{SERVER_URL}}/inventory/api/inventory-item-types",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"inventory",
+								"api",
+								"inventory-item-types"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Inventory Item Type Smappee",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e1b6fad0-bf6e-43bb-a3bc-d8d0623a951a",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Inventory Item was created\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var id = jsonData.id;",
+									"    pm.expect(id).not.eql(null);",
+									"    pm.environment.set(\"smappee_inventory_item_type_id\", id);",
+									"    console.log(\"Inventory Item Type Created: \", JSON.stringify(jsonData));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d225e841-e762-420d-9f9b-32d08ae3d7ad",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"POSTMAN SMAPPEE\",\n    \"code\": \"SMAPPEE\"\n}"
+						},
+						"url": {
+							"raw": "{{SERVER_URL}}/inventory/api/inventory-item-types",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"inventory",
+								"api",
+								"inventory-item-types"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Inventory Item Type Network Router",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e1b6fad0-bf6e-43bb-a3bc-d8d0623a951a",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Inventory Item was created\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var id = jsonData.id;",
+									"    pm.expect(id).not.eql(null);",
+									"    pm.environment.set(\"nr_inventory_item_type_id\", id);",
+									"    console.log(\"Inventory Item Type Created: \", JSON.stringify(jsonData));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d225e841-e762-420d-9f9b-32d08ae3d7ad",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"POSTMAN NETWORK ROUTER\",\n    \"code\": \"NETWORK_ROUTER\"\n}"
+						},
+						"url": {
+							"raw": "{{SERVER_URL}}/inventory/api/inventory-item-types",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"inventory",
+								"api",
+								"inventory-item-types"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "9b2056d8-7f4a-4158-966e-abfe50614867",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "75e7ee5e-bf99-4000-b813-55419f83acda",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Installed Equipments",
+			"item": [
+				{
+					"name": "Get Installed Eqipement Item for Site",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6a602289-c092-4ac5-a926-5fcc26394f03",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"var schema = {",
+									"    \"type\": \"array\",",
+									"    \"items\": [{",
+									"        type: \"object\",",
+									"        properties:{",
+									"         \"id\": { \"type\":\"number\" },",
+									"         \"name\": { \"type\":\"string\" },",
+									"         \"budderflyId\": { \"type\":\"string\" },",
+									"         \"externalId\": { \"type\":\"string\" },",
+									"         \"inventoryItemTypeId\": { \"type\":\"number\" },",
+									"         \"inventoryItemTypeCode\": { \"type\":\"string\" }",
+									"        }",
+									"    }]",
+									"};",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER_URL}}/inventory/api/inventory-items?budderflyId.equals={{BUDDERFLY_ID}}",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"inventory",
+								"api",
+								"inventory-items"
+							],
+							"query": [
+								{
+									"key": "budderflyId.equals",
+									"value": "{{BUDDERFLY_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "GET Inventory Item Types",
+			"item": [
+				{
+					"name": "[Select Equipment Type To Assing] Get Inventory Item Types",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6a602289-c092-4ac5-a926-5fcc26394f03",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.environment.set(\"fc_inventory_item_code\")",
+									"});",
+									"",
+									"pm.test('Response not empty', function() {",
+									"  pm.expect(pm.response.json().length).to.be.above(2);",
+									"});",
+									"",
+									"",
+									"var schema = {",
+									"    \"type\": \"array\",",
+									"    \"items\": [{",
+									"        type: \"object\",",
+									"        properties:{",
+									"         \"id\": { \"type\":\"number\" },",
+									"         \"name\": { \"type\":\"string\" },",
+									"         \"budderflyId\": { \"type\":\"string\" },",
+									"         \"externalId\": { \"type\":\"string\" },",
+									"         \"inventoryItemTypeId\": { \"type\":\"number\" },",
+									"         \"inventoryItemTypeCode\": { \"type\":\"string\" }",
+									"        }",
+									"    }]",
+									"};",
+									"",
+									"pm.test('Response schema verification', function() {",
+									"  pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+									"});",
+									"",
+									"checkForInventoryItemTypeCode(\"FACILITY_CONTROLLER_MHA\");",
+									"checkForInventoryItemTypeCode(\"NETWORK_ROUTER\");",
+									"checkForInventoryItemTypeCode(\"SMAPPEE\");",
+									"",
+									"function checkForInventoryItemTypeCode(typeCode) {",
+									"    pm.test('It has a ' + typeCode, function() {",
+									"      var jsonData = pm.response.json();",
+									"      var flag = false;",
+									"      for(var i = 0; i < jsonData.length; i++) {",
+									"          if (jsonData[i].code == typeCode) {",
+									"            flag = true;",
+									"          }",
+									"      }",
+									"      pm.expect(flag).to.eql(true);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER_URL}}/inventory/api/inventory-item-types",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"inventory",
+								"api",
+								"inventory-item-types"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[FC List to assign to Smappee] Get FCs for Smappee",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6a602289-c092-4ac5-a926-5fcc26394f03",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response not empty', function() {",
+									"  pm.expect(pm.response.json().length).to.be.above(0);",
+									"});",
+									"",
+									"",
+									"var schema = {",
+									"    \"type\": \"array\",",
+									"    \"items\": [{",
+									"        type: \"object\",",
+									"        properties:{",
+									"         \"id\": { \"type\":\"number\" },",
+									"         \"name\": { \"type\":\"string\" },",
+									"         \"budderflyId\": { \"type\":\"string\" },",
+									"         \"externalId\": { \"type\":\"string\" },",
+									"         \"inventoryItemTypeId\": { \"type\":\"number\" },",
+									"         \"inventoryItemTypeCode\": { \"type\":\"string\" }",
+									"        }",
+									"    }]",
+									"};",
+									"",
+									"",
+									"checkForInventoryItemTypeCode(\"FACILITY_CONTROLLER_MHA\");",
+									"",
+									"function checkForInventoryItemTypeCode(typeCode) {",
+									"    pm.test('All are ' + typeCode, function() {",
+									"      var jsonData = pm.response.json();",
+									"      var flag = true;",
+									"      for(var i = 0; i < jsonData.length; i++) {",
+									"          if (jsonData[i].inventoryItemTypeCode != typeCode) {",
+									"            flag = false;",
+									"          }",
+									"      }",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER_URL}}/inventory/api/inventory-items?budderflyId.equals={{BUDDERFLY_ID}}&inventoryItemTypeId.id={{fc_inventory_item_type_id}}",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"inventory",
+								"api",
+								"inventory-items"
+							],
+							"query": [
+								{
+									"key": "budderflyId.equals",
+									"value": "{{BUDDERFLY_ID}}"
+								},
+								{
+									"key": "inventoryItemTypeId.id",
+									"value": "{{fc_inventory_item_type_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "9b2056d8-7f4a-4158-966e-abfe50614867",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "75e7ee5e-bf99-4000-b813-55419f83acda",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "POST (Create) Inventory Items",
+			"item": [
+				{
+					"name": "[Save a Inventory Item] Create Inventory Item FC",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e1b6fad0-bf6e-43bb-a3bc-d8d0623a951a",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Inventory Item was created\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var id = jsonData.id;",
+									"    pm.expect(id).not.eql(null);",
+									"    pm.environment.set(\"fc_inventory_item_id\", id);",
+									"    console.log(\"Inventory Item Created: \", JSON.stringify(jsonData));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d225e841-e762-420d-9f9b-32d08ae3d7ad",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"POSTMAN FC INVENTORY ITEM\",\n    \"externalId\": \"11-22-33-44-55-66\",\n    \"budderflyId\": \"{{BUDDERFLY_ID}}\",\n    \"inventoryItemTypeId\": {{fc_inventory_item_type_id}}\n}"
+						},
+						"url": {
+							"raw": "{{SERVER_URL}}/inventory/api/inventory-items",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"inventory",
+								"api",
+								"inventory-items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Inventory Item Smappee",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e1b6fad0-bf6e-43bb-a3bc-d8d0623a951a",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Inventory Item was created\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var id = jsonData.id;",
+									"    pm.expect(id).not.eql(null);",
+									"    pm.environment.set(\"smappee_inventory_item_id\", id);",
+									"    console.log(\"Inventory Item Created: \", JSON.stringify(jsonData));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d225e841-e762-420d-9f9b-32d08ae3d7ad",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"POSTMAN SMAPPEE INVENTORY ITEM\",\n    \"externalId\": \"1234\",\n    \"budderflyId\": \"{{BUDDERFLY_ID}}\",\n    \"inventoryItemTypeId\": {{smappee_inventory_item_type_id}}\n}"
+						},
+						"url": {
+							"raw": "{{SERVER_URL}}/inventory/api/inventory-items",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"inventory",
+								"api",
+								"inventory-items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Inventory Item Network Router",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e1b6fad0-bf6e-43bb-a3bc-d8d0623a951a",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Inventory Item was created\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var id = jsonData.id;",
+									"    pm.expect(id).not.eql(null);",
+									"    pm.environment.set(\"nr_inventory_item_id\", id);",
+									"    console.log(\"Inventory Item Created: \", JSON.stringify(jsonData));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d225e841-e762-420d-9f9b-32d08ae3d7ad",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"POSTMAN NETWORK ROUTER INVENTORY ITEM\",\n    \"externalId\": \"11:22:33:AA:BB:CC\",\n    \"budderflyId\": \"{{BUDDERFLY_ID}}\",\n    \"inventoryItemTypeId\": {{nr_inventory_item_type_id}}\n}"
+						},
+						"url": {
+							"raw": "{{SERVER_URL}}/inventory/api/inventory-items",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"inventory",
+								"api",
+								"inventory-items"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "9b2056d8-7f4a-4158-966e-abfe50614867",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "75e7ee5e-bf99-4000-b813-55419f83acda",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Delete Installed Eqipment",
+			"item": [
+				{
+					"name": "[Installed Equipment List] Delete Inventory Item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e1b6fad0-bf6e-43bb-a3bc-d8d0623a951a",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.environment.unset(\"fc_inventory_item_id\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d225e841-e762-420d-9f9b-32d08ae3d7ad",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{SERVER_URL}}/inventory/api/inventory-items/{{fc_inventory_item_id}}",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"inventory",
+								"api",
+								"inventory-items",
+								"{{fc_inventory_item_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Equipments",
+			"item": [
+				{
+					"name": "Get equipment type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1ab8d2d3-d6b2-4200-832f-7816d4c20691",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Response not empty', function() {",
+									"  pm.expect(pm.response.json().length).to.be.above(0);",
+									"});",
+									"pm.test('Find and save one budderflyId', function() {",
+									"    var response = pm.response.json();",
+									"    for(var item of response){",
+									"        if(item.budderflyId !== null){",
+									"            console.log(\"BFID: \"+item.budderflyId);",
+									"            pm.globals.set(\"budderflyId\", item.budderflyId);",
+									"            break;",
+									"        }",
+									"        ",
+									"    }",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{SERVER_URL}}/inventory/api/equipment-types",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"inventory",
+								"api",
+								"equipment-types"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get sites owned by user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f9b261b2-e105-4710-860a-b9659efd0b45",
+								"exec": [
+									"pm.test(\"Set budderflyId\", function(){",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"budderfly_id_equipments\", jsonData[0].budderflyId);",
+									"    ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER_URL}}/authenticate/api/user-sites",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"authenticate",
+								"api",
+								"user-sites"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add equipment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d301240e-c50c-432b-9140-c02ed5a7d8d9",
+								"exec": [
+									"pm.test(\"Equipment created\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.response.to.have.status(201);",
+									"    pm.environment.set(\"equipmentID\", jsonData.id)",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "   {\r\n        \"budderflyId\": \"{{budderfly_id_equipments}}\",\r\n        \"code\": \"COOLER\"\r\n   }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_URL}}/inventory/api/create-equipment-for-installer?budderflyId={{budderfly_id_equipments}}",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"inventory",
+								"api",
+								"create-equipment-for-installer"
+							],
+							"query": [
+								{
+									"key": "budderflyId",
+									"value": "{{budderfly_id_equipments}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get equipments added by budderflyId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f12ae8f4-81ae-49cd-b767-bf40a463d537",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Found the equipment created\" , function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData[jsonData.length-1].id).to.equal(pm.environment.get(\"equipmentID\"));",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{SERVER_URL}}/inventory/api/equipment/by-budderfly-id/{{budderfly_id_equipments}}?",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"inventory",
+								"api",
+								"equipment",
+								"by-budderfly-id",
+								"{{budderfly_id_equipments}}"
+							],
+							"query": [
+								{
+									"key": "budderfly_id_equipment",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete equipment created",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "78f99979-68e6-47be-99b3-67a9791d3246",
+								"exec": [
+									"pm.test(\"Status code is 200; Equipment deleted\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER_URL}}/inventory/api/equipment/{{equipmentID}}",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"inventory",
+								"api",
+								"equipment",
+								"{{equipmentID}}"
+							]
+						},
+						"description": "/equipment/{id}"
+					},
+					"response": []
+				}
+			],
+			"description": "List of equipments\nList of equipments added (with Id)\nAdd equipments",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "0137be45-e6e4-4770-b6d9-b8efc067265e",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "b602249c-e9ab-4874-adb0-9197e42ed5ff",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "d7d63e5c-b9df-42a1-8f6b-4457f97bc6c7",
+				"type": "text/javascript",
+				"exec": [
+					"console.log('Executing Pre Request Collection', pm.variables.get('SERVER_URL'))",
+					"",
+					"var authenticate = pm.variables.get('AUTHENTICATE');",
+					"",
+					"console.log(\"Authenticate? > \" + authenticate);",
+					"",
+					"if (authenticate) {",
+					"    ",
+					"    const postAuthRequest = {",
+					"      url: pm.variables.get('SERVER_URL')+'/auth/login',",
+					"      method: 'POST',",
+					"      header: 'Content-Type:application/json',",
+					"      body: {",
+					"        mode: 'application/json',",
+					"        raw: JSON.stringify(",
+					"            {",
+					"                \"username\": pm.variables.get('USERNAME'),",
+					"                \"password\": pm.variables.get('PASSWORD')",
+					"            })",
+					"      }",
+					"    };",
+					"    ",
+					"    pm.sendRequest(postAuthRequest, function (err, res) {",
+					"        if (err === null) {",
+					"            var responseJson = res.json();",
+					"            console.log('Saving the Access Token:', responseJson.access_token);",
+					"            pm.environment.set('access_token', responseJson.access_token);",
+					"            ",
+					"            res.headers.all()",
+					"            .filter(header => { return header.key === 'Set-Cookie';})",
+					"            .forEach(header => {",
+					"                if (header.value.includes('XSRF-TOKEN')) {",
+					"                    // Expect a string like \"XSRF-TOKEN=3dcefa44-b265-417a-a90e-9a71cf34a398; path=/\"",
+					"                    // And want to extract the hash token \"3dcefa44-b265-417a-a90e-9a71cf34a398\"",
+					"                    var xsrf_token = header.value.split('XSRF-TOKEN=')[1];",
+					"                    xsrf_token = xsrf_token.split('; path')[0];",
+					"                    ",
+					"                    // Inserts a header name and header value as given to the list of headers",
+					"                    // for the current request (if the header does not exist, ",
+					"                    // otherwise the already existing header is updated to the new value).",
+					"                    pm.request.headers.add({key: 'X-XSRF-TOKEN', value: xsrf_token }); ",
+					"                }",
+					"            })",
+					"            ",
+					"",
+					"        } else {",
+					"            console.log('Error on GET Access Token' + err);",
+					"        }",
+					"        pm.variables.set('AUTHENTICATE', false);",
+					"    });",
+					"} else {",
+					"    // Inserts a header name and header value as given to the list of headers",
+					"    // for the current request (if the header does not exist, ",
+					"    // otherwise the already existing header is updated to the new value).",
+					"    var xsrf_token = pm.environment.get('xsrf_token');",
+					"    pm.request.headers.add({key: 'X-XSRF-TOKEN', value: xsrf_token }); ",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "adef217e-1332-49e1-a8b2-f2721a9a2297",
+				"type": "text/javascript",
+				"exec": [
+					"pm.test('Verify Cookie and Token', function(){",
+					"    var cookie = pm.cookies.get('XSRF-TOKEN');",
+					"    pm.environment.set('xsrf_token', cookie);",
+					"});"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "f8e1e6eb-a8ec-42a7-8dc6-246381a29ef4",
+			"key": "USER_ID",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"id": "e35fab45-aff4-42b6-a54c-83ff5a9e0a68",
+			"key": "USER_LOGIN",
+			"value": "admin",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}

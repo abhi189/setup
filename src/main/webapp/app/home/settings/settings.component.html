@@ -1,7 +1,9 @@
 <main>
     <nav class="navbar">
         <div class="nav-item logo">
-            <img class="" src="https://d3rbhwp8vebia6.cloudfront.net/img/Budderfly-logo-dark-large-300x138 .png" alt="budderfly installer logo" />
+            <span >
+            <img (click)="handleBackClick()" class="" src="https://d3rbhwp8vebia6.cloudfront.net/img/Budderfly-logo-dark-large-300x138.png" alt="budderfly installer logo" />
+            </span>
         </div>
         <div class="nav-item">
             <button class="btn-logout" (click)="handleLogout()">
@@ -31,6 +33,7 @@
                 [loading]="loadingStores"
                 [storeSelected]="formData.store"
                 (onItemSelected)="handleItemSelected($event)"
+                (onRefreshStores)="handleRefreshStores($event)"
             ></jhi-location-stores>
             <div class="alert alert-danger" *ngIf="showError">Something went wrong. Please try again later.</div>
         </section>
@@ -45,5 +48,4 @@
             >{{configurationDone ? 'Done' : 'Next'}}</button>
         </div>
     </div>
-
 </main>

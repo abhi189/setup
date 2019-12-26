@@ -1,15 +1,16 @@
-import { Component, Input, Output, OnChanges, EventEmitter, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, Output, OnInit, OnChanges, EventEmitter, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
-    templateUrl: './controller.component.html',
-    styleUrls: ['./controller.component.scss'],
-    selector: 'jhi-location-controller',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    templateUrl: './smappee.component.html',
+    styleUrls: ['./smappee.component.scss'],
+    selector: 'jhi-location-smappee',
 })
-export class Controllers implements OnChanges {
+export class Smappee implements OnChanges {
     @Input() controllers: Array<any>;
+    @Input() loading: boolean;
     @Input() controllerSelected: any = {};
     @Output() onItemSelected = new EventEmitter();
+    public loadingControllers: boolean;
 
     constructor() {}
 
@@ -26,6 +27,6 @@ export class Controllers implements OnChanges {
     }
 
     setSelectedController(controller: any) {
-        this.onItemSelected.next({ name: 'controller', value: controller });
+        this.onItemSelected.next({ name: 'smappeeController', value: controller });
     }
 }

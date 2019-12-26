@@ -3,6 +3,7 @@
     <div *ngIf="loading" class="loading">
             <div class="loader"></div>
     </div>
+    <img (click)="refreshStores()" class="refresh-img" src="../../../../../content/images/refresh.png">
     <div *ngIf="!loading && stores.length" class="stores-list">
         <div class="stores-list-item" 
             *ngFor="let store of stores;" 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { LoginService } from '../../core/login/login.service';
 import { SettingsService } from './settings.service';
 import { AccountService } from '../../core/auth/account.service';
@@ -9,6 +9,7 @@ import { AccountService } from '../../core/auth/account.service';
     styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent implements OnInit {
+    @Output() onBackClick = new EventEmitter();
     public showNextButton: boolean;
     public currentScreen: string;
     public showPreviousButton: boolean;
@@ -90,7 +91,6 @@ export class SettingsComponent implements OnInit {
 
     async getAccountDetails() {
         const account = await  this.accountService.identity(true).then(account => account);
-        console.log('Account: ', account);
     }
 
     async getStores() {
@@ -101,14 +101,16 @@ export class SettingsComponent implements OnInit {
             res => {
                 this.loadingStores = false;
                 this.constructStores(res.body);
-                console.log('Stores ', res);
             },
             err => {
                 this.loadingStores = false;
                 this.showError = true;
-                console.log('Error fetching stores ', err);
             }
         );
+    }
+
+    handleRefreshStores() {
+        this.getStores();
     }
 
     constructStores(stores: any): void {
@@ -143,6 +145,11 @@ export class SettingsComponent implements OnInit {
             currentScreenIndex += 1;
         }
         return this.allScreens[currentScreenIndex];
+    }
+
+    handleBackClick() {
+        this.currentScreen = 'location';
+        this.showPreviousButton = false;
     }
 
     getPreviousStep() {

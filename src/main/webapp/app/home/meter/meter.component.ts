@@ -1,4 +1,5 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, SimpleChanges, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef, SimpleChanges, OnInit } from '@angular/core';
+import { SettingsService } from '../settings/settings.service';
 
 @Component({
     templateUrl: './meter.component.html',
@@ -9,10 +10,15 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, Simple
 export class MeterComponent implements OnInit {
     @Input() meter: Array<any> = [];
     public steps: any = {
+        services: '',
         connections: '',
         configure: ''
     };
+    @Input() configuration: any = {}
     @Output() onPreviousScreenClick = new EventEmitter();
+    @Output() onpreviousStepClick=  new EventEmitter();
+    @Output() onSendToPreviousModule = new EventEmitter();
+    @Input() sendToScreen: string;
     public showNextButton: boolean;
     public currentScreen: string;
     public showPreviousButton: boolean;
@@ -22,6 +28,7 @@ export class MeterComponent implements OnInit {
     public storeSelected: any = {};
     public configurations: any = [];
     public configurationDone: boolean;
+    public createServiceTypeError: string;
     public data = {
         stores: [
             {
@@ -92,12 +99,14 @@ export class MeterComponent implements OnInit {
         services: [
             {
                 id: 1,
+                name: 'THREE_PHASE',
                 phase: 5,
                 content: 'Three Phase 120/208 or 277/480',
                 imageUrl: 'https://d3rbhwp8vebia6.cloudfront.net/installersetupweb/Three-phase.png'
             },
             {
                 id: 2,
+                name: 'SPLIT_PHASE',
                 phase: 3,
                 content: 'Split Phase 120/240',
                 imageUrl: 'https://d3rbhwp8vebia6.cloudfront.net/installersetupweb/Split-Phase.png'
@@ -111,7 +120,7 @@ export class MeterComponent implements OnInit {
             },
             {
                 id: 2,
-                type: 'Delta',
+                type: 'DELTA',
                 imageUrl: 'https://d3rbhwp8vebia6.cloudfront.net/installersetupweb/delta.png'
             }
         ],
@@ -258,11 +267,20 @@ export class MeterComponent implements OnInit {
     };
     public allScreens: Array<string> = [];
 
-    constructor() {}
+    constructor(
+        private settingsService: SettingsService,
+        private cd: ChangeDetectorRef,
+    ) {}
 
     ngOnInit(): void {
-        this.showNextButton = true;
+        this.formData = {
+            ...this.configuration
+        }
+        console.log(this.formData);
+        this.showNextButton = this.showPreviousButton = this.isPreviousEnabled = true;
         this.allScreens = Object.keys(this.steps);
+        this.currentScreen = this.sendToScreen ?  this.sendToScreen : this.allScreens[0];
+        this.handleButtonState();
     }
 
     getNextStep() {
@@ -271,7 +289,7 @@ export class MeterComponent implements OnInit {
         if (currentScreenIndex < this.allScreens.length - 1) {
             currentScreenIndex = currentScreenIndex + 1;
         }
-        if (this.currentScreen === 'services' && this.formData.service.id === 1) {
+        if (this.currentScreen === 'services' && this.formData.service.id === 2) {
             currentScreenIndex += 1;
         }
         return this.allScreens[currentScreenIndex];
@@ -280,11 +298,12 @@ export class MeterComponent implements OnInit {
     getPreviousStep() {
         let currentScreenIndex = this.allScreens.indexOf(this.currentScreen);
 
+        if (currentScreenIndex === 0) return null;
         if (currentScreenIndex > 0) {
             currentScreenIndex = currentScreenIndex - 1;
         }
-        if (this.currentScreen === 'connections') {
-            currentScreenIndex -= 1;
+        if (this.currentScreen === 'services' && this.formData.service.id === 2) {
+            currentScreenIndex += 1;
         }
         return this.allScreens[currentScreenIndex];
     }
@@ -298,7 +317,6 @@ export class MeterComponent implements OnInit {
     }
 
     updateForm({ name, value }) {
-        console.log('Form: ', name, value);
         this.formData = {
             ...this.formData,
             [name]: value
@@ -343,8 +361,9 @@ export class MeterComponent implements OnInit {
         this.currentScreen = this.getPreviousStep();
         this.isNextEnabled = true;
         this.configurationDone = false;
-        if (this.allScreens.indexOf(this.currentScreen) === 0) {
-            this.showPreviousButton = false;
+        if (!this.currentScreen) {
+            // this.showPreviousButton = false;
+            this.onpreviousStepClick.next();
         } else {
             this.showPreviousButton = true;
         }
@@ -352,19 +371,56 @@ export class MeterComponent implements OnInit {
     }
 
     handleNextClick() {
-        console.log('Curr Screen: ', this.currentScreen);
         if (this.validateScreenData()) {
-            this.currentScreen = this.getNextStep();
+            const currentScreen = this.getNextStep();
+            if (this.allScreens.indexOf(currentScreen) === this.allScreens.length - 1) {
+                this.createServiceType(currentScreen);
+                return;
+            }
+            this.currentScreen = currentScreen;
             this.isNextEnabled = false;
             if (this.configurationDone) {
                 this.handleDoneClick();
                 return;
             }
-            if (this.allScreens.indexOf(this.currentScreen) === this.allScreens.length - 1) {
-                this.configurationDone = true;
-            }
             this.showPreviousButton = this.isPreviousEnabled = true;
         }
+        this.handleButtonState();
+    }
+
+    createServiceType(screen) {
+        console.log(this.configuration, this.formData);
+        const { smappeeController: createdFc } = this.configuration;
+        const payload = {
+            "id": createdFc ? createdFc.id : '',
+            "budderflyId": createdFc ? createdFc.budderflyId : '',
+            "code": createdFc ? createdFc.inventoryItemTypeCode : '',
+            "name": createdFc ? createdFc.name : '',
+            "externalId": createdFc ? createdFc.externalId : '',
+        }
+        const connection = this.formData.connection ? this.formData.connection.type : 'DELTA';
+        const service = this.formData.service ? this.formData.service.name : '';
+
+        this.createServiceTypeError = '';
+        this.settingsService.createServiceType(
+            connection, payload, service
+        )
+        .subscribe(res => {
+            this.currentScreen = screen;
+            this.cd.detectChanges();
+        }, err => {
+            this.currentScreen = screen;
+            this.createServiceTypeError = 'Something went wrong.'
+            this.cd.detectChanges();
+        })
+    }
+
+    sendToPreviousModule(screen) {
+        this.onSendToPreviousModule.next(screen);
+    }
+
+    handlePreviousStepClick(event) {
+        this.currentScreen = event;
         this.handleButtonState();
     }
 
@@ -373,7 +429,6 @@ export class MeterComponent implements OnInit {
         this.configurations = [...this.configurations, this.formData];
         this.formData = {};
         this.configurationDone = false;
-        this.showPreviousButton = false;
     };
 
     handleAddConfiguration(event) {

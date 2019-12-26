@@ -11,6 +11,7 @@ export class Stores implements OnInit, OnChanges {
     @Input() storeSelected: any = {};
     @Input() loading: boolean;
     @Output() onItemSelected = new EventEmitter();
+    @Output()  onRefreshStores = new EventEmitter();
 
     constructor() {
     }
@@ -32,5 +33,9 @@ export class Stores implements OnInit, OnChanges {
 
     setSelectedStore(store: any) {
         this.onItemSelected.next({ name: 'store', value: store });
+    }
+
+    refreshStores() {
+        this.onRefreshStores.next()
     }
 }

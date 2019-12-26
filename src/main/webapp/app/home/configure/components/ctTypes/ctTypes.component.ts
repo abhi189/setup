@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, ChangeDetectionStrategy, SimpleChanges } from '@angular/core';
 
 @Component({
     templateUrl: './ctTypes.component.html',
@@ -6,7 +6,7 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, Simple
     selector: 'jhi-configure-ctTypes',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Cttypes {
+export class Cttypes implements OnInit, OnChanges {
     @Input() ctTypes: Array<any>;
     @Input() ctTypeSelected: any = {};
     @Output() onItemSelected = new EventEmitter();
@@ -23,6 +23,10 @@ export class Cttypes {
         if (ctTypeSelected && ctTypeSelected.currentValue !== ctTypeSelected.previousValue) {
             this.ctTypeSelected = ctTypeSelected.currentValue;
         }
+    }
+
+    ngOnInit() {
+       //  this.onCtTypeMount.next();
     }
 
     setSelectedCtType(ctType: any) {

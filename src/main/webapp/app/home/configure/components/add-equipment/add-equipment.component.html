@@ -1,0 +1,33 @@
+<div class="controllers-container">
+    <div class="header">Select Equipment Type to Add</div>
+    <div *ngIf="loading" class="loading">
+            <div class="loader"></div>
+    </div>
+    <div *ngIf="!loading && controllers.length" class="controllers-list">
+        <div class="controllers-list-item" 
+            *ngFor="let controller of controllers;" 
+            [ngClass]="{'selected': controllerSelected && controller.id === controllerSelected.id}"
+            (click)=setSelectedController(controller)
+        >
+            <div>{{controller.name}}</div>
+        </div>
+    </div>
+    <div class="alert alert-primary" *ngIf="!loading && !controllers.length">
+        No Equipments
+    </div>
+    <div *ngIf="showConfirmAdd" class="modal-open"></div>
+    <div *ngIf="showConfirmAdd" class="confirm-container">
+        <div class="content">
+            <h3 *ngIf="creatingEquipment">Adding New Equipment</h3>
+            <h5 *ngIf="!creatingEquipment && !equipment.name" class="alert alert-danger">{{equipment}}</h5>
+            <h5 *ngIf="!creatingEquipment && equipment.name"><span class="equipment">{{equipment.name}}</span> has been successfully created. Please label the equipment with <span class="equipment">[{{equipment.name}}]</span> for future reference.</h5>
+            <div *ngIf="creatingEquipment" class="loading">
+                <div class="loader"></div>
+            </div>
+            <div *ngIf="!creatingEquipment" class="btn-container">
+                <button *ngIf="!showCancel" class="btn btn-success" (click)="continueAdd()">continue</button>
+                <button *ngIf="showCancel" class="btn btn-danger" (click)="cancelAdd()">cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

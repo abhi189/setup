@@ -1,64 +1,104 @@
 <main>
+    <div [ngClass]="{'modal-open': showConfirmDelete}">
+    </div>
     <section class="content-container" [ngSwitch]="currentScreen">
-    <jhi-configure-devices
-        *ngSwitchCase="'devices'"
-        [devices]="data.devices"
-        [deviceSelected]="formData.device"
-        (onItemSelected)="handleItemSelected($event)"
-    ></jhi-configure-devices>
-    <jhi-configure-phases
-        *ngSwitchCase="'phases'"
-        [phases]="data.phases"
-        [phaseSelected]="formData.phase"
-        (onItemSelected)="handleItemSelected($event)"
-    ></jhi-configure-phases>
-    <jhi-configure-ctTypes
-        *ngSwitchCase="'ctType'"
-        [ctTypes]="data.ctTypes"
-        [ctTypeSelected]="formData.ctType"
-        (onItemSelected)="handleItemSelected($event)"
-    ></jhi-configure-ctTypes>
-    <jhi-configure-ctSetup
-        *ngSwitchCase="'ctSetup'"
-        [ctSetup]="data.ctSetup"
-        [ctSetupSelected]="formData.ctSetup"
-        (onItemSelected)="handleItemSelected($event)"
-    ></jhi-configure-ctSetup>
-    <jhi-configure-ctPhase
-        *ngSwitchCase="'ctPhases'"
-        [ctPhase]="data.ctPhase"
-        [ctPhaseSelected]="formData.ctPhase"
-        (onItemSelected)="handleItemSelected($event)"
-    ></jhi-configure-ctPhase>
-        <!-- <div *ngIf="currentScreen === 'configure'">   -->
-        <div class="configure-container" *ngSwitchDefault>
-            <div class="header">List of configuration</div>
-            <div class="configure-list">
-                <div *ngIf="configures.length">
-                    <div *ngFor="let configure of configures"></div>
+        <jhi-configure-devices
+            *ngSwitchCase="'devices'"
+            [devices]="equipments"
+            [loading]="loadingEquipment"
+            [deviceSelected]="formData.device"
+            (onItemSelected)="handleItemSelected($event)"
+            (onAddEqupmentClicked)="handleAddEquipment($event)"
+            (onDeviceComponentLoaded)="getEquipments()"
+        ></jhi-configure-devices>
+        <jhi-location-add-equipment
+            *ngSwitchCase="'equipments'"
+            [loading]="loadingControllers"
+            [controllers]="equipmentTypes"
+            [controllerSelected]="formData.equipment"
+            [creatingEquipment]="creatingEquipment"
+            (onItemSelected)="handleItemSelected($event)"
+            [showConfirmModal]="showConfirmModal"
+            (onConfirmClick)="handleConfirmAddClick($event)"
+        ></jhi-location-add-equipment>
+        <jhi-configure-phases
+            *ngSwitchCase="'phases'"
+            [phases]="data.phases"
+            [phaseSelected]="formData.phase"
+            (onItemSelected)="handleItemSelected($event)"
+        ></jhi-configure-phases>
+        <jhi-configure-ctTypes
+            *ngSwitchCase="'ctType'"
+            [ctTypes]="data.ctTypes"
+            [ctTypeSelected]="formData.ctType"
+            (onItemSelected)="handleItemSelected($event)"
+        ></jhi-configure-ctTypes>
+        <jhi-configure-ctSetup
+            *ngSwitchCase="'ctSetup'"
+            [ctSetup]="data.ctSetup"
+            [ctSetupSelected]="formData.ctSetup"
+            (onItemSelected)="handleItemSelected($event)"
+        ></jhi-configure-ctSetup>
+        <jhi-configure-ctPhase
+            *ngSwitchCase="'ctPhases'"
+            [ctPhase]="data.ctPhase"
+            [ctPhaseSelected]="formData.ctPhase"
+            (onItemSelected)="handleItemSelected($event)"
+        ></jhi-configure-ctPhase>
+        <div *ngIf="showConfirmDelete" class="confirm-container">
+            <div class="content" >
+                <div class="alert alert-danger" *ngIf="deleteError">Something went wrong. Please try again later.</div>
+                <h2>Are you sure you want to delete {{selectedConfiguredItem.name}}?</h2>
+                <div class="btn-container">
+                    <button class="btn btn-danger" (click)="continueDelete()">Confirm</button>
+                    <button class="btn btn-success" (click)="showConfirmDelete = false;">Cancel</button>
+                </div>
             </div>
         </div>
-    <div class="configure-add" (click)="handleAddConfiguration($event)">
-        <div>+</div>
-        <div>Add New Configuration</div>
-    </div>
-    <div *ngIf="configurations.length" class="config-list">
-        <h4>Configured Items</h4>
-        <div *ngFor="let conf of configurations" class="config-list-item">
-            <strong>{{conf.device.type}}</strong> <br />configuration is done.
+        <!-- <div *ngIf="currentScreen === 'configure'">   -->
+        <div *ngIf="configuringEquipment || configuringEquipmentError" class="loading-wrapper">
+            <div *ngIf="configuringEquipment" class="loading">
+                <div class="loader"></div>
+            </div>
+            <div *ngIf="configuringEquipmentError" class="error-modal">
+                <p class="alert alert-danger">Something Went Wrong! Please try Again.</p>
+                <button class="btn btn-danger" (click)="handleDoneClick()">go back</button>
+            </div>
         </div>
-    </div>
-    </div>
+        <div class="configure-container" *ngSwitchDefault>
+            <div class="configure-add" (click)="handleAddConfiguration($event)">
+                <div>+</div>
+                <div>Add New Configuration</div>
+            </div>
+            <div *ngIf="!configuredItems.length && !showError" class="config-list" class="alert alert-primary">
+                No Devices Configured
+            </div>
+            <div *ngIf="showError" class="alert alert-danger">
+                Something went wrong. Please try again later
+            </div>
+            <div *ngIf="loadingConfiguredItems" class="loading">
+                <div class="loader"></div>
+            </div>
+            <div *ngIf="configuredItems.length" class="config-list">
+                <h4>Configured Items</h4>
+                <div class="configured-list">
+                    <div *ngFor="let conf of configuredItems" class="config-list-item">
+                        <strong>{{conf.name}}</strong> <br />configuration is done.
+                        <button (click)="selectedConfiguredItem = conf; showConfirmDelete = true" class="btn"><img src="../../../content/images/trash.png"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
     <div class="action-bar">
-    <button [hidden]="!showPreviousButton" class="btn previous" 
-        [disabled]="!isPreviousEnabled"
-        (click)="handlePreviousClick()"
-    >Previous</button>
-    <button [hidden]="showDoneBtn || !showNextButton" class="btn next"
-        [disabled]="!isNextEnabled"
-        (click)="handleNextClick()"
-    >{{configurationDone ? 'Done' : 'Next'}}</button>
-    <div [hidden]="!showDoneBtn" class="btn next" (click)="onDoneClick()">Done</div>
+        <button [hidden]="!showPreviousButton" class="btn previous" 
+            [disabled]="!isPreviousEnabled"
+            (click)="handlePreviousClick()"
+        >Previous</button>
+        <button [hidden]="showDoneBtn || !showNextButton" class="btn next"
+            [disabled]="!isNextEnabled"
+            (click)="handleNextClick()"
+        >{{configurationDone ? 'Done' : 'Next'}}</button>
+        <div [hidden]="!showDoneBtn" class="btn next" (click)="onDoneClick()">Done</div>
     </div>
 </main>

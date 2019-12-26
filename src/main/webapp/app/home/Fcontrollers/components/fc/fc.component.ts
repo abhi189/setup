@@ -65,7 +65,6 @@ export class Fcs implements OnInit {
         this.codeReader
             .decodeFromInputVideoDevice(firstDeviceId, 'video')
             .then(result => {
-                console.log('Result: ', result);
                 this.macAddress = result.text;
                 this.stopScanning();
                 this.onItemSelected.next({ name: 'external_id', value: result.text})

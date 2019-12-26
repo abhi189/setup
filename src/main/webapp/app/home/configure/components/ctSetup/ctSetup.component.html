@@ -3,10 +3,10 @@
     <div class="ctSetups-list">
         <div class="ctSetups-list-item" 
             *ngFor="let ctSetup of ctSetup" 
-            [ngClass]="{'selected': ctSetupSelected && ctSetup.id === ctSetupSelected.id}"
+            [ngClass]="{'selected': ctSetupSelected && ctSetup.channel === ctSetupSelected.channel}"
             (click)=setSelectedctSetup(ctSetup)
         >
-            <div class="connection-type">{{ctSetup.type}}</div>
+            <div class="connection-type">{{ctSetup.name}}</div>
         </div>
     </div>
 </div>

@@ -1,12 +1,23 @@
     <div class="devices-container">
-        <div class="header">Select device type at the location</div>
+            <div *ngIf="loading" class="loading">
+                    <div class="loader"></div>
+            </div>
+            <div class="configure-add" (click)="handleAddEquipment($event)">
+                <div>+</div>
+                <div>Add New Equipment</div>
+            </div>
+            <hr>
+        <div class="header">Select the equipment at the location</div>
         <div class="devices-list">
             <div class="devices-list-item" 
                 *ngFor="let device of devices" 
                 [ngClass]="{'selected': deviceSelected && device.id === deviceSelected.id}"
                 (click)=setSelectedDevice(device)
             >
-                <div class="connection-type">{{device.type}}</div>
+                <div class="connection-type">{{device.name}}</div>
             </div>
+        </div>
+        <div class="alert alert-primary" *ngIf="!loading && devices && !devices.length">
+                No Equipments
         </div>
     </div>

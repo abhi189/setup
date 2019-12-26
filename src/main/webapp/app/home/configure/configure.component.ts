@@ -1,4 +1,7 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, SimpleChanges, OnInit } from '@angular/core';
+import { Phases } from './components/phases/phases.component';
+
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
+import { SettingsService } from '../settings/settings.service';
 
 @Component({
     templateUrl: './configure.component.html',
@@ -8,13 +11,18 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, Simple
 })
 export class ConfigurationComponent implements OnInit {
     @Input() configures: Array<any> = [];
+    @Input() configuration: any = {};
     @Output() onPreviousScreenClick = new EventEmitter();
+    @Output() onPreviousStepClick = new EventEmitter();
+    @Output() sendToPreviousModule = new EventEmitter();
     public steps: any = {
+        default: '',
         devices: '',
+        equipments: '',
         phases: '',
         ctType: '',
         ctSetup: '',
-        ctPhases: ''
+        ctPhases: '',
     };
     public showNextButton: boolean;
     public currentScreen: string;
@@ -23,7 +31,13 @@ export class ConfigurationComponent implements OnInit {
     public isPreviousEnabled: boolean;
     public formData: any = {};
     public storeSelected: any = {};
+    public loadingEquipment: boolean;
+    public showConfirmAdd: any = {};
+    public loadingControllers:boolean;
+    public showError: boolean;
     public configurations: any = [];
+    public equipmentTypes: Array<any> = [];
+    public equipments: Array<any>;
     public configurationDone: boolean;
     public data = {
         stores: [
@@ -143,11 +157,11 @@ export class ConfigurationComponent implements OnInit {
         devices: [
             {
                 id: 1,
-                type: 'HVAC Unit 1'
+                type: 'Freezer'
             },
             {
                 id: 2,
-                type: 'HVAC Unit 2'
+                type: 'Exhaust'
             },
             {
                 id: 3,
@@ -167,27 +181,27 @@ export class ConfigurationComponent implements OnInit {
             },
             {
                 id: 7,
-                type: 'HVAC Unit 1'
+                type: 'Water Heater'
             },
             {
                 id: 8,
-                type: 'HVAC Unit 2'
+                type: 'Speed Oven'
             },
             {
                 id: 9,
-                type: 'Main'
+                type: 'Heat Pump'
             },
             {
                 id: 10,
-                type: 'Cooler'
+                type: 'Power Soak Station'
             },
             {
                 id: 11,
-                type: 'Bread Oven'
+                type: 'POS'
             },
             {
                 id: 12,
-                type: 'Speed Oven'
+                type: 'Microwave'
             }
         ],
         phases: [
@@ -204,69 +218,38 @@ export class ConfigurationComponent implements OnInit {
                 type: '3'
             }
         ],
-        ctTypes: [
-            {
-                id: 1,
-                type: 'SCT02-T10/50A'
-            },
-            {
-                id: 2,
-                type: 'SCT02-T16/100A'
-            },
-            {
-                id: 3,
-                type: 'SCT02-T24/200A'
-            }
-        ],
-        ctSetup: [
-            {
-                id: 1,
-                type: 'CT Input: A'
-            },
-            {
-                id: 2,
-                type: 'CT Input: B'
-            },
-            {
-                id: 3,
-                type: 'CT Input: C'
-            },
-            {
-                id: 4,
-                type: 'CT Input: D'
-            },
-            {
-                id: 5,
-                type: 'CT Input: E'
-            },
-            {
-                id: 6,
-                type: 'CT Input: F'
-            }
-        ],
-        ctPhase: [
-            {
-                id: 1,
-                type: 'L1'
-            },
-            {
-                id: 2,
-                type: 'L2'
-            },
-            {
-                id: 3,
-                type: 'L3'
-            }
-        ]
+        ctTypes: [],
+        ctSetup: [],
+        ctPhase: []
     };
     public allScreens: Array<string> = [];
     public showDoneBtn: boolean;
-    constructor() {}
+    public showConfirmDelete: boolean;
+    public phasesCount: number;
+    public selectedCtPhases: Array<any> = [];
+    public deleteError: boolean;
+    public selectedCtSetups: Array<any> = [];
+    @Input() sendToScreen: string;
+    public creatingEquipment: boolean;
+    public showConfirmModal: any = {};
+    public loadingConfiguredItems: boolean;
+    public configuredItems: any = [];
+    public selectedConfiguredItem: any;
+    public loadingData: boolean;
+    public originalCtTypes: any = [];
+    public originalCtPhases: any = [];
+    public originalCtSetup: any = [];
+    public configuringEquipmentError: string;
+    public configuringEquipment: boolean;
+    constructor(private settingsService: SettingsService, private cd: ChangeDetectorRef) {
+    }
 
     ngOnInit(): void {
         this.showNextButton = false;
-        this.showDoneBtn = true;
+        this.phasesCount = 1;
+        this.showDoneBtn = this.showPreviousButton = this.isPreviousEnabled =  true;
         this.allScreens = Object.keys(this.steps);
+        this.getConfiguredItems();
     }
 
     getNextStep() {
@@ -275,7 +258,10 @@ export class ConfigurationComponent implements OnInit {
         if (currentScreenIndex < this.allScreens.length - 1) {
             currentScreenIndex = currentScreenIndex + 1;
         }
-        if (this.currentScreen === 'services' && this.formData.service.id === 1) {
+        if (this.currentScreen === 'services' && (this.formData.service && this.formData.service.id === 1)) {
+            currentScreenIndex += 1;
+        }
+        if (this.currentScreen === 'devices') {
             currentScreenIndex += 1;
         }
         return this.allScreens[currentScreenIndex];
@@ -287,7 +273,10 @@ export class ConfigurationComponent implements OnInit {
         if (currentScreenIndex > 0) {
             currentScreenIndex = currentScreenIndex - 1;
         }
-        if (this.currentScreen === 'configure' && this.formData.service.id === 1) {
+        if (this.currentScreen === 'configure' && (this.formData.service && this.formData.service.id === 1)) {
+            currentScreenIndex -= 1;
+        }
+        if (this.currentScreen === 'phases' && !this.formData.equipmentif) {
             currentScreenIndex -= 1;
         }
         return this.allScreens[currentScreenIndex];
@@ -297,8 +286,200 @@ export class ConfigurationComponent implements OnInit {
         this.updateForm(data);
     }
 
+    updateCtSetups(ctSetup) {
+        // if (!this.selectedCtSetups) return;
+        const currentCtSetups = ctSetup;
+        const updatedCtSetups = currentCtSetups.filter((ctSetup) => {
+            if (this.selectedCtSetups.find((elm) => elm.channel === ctSetup.channel)) {
+                return false;
+            }
+            return true;
+        })
+
+        this.data.ctSetup = [...updatedCtSetups];
+    }
+
+    updateConfiguration() {
+        this.configuringEquipment = true;
+        this.configuringEquipmentError = '';
+        let payload = {
+            budderflyId: this.configuration.store.id,
+            numberOfPhases: this.formData.phase.type,
+            ctTypeCode: this.formData.ctType.code,
+            equipmentId: this.formData.equipment ? this.formData.equipment.id : this.formData.device ? this.formData.device.id : '',
+            inventoryItemId: this.configuration.createdFc ? this.configuration.createdFc.id
+            : this.configuration.controller ? this.configuration.controller.id : '',
+        };
+        const channels = ['A', 'B', 'C'];
+        
+        if (this.configuration.smappeeController) {
+            payload['facilityControllerInventoryItemId'] =  this.configuration.smappeeController.id;
+        }
+        if (this.selectedCtSetups.length) {
+            this.selectedCtSetups.forEach((setup, index) => {
+                payload[`ctInputPhase${channels[index]}`] = setup.channel;
+            })
+        }
+        if (this.selectedCtPhases.length) {
+            this.selectedCtPhases.forEach((setup, index) => {
+                payload[`ctLinePhase${channels[index]}`] = setup.code;
+            })
+        }
+        console.log(this.configuration, this.formData);
+        this.settingsService.updateConfiguration(payload)
+        .subscribe(res => {
+            this.handleDoneClick();
+            this.configuringEquipment = false;
+            this.cd.detectChanges();
+        }, err => {
+            this.configuringEquipment = false;
+            this.configuringEquipmentError = 'Something went wrong';
+            this.cd.detectChanges();
+        })
+    }
+
+    updateCtPhases(ctPhase) {
+        // if (!this.selectedCtPhases) return;
+        const currentCtPhases = ctPhase;
+        const updatedCtPhases = currentCtPhases.filter((CtPhase) => {
+            if (this.selectedCtPhases.find((elm) => elm.code === CtPhase.code)) {
+                return false;
+            }
+            return true;
+        })
+
+        this.data.ctPhase = [...updatedCtPhases];
+    }
+
+    getEquipmentTypes(){
+        this.loadingEquipment = true
+        this.settingsService.getEquipmentType().subscribe(
+            res => {
+                this.loadingEquipment = false;
+                this.equipmentTypes = res.body;
+                this.cd.detectChanges();
+            },
+            err => {
+                this.loadingEquipment = false;
+                this.showError = true;
+                this.cd.detectChanges();
+            }
+        );
+    }
+
+    getConfiguredItems() {
+        const { createdFc = {}, controller = {} } = this.configuration;
+
+        this.loadingConfiguredItems = true;
+        this.showError = false;
+        this.settingsService.getLoadedConfigurations(createdFc.id || controller.id || '')
+        .subscribe(res => {
+            this.loadingConfiguredItems = false;
+            this.configuredItems = res.body || [];
+            this.cd.detectChanges();
+        }, err => {
+            this.loadingConfiguredItems = false;
+            this.showError = true;
+            this.cd.detectChanges();
+        })
+    }
+
+    continueDelete() {
+        if (this.selectedConfiguredItem) {
+            this.deleteError= false;
+            this.settingsService.deleteConfiguredItem(this.selectedConfiguredItem)
+            .subscribe(res => {
+                this.showConfirmDelete = false;
+                this.getConfiguredItems();
+                this.cd.detectChanges();
+            },
+            err => {
+                this.deleteError = true;
+                this.cd.detectChanges();
+            })
+        }
+    }
+
+    getCtTypes() {
+        this.loadingData = true;
+        this.settingsService.getCtTypes()
+        .subscribe(res => {
+            this.loadingData = false;
+            this.originalCtTypes = res.body || [];
+            this.data.ctTypes = [...this.originalCtTypes]
+            this.cd.detectChanges();
+        }, err => {
+            this.loadingData = false
+            this.cd.detectChanges();
+        })
+    }
+
+    getCtSetups() {
+        this.loadingData = true
+        this.settingsService.getCtSetups()
+        .subscribe(res => {
+            this.loadingData = false;
+            this.originalCtSetup = res.body || [];
+            const ctSetup = [...this.originalCtSetup]
+            
+            this.updateCtSetups(ctSetup);
+            this.cd.detectChanges();
+        }, err => {
+            this.loadingData = false
+            this.cd.detectChanges();
+        })
+    }
+
+    getCtLinePhases() {
+        this.loadingData = true;
+        this.settingsService.getCtLinePhasess()
+        .subscribe(res => {
+            this.loadingData = false;
+            this.originalCtPhases = res.body || [];
+            const ctPhase = [...this.originalCtPhases];
+            this.updateCtPhases(ctPhase);
+            this.cd.detectChanges();
+        }, err => {
+            this.loadingData = false;
+            this.cd.detectChanges();
+        })
+    }
+
+    getEquipments(){
+        this.loadingEquipment = true
+        this.settingsService.getEquipments(this.configuration.store.id).subscribe(
+            res => {
+                this.loadingEquipment = false;
+                this.equipments = res.body || [];
+                this.cd.detectChanges();
+            },
+            err => {
+                this.loadingEquipment = false;
+                this.showError = true;
+                this.cd.detectChanges();
+            }
+        );
+    }
+
+    saveAndupdatectSetups(ctSetup) {
+        this.selectedCtSetups = [
+            ...this.selectedCtSetups,
+            ctSetup
+        ]
+    }
+
+    saveAndUpdatectPhases(ctPhase) {
+        this.selectedCtPhases = [
+            ...this.selectedCtPhases,
+            ctPhase
+        ]
+    }
+
+    countPhases() {
+        return this.phasesCount += 1;
+    }
+
     updateForm({ name, value }) {
-        console.log('Form: ', name, value);
         this.formData = {
             ...this.formData,
             [name]: value
@@ -307,17 +488,23 @@ export class ConfigurationComponent implements OnInit {
     }
 
     handleButtonState() {
-        if (this.validateScreenData()) {
+        if (this.validateScreenData(false)) {
             this.isNextEnabled = true;
         } else {
             this.isNextEnabled = false;
         }
     }
 
-    validateScreenData() {
+    validateScreenData(save) {
         switch (this.currentScreen) {
             case 'devices': {
                 if (this.formData['device']) {
+                    return true;
+                }
+                break;
+            }
+            case 'equipments': {
+                if (this.formData['equipment']) {
                     return true;
                 }
                 break;
@@ -336,12 +523,14 @@ export class ConfigurationComponent implements OnInit {
             }
             case 'ctSetup': {
                 if (this.formData['ctSetup']) {
+                    if (save) this.saveAndupdatectSetups(this.formData['ctSetup']);
                     return true;
                 }
                 break;
             }
             case 'ctPhases': {
                 if (this.formData['ctPhase']) {
+                    if (save) this.saveAndUpdatectPhases(this.formData['ctPhase']);
                     return true;
                 }
                 break;
@@ -351,28 +540,105 @@ export class ConfigurationComponent implements OnInit {
         }
     }
 
+    createEquipment() {
+        this.creatingEquipment = true;
+        this.showConfirmModal =  Object.assign({}, {
+            enable: true,
+            showCancel: false,
+            equipment: undefined,
+        });
+        this.settingsService.createEquipment(this.configuration.store.id, { id : this.formData && this.formData['equipment'].id , code : this.formData && this.formData['equipment'].code } )
+        .subscribe(res => {
+            this.showConfirmModal =  Object.assign({}, {
+                enable: true,
+                showCancel: false,
+                equipment: res,
+            });
+            this.formData['equipment'] = res;
+            this.creatingEquipment = false;
+            this.cd.detectChanges();
+        }, err => {
+            this.showConfirmModal =  Object.assign({}, {
+                enable: true,
+                showCancel: true,
+                equipment: 'Something went wrong Please try again.'
+            });
+            this.creatingEquipment = false;
+            this.cd.detectChanges()
+        })
+    }
+
     handlePreviousClick() {
         this.currentScreen = this.getPreviousStep();
         this.isNextEnabled = true;
         this.configurationDone = false;
-        if (this.allScreens.indexOf(this.currentScreen) === 0) {
-            this.showPreviousButton = false;
+        if (this.currentScreen === 'default') {
+            this.showDoneBtn = true;
+            this.currentScreen = '';
         } else {
-            this.showPreviousButton = true;
+            this.showDoneBtn = false;
+            if (!this.currentScreen) {
+                if (this.sendToScreen) {
+                    this.sendToPreviousModule.next('installers');
+                    return;
+                }
+                if ( this.configuration.service && this.configuration.service.id === 2) {
+                    // this.showPreviousButton = false;
+                    this.onPreviousStepClick.next('services');
+                } else {
+                    this.onPreviousStepClick.next('connections');
+                }
+            } else {
+                this.showPreviousButton = true;
+            }
         }
         this.handleButtonState();
     }
 
-    handleNextClick() {
-        if (this.validateScreenData()) {
-            this.currentScreen = this.getNextStep();
+    handleConfirmAddClick(event) {
+        this.showConfirmModal = Object.assign({}, {
+            enable: false,
+        });
+        if (event) {
+            this.handleNextClick(true);
+        }
+    }
+
+    handleNextClick(pass ?: boolean) {
+        if (!pass && this.currentScreen === 'equipments') {
+            this.createEquipment();
+            return;
+        }
+        if (this.getNextStep() === 'ctType') {
+            this.getCtTypes();
+        }
+        if (this.getNextStep() === 'ctSetup') {
+            this.getCtSetups();
+        }
+        if (this.getNextStep() === 'ctPhases') {
+            this.getCtLinePhases();
+        }
+        if (this.validateScreenData(true)) {
             this.isNextEnabled = false;
             if (this.configurationDone) {
-                this.handleDoneClick();
+                this.updateConfiguration();
+                //this.handleDoneClick();
                 return;
             }
-            if (this.allScreens.indexOf(this.currentScreen) === this.allScreens.length - 1) {
-                this.configurationDone = true;
+            if (this.currentScreen === 'ctPhases') {
+                if (this.formData['phase'] && this.formData['phase'].type <= this.phasesCount) {
+                    this.configurationDone = true;
+                } else {
+                    this.countPhases();
+                    this.currentScreen = 'ctSetup';
+                    this.getCtSetups();
+                    this.formData['ctSetup'] = this.formData['ctPhase'] = null;
+                }
+            } else {
+                if (this.currentScreen === 'ctSetup' && this.formData['phase'] && this.formData['phase'].type <= this.phasesCount) {
+                    this.configurationDone = true;
+                }
+                this.currentScreen = this.getNextStep();
             }
             this.showPreviousButton = this.isPreviousEnabled = true;
         }
@@ -383,10 +649,18 @@ export class ConfigurationComponent implements OnInit {
         this.currentScreen = 'configure';
         this.configurations = [...this.configurations, this.formData];
         this.formData = {};
-        this.configurationDone = false;
-        this.showPreviousButton = false;
+        this.configurationDone = this.configuringEquipment = false;
         this.showDoneBtn = true;
+        this.configuringEquipmentError = '';
+        this.phasesCount = 1;
+        this.selectedCtPhases = this.selectedCtSetups = [];
+        this.getConfiguredItems();
     };
+
+    handleAddEquipment(event) {
+        this.currentScreen = 'equipments';
+        this.getEquipmentTypes();
+    }
 
     handleAddConfiguration(event) {
         this.currentScreen = 'devices';
@@ -399,6 +673,3 @@ export class ConfigurationComponent implements OnInit {
         this.onPreviousScreenClick.next('stores');
     }
 }
-
-
-

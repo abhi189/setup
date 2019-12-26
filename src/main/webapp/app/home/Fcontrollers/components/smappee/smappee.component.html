@@ -1,0 +1,19 @@
+<div class="controllers-container">
+    <div class="header">Select Facility Controller to configure</div>
+    <div *ngIf="loading" class="loading">
+            <div class="loader"></div>
+    </div>
+    <div *ngIf="!loading && controllers.length" class="controllers-list">
+        <div class="controllers-list-item" 
+            *ngFor="let controller of controllers;" 
+            [ngClass]="{'selected': controllerSelected && controller.id === controllerSelected.id}"
+            (click)=setSelectedController(controller)
+        >
+            <div>{{controller.name}}</div>
+            <div class="external-id">{{controller.externalId || '-' }}</div>
+        </div>
+    </div>
+    <div class="alert alert-primary" *ngIf="!loading && !controllers.length">
+        Please configure atleast One Facility Controller to configure Smappee
+    </div>
+</div>

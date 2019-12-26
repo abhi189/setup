@@ -1,12 +1,17 @@
 <div class="ctPhases-container">
         <div class="header">Which phase is measured with this CT?</div>
+        <div *ngIf="loading" class="loading-wrapper">
+            <div class="loading">
+                <div class="loader"></div>
+            </div>
+        </div>
         <div class="ctPhases-list">
             <div class="ctPhases-list-item" 
                 *ngFor="let ctPhase of ctPhase" 
-                [ngClass]="{'selected': ctPhaseSelected && ctPhase.id === ctPhaseSelected.id}"
+                [ngClass]="{'selected': ctPhaseSelected && ctPhase.code === ctPhaseSelected.code}"
                 (click)=setSelectedctPhase(ctPhase)
             >
-                <div class="connection-type">{{ctPhase.type}}</div>
+                <div class="connection-type">{{ctPhase.name}}</div>
             </div>
         </div>
     </div>

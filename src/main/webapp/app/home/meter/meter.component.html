@@ -1,20 +1,23 @@
 
 <main>
-        <!-- <div *ngIf="currentScreen !== 'configure'">  
-        <section class="content-container" [ngSwitch]="currentScreen" > -->
-        <!-- </section>
-        </div> -->
-            
-        <div *ngIf="currentScreen === 'configure'" [ngSwitch]="currentScreen">
-            <jhi-location-configure
-                [configuration]="formData"
-                (onItemSelected)="handleItemSelected($event)"
-                (onPreviousScreenClick)="handlePreviousScreenClick($event)"
-            ></jhi-location-configure>
-        </div>
+    <!-- <div *ngIf="currentScreen !== 'configure'">  
+    <section class="content-container" [ngSwitch]="currentScreen" > -->
+    <!-- </section>
+    </div> -->
+        
+    <div *ngIf="currentScreen === 'configure'" [ngSwitch]="currentScreen">
+        <jhi-location-configure
+            [configuration]="formData"
+            [sendToScreen]="sendToScreen"
+            (sendToPreviousModule)="sendToPreviousModule($event)"
+            (onItemSelected)="handleItemSelected($event)"
+            (onPreviousScreenClick)="handlePreviousScreenClick($event)"
+            (onPreviousStepClick)="handlePreviousStepClick($event)"
+        ></jhi-location-configure>
+    </div>
 
-        <div class="content-container" *ngIf="currentScreen !== 'configure'">       
-        <section [ngSwitch]="currentScreen">
+    <div *ngIf="currentScreen !== 'configure'">       
+        <section  class="content-container"  [ngSwitch]="currentScreen">
             <jhi-configure-services
                 *ngSwitchDefault
                 [services]="data.services"
@@ -27,7 +30,7 @@
                 [connectionSelected]="formData.connection"
                 (onItemSelected)="handleItemSelected($event)"
             ></jhi-configure-connections>
-            
+        </section>
         <div class="action-bar">
             <button [hidden]="!showPreviousButton" class="btn previous" 
                 [disabled]="!isPreviousEnabled"
@@ -38,4 +41,6 @@
                 (click)="handleNextClick()"
             >{{configurationDone ? 'Done' : 'Next'}}</button>
         </div>
-        
+    </div>
+</main>
+    

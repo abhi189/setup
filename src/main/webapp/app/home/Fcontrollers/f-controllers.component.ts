@@ -3,8 +3,8 @@ import { SettingsService } from '../settings/settings.service';
 import { forkJoin } from 'rxjs';
 
 @Component({
-    templateUrl: './Fcontrollers.component.html',
-    styleUrls: ['./Fcontrollers.component.scss'],
+    templateUrl: './f-controllers.component.html',
+    styleUrls: ['./f-controllers.component.scss'],
     selector: 'jhi-controllers-config',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -13,6 +13,7 @@ export class FcontrollersComponent implements OnInit {
     public steps: any = {
         installers: '',
         controllers: '',
+        smappee: '',
         fcs: '',
         configure: ''
     };
@@ -86,11 +87,11 @@ export class FcontrollersComponent implements OnInit {
         devices: [
             {
                 id: 1,
-                type: 'HVAC Unit 1'
+                type: 'HVAC'
             },
             {
                 id: 2,
-                type: 'HVAC Unit 2'
+                type: 'Freezer'
             },
             {
                 id: 3,
@@ -110,27 +111,27 @@ export class FcontrollersComponent implements OnInit {
             },
             {
                 id: 7,
-                type: 'HVAC Unit 1'
+                type: 'Exhaust'
             },
             {
                 id: 8,
-                type: 'HVAC Unit 2'
+                type: 'Lighting'
             },
             {
                 id: 9,
-                type: 'Main'
+                type: 'WaterHeater'
             },
             {
                 id: 10,
-                type: 'Cooler'
+                type: 'HeatPump'
             },
             {
                 id: 11,
-                type: 'Bread Oven'
+                type: 'PowerSoakStation'
             },
             {
                 id: 12,
-                type: 'Speed Oven'
+                type: 'POS'
             }
         ],
         phases: [
@@ -207,15 +208,26 @@ export class FcontrollersComponent implements OnInit {
     public apiControllers: Array<any> = [];
     public apiControllersByCode: any = {};
     public showError: boolean;
+    public deleteError: boolean;
     public deleteController: boolean;
     public selectedController: any;
     public showConfirmDelete: boolean;
+    public sendToScreen: string;
+    public selectedConf: any = {};
+    public loadingControllers: boolean;
+    public smappeeControllers: any = [];
 
     constructor(private settingsService: SettingsService, private cd: ChangeDetectorRef) {}
 
     ngOnInit(): void {
         this.showNextButton = this.showPreviousButton = this.isPreviousEnabled = true;
         this.allScreens = Object.keys(this.steps);
+        this.currentScreen = this.allScreens[0];
+        this.formData['controller'] = undefined;
+        this.formData = {
+            ...this.configuration,
+            ...this.formData
+        }
         this.getConfiguredEquipmentsAndUnconfigured();
     }
 
@@ -235,11 +247,13 @@ export class FcontrollersComponent implements OnInit {
             err => {
                 this.loadingEquipment = false;
                 this.showError = true;
+                this.cd.detectChanges();
             }
         );
     }
 
     constructControllers(controllers): void {
+        this.isNextEnabled = false;
         this.fcontrollers = Array.prototype.slice.call(controllers);
         this.cd.detectChanges();
     }
@@ -262,8 +276,8 @@ export class FcontrollersComponent implements OnInit {
         if (currentScreenIndex < this.allScreens.length - 1) {
             currentScreenIndex = currentScreenIndex + 1;
         }
-        if (this.currentScreen === 'controllers' && this.formData.controller.id === 1) {
-            // currentScreenIndex += 1;
+        if (this.currentScreen === 'controllers' && (this.formData.controller && this.formData.controller.code !== 'SMAPPEE')) {
+            currentScreenIndex += 1;
         }
         return this.allScreens[currentScreenIndex];
     }
@@ -274,7 +288,7 @@ export class FcontrollersComponent implements OnInit {
         if (currentScreenIndex > 0) {
             currentScreenIndex = currentScreenIndex - 1;
         }
-        if (this.currentScreen === 'configure' && this.formData.service.id === 1) {
+        if (this.currentScreen === 'fcs' && (this.formData.controller && this.formData.controller.code !== 'SMAPPEE')) {
             currentScreenIndex -= 1;
         }
         return this.allScreens[currentScreenIndex];
@@ -293,6 +307,7 @@ export class FcontrollersComponent implements OnInit {
     }
 
     handleButtonState() {
+        this.sendToScreen = undefined;
         if (this.validateScreenData()) {
             this.isNextEnabled = true;
         } else {
@@ -320,6 +335,12 @@ export class FcontrollersComponent implements OnInit {
                 }
                 break;
             }
+            case 'smappee': {
+                if (this.formData['smappeeController']) {
+                    return true;
+                }
+                break;
+            }
             default:
                 return true;
         }
@@ -342,6 +363,11 @@ export class FcontrollersComponent implements OnInit {
         const { controller } = this.formData;
 
         this.createFcError = false;
+        if (this.selectedConf && this.currentScreen === 'installers') {
+            this.sendToScreen = this.currentScreen =  'configure';
+            this.selectedConf = {}
+            return;
+        }
         if (this.validateScreenData()) {
             const currentScreen = this.getNextStep();
 
@@ -354,7 +380,11 @@ export class FcontrollersComponent implements OnInit {
                 this.handleCreateFcController('installers');
                 return;
             }
-            if (controller.code === 'SMAPPEE' && this.allScreens.indexOf(currentScreen) === this.allScreens.length - 1) {
+            if (controller.code === 'SMAPPEE' && currentScreen === 'smappee') {
+                this.getSmappeeControllers();
+                return;
+            }
+            if (controller.code === 'SMAPPEE' && this.formData['smappeeController'] && this.formData['external_id']) {
                 this.handleCreateFcController('configure');
                 return;
             }
@@ -362,6 +392,33 @@ export class FcontrollersComponent implements OnInit {
             this.showPreviousButton = this.isPreviousEnabled = true;
         }
         this.handleButtonState();
+    }
+
+    addDevices(smapee) {
+        if (smapee.inventoryItemTypeCode === 'SMAPPEE') {
+            this.selectedConf = smapee;
+            this.formData['controller'] = smapee;
+            this.isNextEnabled = true;
+        }
+    }
+
+    onSendToPreviousModule(screen) {
+        this.currentScreen = screen;
+        this.getConfiguredEquipmentsAndUnconfigured();
+    }
+
+    getSmappeeControllers() {
+        this.currentScreen = 'smappee';
+        this.loadingControllers = true;
+        this.settingsService.getFcControllersBySmappee(this.configuration.store.id, this.apiControllersByCode['FACILITY_CONTROLLER_MHA'].id)
+        .subscribe(res => {
+            this.loadingControllers = false;
+            this.smappeeControllers = res.body;
+            this.cd.detectChanges();
+        }, err => {
+            this.loadingControllers = false;
+            this.cd.detectChanges();
+        })
     }
 
     handleCreateFcController(nextScreen): void {
@@ -376,10 +433,13 @@ export class FcontrollersComponent implements OnInit {
         this.createFcError = false;
         this.settingsService.createFCController(payload).subscribe(
             res => {
+               
                 this.currentScreen = nextScreen;
                 if (this.currentScreen === 'installers') {
+                    this.formData['controller'] = undefined;
                     this.getConfiguredEquipmentsAndUnconfigured();
                 }
+                this.formData['createdFc'] = res;
                 this.cd.detectChanges();
             },
             err => {
@@ -392,6 +452,7 @@ export class FcontrollersComponent implements OnInit {
     deleteFcController(controller) {
         this.selectedController = controller;
         this.showConfirmDelete = true;
+        this.deleteError = false;
     }
 
     cancelDelete() {
@@ -402,19 +463,30 @@ export class FcontrollersComponent implements OnInit {
     continueDelete() {
         if (!this.selectedController) return;
         this.deleteController = true;
+        this.deleteError = false;
         this.settingsService.deleteFCController(this.selectedController.id).subscribe(
             res => {
+                this.showConfirmDelete = false;
                 this.deleteController = false;
+                this.getConfiguredEquipmentsAndUnconfigured()
+                this.cd.detectChanges();
             },
             err => {
+                this.showConfirmDelete = true;
                 this.deleteController = false;
+                this.deleteError = true;
+                this.cd.detectChanges(); 
             }
         );
     }
 
     handleControllerPreviousClick(event) {
-        console.log('Event: ', event);
         this.currentScreen = 'installers';
+        this.getConfiguredEquipmentsAndUnconfigured()
+    }
+
+    handlePreviousStepClick(event) {
+        this.currentScreen = 'fcs';
     }
 
     handleDoneClick = () => {

@@ -23,8 +23,12 @@
     width: 100%;
     position: relative;
     overflow: hidden;
+    overflow-y: auto;
     max-width: 720px;
     margin: 0 auto;
+}
+main {
+    position: relative;
 }
 .modal-open {
     position: fixed;
@@ -39,12 +43,21 @@
     position: fixed;
     width: 300px;
     padding: 20px;
-    height: 300px;
-    z-index: 2;
+    height: 268px;
+    border-radius: 5px;
+    z-index: 9;
     text-align: center;
     top: 50%;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     left: 50%;
     transform: translate(-50%, -50%);
+    h2 {
+        font-size: 20px;
+        margin-bottom: 24px;
+    }
 }
 .configure-container {
     padding: 30px 20px;
@@ -91,11 +104,27 @@ h4 {
         font-weight: 500;
         border-radius: 4px;
         margin-bottom: 10px;
+        position: relative;
+        border: 2px solid transparent;
+        &.selected {
+            border: 2px solid #009688;
+        }
+        .btn {
+            position: absolute;
+            bottom: -6px;
+            right: -14px;
+            font-size: 12px;
+            letter-spacing: 1px;
+            &.add {
+                top: 5px;
+                bottom: unset;
+            }
+        }
     }
 }
 
-.red {
-    color: #b22222;
+.green {
+    color: #14653b;
 }
 .action-bar {
     height: 80px;

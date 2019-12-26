@@ -1,4 +1,4 @@
-.devices-container {
+.controllers-container {
     padding: 30px 20px;
     display: flex;
     flex-direction: column;
@@ -9,40 +9,23 @@
         line-height: 1.4em;
         margin-bottom: 24px;
     }
-    .configure-add {
-        flex: 1;
-        justify-content: center;
-        flex-direction: column;
+    .loading {
+        min-height: 200px;
+        width: 100%;
         display: flex;
         align-items: center;
-        div {
-            cursor: pointer;
-            &:first-child {
-                font-size: 50px;
-                color: #fff;
-                line-height: 50px;
-                text-align: center;
-                width: 60px;
-                height: 60px;
-                border-radius: 50%;
-                background: #14653b;
-            }
-            &:last-child {
-                font-size: 14px;
-                font-weight: bold;
-                color: rgba(0, 0, 0, 0.8);
-                margin-top: 12px;
-            }
-        }
+        justify-content: center;
     }
-    hr {
-        
+    .external-id{
+        color: #14653b;
+        font-size: 14px;
+        padding: 0.4rem;
     }
-    .devices-list {
+    .controllers-list {
         display: flex;
         flex: 1;
         flex-direction: column;
-        .devices-list-item {
+        .controllers-list-item {
             position: relative;
             background: rgba(255, 255, 255, 0.9);
             margin: 10px;
@@ -52,8 +35,9 @@
             border: 2px solid transparent;
             box-shadow: 0px 4px 2px 0px rgba(0, 0, 0, 0.05);
             display: flex;
-            align-items: center;
-            .service-image {
+            flex-direction: column;
+            justify-content: flex-start;
+            .controller-image {
                 width: 100px;
                 margin-right: 10px;
             }
@@ -69,15 +53,15 @@
                 transform: scale(1.02);
                 cursor: pointer;
             }
-            .device-id {
+            .controller-id {
                 color: rgba(0, 0, 0, 0.8);
             }
-            .device-address {
+            .controller-address {
                 font-weight: normal;
                 margin: 10px 0;
                 color: rgba(0, 0, 0, 0.8);
             }
-            .device-status {
+            .controller-status {
                 position: absolute;
                 right: 10px;
                 width: 50px;
