@@ -46,7 +46,7 @@ export class SettingsService {
     }
 
     createServiceType(connection = 'DELTA', payload, service): Observable<any> {
-        return this.http.post(`/inventory/api/inventory-items/installer/location/service-type/${service}/connection-type/${connection}`, payload)
+        return this.http.post(`/inventory/api/inventory-items/installer/location/service-type/${service}/connection-type/${connection}`, payload);
     }
 
     getLoadedConfigurations(smappeeId): Observable<HttpResponse<any>> {
@@ -54,7 +54,7 @@ export class SettingsService {
     }
 
     deleteConfiguredItem(item): Observable<any> {
-        return this.http.delete(`${SERVER_API_URL}/inventory/api/load-configuration/${item.id}`)
+        return this.http.delete(`${SERVER_API_URL}/inventory/api/load-configuration/${item.id}`, { observe : 'response' });
     }
 
     getCtTypes(): Observable<HttpResponse<any>> {
@@ -70,6 +70,6 @@ export class SettingsService {
     }
 
     updateConfiguration(payload): Observable<any> {
-        return this.http.post(`${SERVER_API_URL}/inventory/api/load-configuration/`, payload)
+        return this.http.post(`${SERVER_API_URL}/inventory/api/load-configuration/`, payload);
     }
 }

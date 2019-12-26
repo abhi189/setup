@@ -16,6 +16,7 @@ export class SettingsComponent implements OnInit {
     public isNextEnabled: boolean;
     public isPreviousEnabled: boolean;
     public formData: any = {};
+    public loading: boolean;
     public storeSelected: any = {};
     public configurationDone: boolean;
     public showError: boolean;

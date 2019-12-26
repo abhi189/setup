@@ -36,6 +36,6 @@ export class Stores implements OnInit, OnChanges {
     }
 
     refreshStores() {
-        this.onRefreshStores.next()
+        this.onRefreshStores.next();
     }
 }

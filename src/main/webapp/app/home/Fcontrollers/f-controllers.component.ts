@@ -227,7 +227,7 @@ export class FcontrollersComponent implements OnInit {
         this.formData = {
             ...this.configuration,
             ...this.formData
-        }
+        };
         this.getConfiguredEquipmentsAndUnconfigured();
     }
 
@@ -365,7 +365,7 @@ export class FcontrollersComponent implements OnInit {
         this.createFcError = false;
         if (this.selectedConf && this.currentScreen === 'installers') {
             this.sendToScreen = this.currentScreen =  'configure';
-            this.selectedConf = {}
+            this.selectedConf = {};
             return;
         }
         if (this.validateScreenData()) {
@@ -418,7 +418,7 @@ export class FcontrollersComponent implements OnInit {
         }, err => {
             this.loadingControllers = false;
             this.cd.detectChanges();
-        })
+        });
     }
 
     handleCreateFcController(nextScreen): void {
@@ -433,7 +433,6 @@ export class FcontrollersComponent implements OnInit {
         this.createFcError = false;
         this.settingsService.createFCController(payload).subscribe(
             res => {
-               
                 this.currentScreen = nextScreen;
                 if (this.currentScreen === 'installers') {
                     this.formData['controller'] = undefined;
@@ -468,21 +467,21 @@ export class FcontrollersComponent implements OnInit {
             res => {
                 this.showConfirmDelete = false;
                 this.deleteController = false;
-                this.getConfiguredEquipmentsAndUnconfigured()
+                this.getConfiguredEquipmentsAndUnconfigured();
                 this.cd.detectChanges();
             },
             err => {
                 this.showConfirmDelete = true;
                 this.deleteController = false;
                 this.deleteError = true;
-                this.cd.detectChanges(); 
+                this.cd.detectChanges();
             }
         );
     }
 
     handleControllerPreviousClick(event) {
         this.currentScreen = 'installers';
-        this.getConfiguredEquipmentsAndUnconfigured()
+        this.getConfiguredEquipmentsAndUnconfigured();
     }
 
     handlePreviousStepClick(event) {
