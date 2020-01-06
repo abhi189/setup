@@ -26,6 +26,9 @@ export class FcontrollersComponent implements OnInit {
     public formData: any = {};
     public controllersConfigured: boolean;
     public createFcError: boolean;
+    public idAlreadyExist: boolean;
+    public macAddressNotFound: boolean;
+    public incorrectMacAddressFormat: boolean;
     @Input() macAddress: string;
     @Input() configuration: any;
     @Output() onPreviousScreenClick = new EventEmitter();
@@ -348,6 +351,9 @@ export class FcontrollersComponent implements OnInit {
 
     handlePreviousClick() {
         this.createFcError = false;
+        this.macAddressNotFound = false;
+        this.incorrectMacAddressFormat = false;
+        this.idAlreadyExist = false;
         if (!this.currentScreen || this.allScreens.indexOf(this.currentScreen) === 0) {
             this.onPreviousScreenClick.next();
         } else {
@@ -363,8 +369,11 @@ export class FcontrollersComponent implements OnInit {
         const { controller } = this.formData;
 
         this.createFcError = false;
+        this.macAddressNotFound = false;
+        this.incorrectMacAddressFormat = false;
+        this.idAlreadyExist = false;
         if (this.selectedConf && this.currentScreen === 'installers') {
-            this.sendToScreen = this.currentScreen =  'configure';
+            this.sendToScreen = this.currentScreen = 'configure';
             this.selectedConf = {};
             return;
         }
@@ -410,15 +419,19 @@ export class FcontrollersComponent implements OnInit {
     getSmappeeControllers() {
         this.currentScreen = 'smappee';
         this.loadingControllers = true;
-        this.settingsService.getFcControllersBySmappee(this.configuration.store.id, this.apiControllersByCode['FACILITY_CONTROLLER_MHA'].id)
-        .subscribe(res => {
-            this.loadingControllers = false;
-            this.smappeeControllers = res.body;
-            this.cd.detectChanges();
-        }, err => {
-            this.loadingControllers = false;
-            this.cd.detectChanges();
-        });
+        this.settingsService
+            .getFcControllersBySmappee(this.configuration.store.id, this.apiControllersByCode['FACILITY_CONTROLLER_MHA'].id)
+            .subscribe(
+                res => {
+                    this.loadingControllers = false;
+                    this.smappeeControllers = res.body;
+                    this.cd.detectChanges();
+                },
+                err => {
+                    this.loadingControllers = false;
+                    this.cd.detectChanges();
+                }
+            );
     }
 
     handleCreateFcController(nextScreen): void {
@@ -431,6 +444,9 @@ export class FcontrollersComponent implements OnInit {
         };
 
         this.createFcError = false;
+        this.macAddressNotFound = false;
+        this.idAlreadyExist = false;
+        this.incorrectMacAddressFormat = false;
         this.settingsService.createFCController(payload).subscribe(
             res => {
                 this.currentScreen = nextScreen;
@@ -442,7 +458,7 @@ export class FcontrollersComponent implements OnInit {
                 this.cd.detectChanges();
             },
             err => {
-                this.createFcError = true;
+                this.onError(err);
                 this.cd.detectChanges();
             }
         );
@@ -498,5 +514,19 @@ export class FcontrollersComponent implements OnInit {
     handleAddConfiguration(event) {
         this.currentScreen = 'controllers';
         event.stopPropagation();
+    }
+
+    private onError(error) {
+        const detail = error.error.detail;
+        const message = error.error.message;
+        if (message === 'mac.address.fc.not.found') {
+            this.macAddressNotFound = true;
+        } else if (message === 'mac.address.fc.incorrect.format') {
+            this.incorrectMacAddressFormat = true;
+        } else if (message === 'inventoryitem.with.externalid.already.exists' || detail.includes('query did not return a unique result')) {
+            this.idAlreadyExist = true;
+        } else {
+            this.createFcError = true;
+        }
     }
 }

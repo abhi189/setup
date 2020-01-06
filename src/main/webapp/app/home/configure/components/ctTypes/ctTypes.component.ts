@@ -9,6 +9,8 @@ import { Component, Input, Output, EventEmitter, OnInit, OnChanges, ChangeDetect
 export class Cttypes implements OnInit, OnChanges {
     @Input() ctTypes: Array<any>;
     @Input() ctTypeSelected: any = {};
+    @Input() loading: boolean;
+    @Input() showError: boolean;
     @Output() onItemSelected = new EventEmitter();
 
     constructor() {}

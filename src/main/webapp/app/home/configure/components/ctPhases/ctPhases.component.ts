@@ -10,6 +10,7 @@ export class CtPhase implements OnChanges {
     @Input() ctPhase: Array<any>;
     @Input() ctPhaseSelected: any = {};
     @Input() loading: boolean;
+    @Input() showError: boolean;
     @Output() onItemSelected = new EventEmitter();
 
     constructor() {}

@@ -17,6 +17,7 @@ export class SettingsComponent implements OnInit {
     public isPreviousEnabled: boolean;
     public formData: any = {};
     public loading: boolean;
+    public budderflyId: string;
     public storeSelected: any = {};
     public configurationDone: boolean;
     public showError: boolean;
@@ -87,21 +88,27 @@ export class SettingsComponent implements OnInit {
         this.currentScreen = 'location';
         this.showNextButton = true;
         this.allScreens = this.currentScreen === 'controllers' ? Object.keys(this.steps.controllers) : Object.keys(this.steps);
-        this.getStores();
+        this.getBudderflyId();
     }
 
     async getAccountDetails() {
         const account = await  this.accountService.identity(true).then(account => account);
     }
 
-    async getStores() {
-        const account = await  this.accountService.identity(true).then(account => account);
+    async getBudderflyId() {
         this.loadingStores = true;
         this.showError = false;
-        this.settingsService.getStores(account.login).subscribe(
+        const account = await  this.accountService.identity(true).then(account => account);
+        this.settingsService.getBudderflyId(account.login).subscribe(
             res => {
-                this.loadingStores = false;
-                this.constructStores(res.body);
+                this.settingsService.getStoreDetailsByIds(res.body)
+                .subscribe(res => {
+                    this.loadingStores = false;
+                    this.constructStores(res.map(res => res.body));
+                }, err => {
+                    this.loadingStores = false;
+                    this.showError = true;
+                });
             },
             err => {
                 this.loadingStores = false;
@@ -109,22 +116,17 @@ export class SettingsComponent implements OnInit {
             }
         );
     }
-
-    handleRefreshStores() {
-        this.getStores();
-    }
-
-    constructStores(stores: any): void {
+    constructStores(stores: any = []): void {
+        if (!stores) return;
         const finalStores = stores.map(store => {
-            const { budderflyId, customerName, address, storeNumber, city, state, zip, online } = store;
+            const { budderflyId, customerName, address, city, state, zip } = store;
             return {
                 id: budderflyId,
                 customerName,
                 address,
                 city,
                 state,
-                zip,
-                online
+                zip
             };
         });
         this.data.stores = Array.prototype.slice.call(finalStores);
@@ -151,6 +153,7 @@ export class SettingsComponent implements OnInit {
     handleBackClick() {
         this.currentScreen = 'location';
         this.showPreviousButton = false;
+        this.getBudderflyId();
     }
 
     getPreviousStep() {

@@ -3,7 +3,6 @@
     <div *ngIf="loading" class="loading">
             <div class="loader"></div>
     </div>
-    <img (click)="refreshStores()" class="refresh-img" src="../../../../../content/images/refresh.png">
     <div *ngIf="!loading && stores.length" class="stores-list">
         <div class="stores-list-item" 
             *ngFor="let store of stores;" 
@@ -13,14 +12,6 @@
             <div class="store-id">{{store.id}}</div>
             <div class="store-address">{{store.address}}</div>
             <div class="store-address">{{store.city}} {{store.state}} {{store.zip}}</div>
-            <div class="store-status">
-                <span *ngIf="store.online">
-                    <img src="../../../../../content/images/online.png" alt="online status" />
-                </span>
-                <span *ngIf="!store.online">
-                    <img src="../../../../../content/images/offline.png" alt="offline status" />
-                </span>
-            </div>
         </div>
     </div>
 </div>

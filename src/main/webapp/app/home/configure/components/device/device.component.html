@@ -20,4 +20,7 @@
         <div class="alert alert-primary" *ngIf="!loading && devices && !devices.length">
                 No Equipments
         </div>
+        <div class="alert alert-danger" *ngIf="showError">
+            Something went wrong! Please Try Again.
+        </div>
     </div>

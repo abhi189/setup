@@ -14,4 +14,7 @@
                 <div class="connection-type">{{ctPhase.name}}</div>
             </div>
         </div>
+        <div class="alert alert-danger" *ngIf="showError">
+            Something went wrong! Please Try Again.
+        </div>
     </div>

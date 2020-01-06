@@ -1,5 +1,8 @@
 <div class="ctTypes-container">
     <div class="header">Select the CT Type</div>
+    <div *ngIf="loading" class="loading">
+        <div class="loader"></div>
+    </div>
     <div class="ctTypes-list">
         <div class="ctTypes-list-item" 
             *ngFor="let ctType of ctTypes" 
@@ -8,5 +11,8 @@
         >
             <div class="connection-type">{{ctType.name}}</div>
         </div>
+    </div>
+    <div class="alert alert-danger" *ngIf="showError">
+        Something went wrong! Please Try Again.
     </div>
 </div>

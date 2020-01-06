@@ -402,6 +402,7 @@ export class ConfigurationComponent implements OnInit {
 
     getCtTypes() {
         this.loadingData = true;
+        this.showError = false;
         this.settingsService.getCtTypes()
         .subscribe(res => {
             this.loadingData = false;
@@ -410,12 +411,14 @@ export class ConfigurationComponent implements OnInit {
             this.cd.detectChanges();
         }, err => {
             this.loadingData = false
+            this.showError = true;
             this.cd.detectChanges();
         })
     }
 
     getCtSetups() {
         this.loadingData = true
+        this.showError = false;
         this.settingsService.getCtSetups()
         .subscribe(res => {
             this.loadingData = false;
@@ -425,13 +428,15 @@ export class ConfigurationComponent implements OnInit {
             this.updateCtSetups(ctSetup);
             this.cd.detectChanges();
         }, err => {
-            this.loadingData = false
+            this.loadingData = false;
+            this.showError = true;
             this.cd.detectChanges();
         })
     }
 
     getCtLinePhases() {
         this.loadingData = true;
+        this.showError = false;
         this.settingsService.getCtLinePhasess()
         .subscribe(res => {
             this.loadingData = false;
@@ -441,12 +446,14 @@ export class ConfigurationComponent implements OnInit {
             this.cd.detectChanges();
         }, err => {
             this.loadingData = false;
+            this.showError = true;
             this.cd.detectChanges();
         })
     }
 
     getEquipments(){
         this.loadingEquipment = true
+        this.showError = false;
         this.settingsService.getEquipments(this.configuration.store.id).subscribe(
             res => {
                 this.loadingEquipment = false;

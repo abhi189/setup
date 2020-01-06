@@ -46,7 +46,7 @@
                 [fcs]="data.fcs"
                 [fcSelected]="formData.fc"
                 [formData]="formData"
-                [errorMessage]="createFcError ? 'Something went wrong.' : ''"
+                [errorMessage]="incorrectMacAddressFormat ? 'Invalid Format' : macAddressNotFound ? 'ID Does Not Exist': idAlreadyExist ? 'Device Already Installed' : createFcError ? 'Something Went Wrong' :''"
                 (onItemSelected)="handleItemSelected($event)"
             ></jhi-location-fc>
             <div *ngSwitchDefault class="configure-container">
@@ -58,7 +58,7 @@
                 </div>
                 <h4>Installed Budderfly Devices</h4>
                 <div *ngIf="!fcontrollers.length && !showError" class="config-list" class="alert alert-primary">
-                    Currently No Budderfly Devices Configured
+                    Currently No Budderfly Devices
                 </div>
                 <div *ngIf="loadingEquipment" class="loading">
                     <div class="loader"></div>

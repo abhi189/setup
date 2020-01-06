@@ -10,6 +10,7 @@ export class Devices implements OnChanges, OnInit {
     @Input() devices: Array<any> = [];
     @Input() deviceSelected: any = {};
     @Input() loading: boolean;
+    @Input() showError: boolean;
     @Output() onItemSelected = new EventEmitter();
     @Output() onAddEqupmentClicked = new EventEmitter();
     @Output() onDeviceComponentLoaded = new EventEmitter();

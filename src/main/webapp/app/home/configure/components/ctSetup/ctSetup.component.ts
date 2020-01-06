@@ -9,6 +9,8 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, Simple
 export class CtSetup {
     @Input() ctSetup: Array<any>;
     @Input() ctSetupSelected: any = {};
+    @Input() loading: boolean;
+    @Input() showError: boolean;
     @Output() onItemSelected = new EventEmitter();
 
     constructor() {}

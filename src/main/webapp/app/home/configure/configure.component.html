@@ -6,6 +6,7 @@
             *ngSwitchCase="'devices'"
             [devices]="equipments"
             [loading]="loadingEquipment"
+            [showError]="showError"
             [deviceSelected]="formData.device"
             (onItemSelected)="handleItemSelected($event)"
             (onAddEqupmentClicked)="handleAddEquipment($event)"
@@ -29,18 +30,24 @@
         ></jhi-configure-phases>
         <jhi-configure-ctTypes
             *ngSwitchCase="'ctType'"
+            [loading]="loadingData"
+            [showError]="showError"
             [ctTypes]="data.ctTypes"
             [ctTypeSelected]="formData.ctType"
             (onItemSelected)="handleItemSelected($event)"
         ></jhi-configure-ctTypes>
         <jhi-configure-ctSetup
             *ngSwitchCase="'ctSetup'"
+            [loading]="loadingData"
+            [showError]="showError"
             [ctSetup]="data.ctSetup"
             [ctSetupSelected]="formData.ctSetup"
             (onItemSelected)="handleItemSelected($event)"
         ></jhi-configure-ctSetup>
         <jhi-configure-ctPhase
             *ngSwitchCase="'ctPhases'"
+            [loading]="loadingData"
+            [showError]="showError"
             [ctPhase]="data.ctPhase"
             [ctPhaseSelected]="formData.ctPhase"
             (onItemSelected)="handleItemSelected($event)"
@@ -62,7 +69,7 @@
             </div>
             <div *ngIf="configuringEquipmentError" class="error-modal">
                 <p class="alert alert-danger">Something Went Wrong! Please try Again.</p>
-                <button class="btn btn-danger" (click)="handleDoneClick()">go back</button>
+                <button class="btn btn-danger" (click)="handleDoneClick()">Go Back</button>
             </div>
         </div>
         <div class="configure-container" *ngSwitchDefault>

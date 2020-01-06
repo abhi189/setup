@@ -1,5 +1,8 @@
 <div class="ctSetups-container">
     <div class="header">CT Setup</div>
+    <div *ngIf="loading" class="loading">
+        <div class="loader"></div>
+    </div>
     <div class="ctSetups-list">
         <div class="ctSetups-list-item" 
             *ngFor="let ctSetup of ctSetup" 
@@ -8,5 +11,8 @@
         >
             <div class="connection-type">{{ctSetup.name}}</div>
         </div>
+    </div>
+    <div class="alert alert-danger" *ngIf="showError">
+        Something went wrong! Please Try Again.
     </div>
 </div>

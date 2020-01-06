@@ -33,7 +33,6 @@
                 [loading]="loadingStores"
                 [storeSelected]="formData.store"
                 (onItemSelected)="handleItemSelected($event)"
-                (onRefreshStores)="handleRefreshStores()"
             ></jhi-location-stores>
             <div class="alert alert-danger" *ngIf="showError">Something went wrong. Please try again later.</div>
         </section>
