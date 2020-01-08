@@ -4,7 +4,7 @@ import { BrowserMultiFormatReader } from '@zxing/library';
 @Component({
     templateUrl: './fc.component.html',
     styleUrls: ['./fc.component.scss'],
-    selector: 'jhi-location-fc',
+    selector: 'jhi-location-fc'
 })
 export class Fcs implements OnInit {
     @Input() fcs: Array<any>;
@@ -18,7 +18,7 @@ export class Fcs implements OnInit {
     public macAddress: string = '';
     public fcController: boolean;
     public ncController: boolean;
-    public showScanner: boolean;    
+    public showScanner: boolean;
     public timeout: any;
 
     constructor(private cd: ChangeDetectorRef) {
@@ -48,7 +48,7 @@ export class Fcs implements OnInit {
         }
         this.timeout = setTimeout(() => {
             this.startReading(type);
-        }, 0)
+        }, 0);
     }
 
     startReading(type): void {
@@ -62,15 +62,26 @@ export class Fcs implements OnInit {
 
     scanDocument(devices: any = [], type): void {
         const firstDeviceId = devices.length ? devices[0].deviceId : undefined;
+        let resultValue = undefined;
         this.codeReader
             .decodeFromInputVideoDevice(firstDeviceId, 'video')
             .then(result => {
                 this.macAddress = result.text;
                 this.stopScanning();
-                this.onItemSelected.next({ name: 'external_id', value: result.text})
+                if (result && result.text) {
+                    resultValue = this.removeText(result.text);
+                }
+                this.onItemSelected.next({ name: 'external_id', value: resultValue });
                 this.cd.detectChanges();
             })
             .catch(err => console.error(err));
+    }
+
+    removeText(text: string) {
+        if (text.split(':').length > 1) {
+            return text.split(':')[1];
+        }
+        return text.split(':')[0];
     }
 
     stopScanning(): void {
