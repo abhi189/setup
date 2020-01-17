@@ -2,12 +2,12 @@
     <nav class="navbar">
         <div class="nav-item logo">
             <span >
-            <img (click)="handleBackClick()" class="" src="https://d3rbhwp8vebia6.cloudfront.net/img/Budderfly-logo-dark-large-300x138.png" alt="budderfly installer logo" />
+            <img (click)="handleBackClick()" class="" src="{{imageUrl}}img/Budderfly-logo-dark-large-300x138.png" alt="budderfly installer logo" />
             </span>
         </div>
         <div class="nav-item">
             <button class="btn-logout" (click)="handleLogout()">
-                <img src="../../../content/images/logout.png" alt="Installer Web logout" />
+                <img src="{{imageUrl}}installersetupweb/logout.png" alt="Installer Web logout" />
             </button>
         </div>
     </nav>

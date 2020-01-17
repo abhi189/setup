@@ -2,12 +2,19 @@
     padding: 30px 20px;
     display: flex;
     flex-direction: column;
-    .header {
+    .header1 {
         color: rgba(0, 0, 0, 0.8);
-        font-size: 1.2em;
+        font-size: 1.25em;
         font-weight: 600;
         line-height: 1.4em;
-        margin-bottom: 24px;
+        margin-bottom: 9px;
+    }
+    .header2 {
+        color: rgba(0, 0, 0, 0.8);
+        font-size: 1.0em;
+        font-weight: 600;
+        line-height: 1.4em;
+        margin-bottom: 0px;
     }
     .configure-add {
         flex: 1;
@@ -15,6 +22,7 @@
         flex-direction: column;
         display: flex;
         align-items: center;
+        margin-top: 11px;
         div {
             cursor: pointer;
             &:first-child {
@@ -53,6 +61,24 @@
             .service-image {
                 width: 100px;
                 margin-right: 10px;
+            }
+            .connection-type {
+                position: absolute;
+                top: 7px;
+            }
+            .device-name {
+                position: absolute;
+                bottom: 5px;
+                left: 67px;
+            }
+            .uniqueIdentifier {
+                position: absolute;
+                bottom: 21px;
+                font-weight: 600;
+            }
+            .externalId {
+                color: green;
+                font-weight: 600;
             }
             &.selected {
                 border: 2px solid #68c721;

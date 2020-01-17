@@ -1,5 +1,5 @@
 <div class="controllers-container">
-    <div class="header">Select Equipment Type to Add</div>
+    <div class="header">What equipment is connected to this load ?</div>
     <div *ngIf="loading" class="loading">
             <div class="loader"></div>
     </div>
@@ -20,7 +20,7 @@
         <div class="content">
             <h3 *ngIf="creatingEquipment">Adding New Equipment</h3>
             <h5 *ngIf="!creatingEquipment && !equipment.name" class="alert alert-danger">{{equipment}}</h5>
-            <h5 *ngIf="!creatingEquipment && equipment.name"><span class="equipment">{{equipment.name}}</span> has been successfully created. Please label the equipment with <span class="equipment">[{{equipment.name}}]</span> for future reference.</h5>
+            <h5 *ngIf="!creatingEquipment && equipment.name">Please label the breaker with <span class="equipment">[{{equipment.name}}]</span> for future reference.</h5>
             <div *ngIf="creatingEquipment" class="loading">
                 <div class="loader"></div>
             </div>

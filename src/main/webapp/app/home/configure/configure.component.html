@@ -75,10 +75,10 @@
         <div class="configure-container" *ngSwitchDefault>
             <div class="configure-add" (click)="handleAddConfiguration($event)">
                 <div>+</div>
-                <div>Add New Configuration</div>
+                <div>Add New Load</div>
             </div>
             <div *ngIf="!configuredItems.length && !showError" class="config-list" class="alert alert-primary">
-                No Devices Configured
+                No Loads Configured 
             </div>
             <div *ngIf="showError" class="alert alert-danger">
                 Something went wrong. Please try again later
@@ -87,11 +87,11 @@
                 <div class="loader"></div>
             </div>
             <div *ngIf="configuredItems.length" class="config-list">
-                <h4>Configured Items</h4>
+                <h4>Configured Loads</h4>
                 <div class="configured-list">
                     <div *ngFor="let conf of configuredItems" class="config-list-item">
                         <strong>{{conf.name}}</strong> <br />configuration is done.
-                        <button (click)="selectedConfiguredItem = conf; showConfirmDelete = true" class="btn"><img src="../../../content/images/trash.png"></button>
+                        <button (click)="selectedConfiguredItem = conf; showConfirmDelete = true" class="btn"><img src="{{imageUrl}}installersetupweb/trash.png"></button>
                     </div>
                 </div>
             </div>

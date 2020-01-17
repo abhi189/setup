@@ -1,5 +1,5 @@
+import { IMAGE_URL } from './../../app.constants';
 import { Phases } from './components/phases/phases.component';
-
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
 import { SettingsService } from '../settings/settings.service';
 
@@ -35,6 +35,7 @@ export class ConfigurationComponent implements OnInit {
     public showConfirmAdd: any = {};
     public loadingControllers:boolean;
     public showError: boolean;
+    public noEquipments: boolean;
     public configurations: any = [];
     public equipmentTypes: Array<any> = [];
     public equipments: Array<any>;
@@ -252,6 +253,8 @@ export class ConfigurationComponent implements OnInit {
         this.getConfiguredItems();
     }
 
+    imageUrl = IMAGE_URL;
+
     getNextStep() {
         let currentScreenIndex = this.allScreens.indexOf(this.currentScreen);
 
@@ -276,7 +279,7 @@ export class ConfigurationComponent implements OnInit {
         if (this.currentScreen === 'configure' && (this.formData.service && this.formData.service.id === 1)) {
             currentScreenIndex -= 1;
         }
-        if (this.currentScreen === 'phases' && !this.formData.equipmentif) {
+        if (this.noEquipments || (this.currentScreen === 'phases' && !this.formData.equipmentId)) {
             currentScreenIndex -= 1;
         }
         return this.allScreens[currentScreenIndex];
@@ -417,9 +420,10 @@ export class ConfigurationComponent implements OnInit {
     }
 
     getCtSetups() {
+        const inventoryId = this.configuration.controller.id
         this.loadingData = true
         this.showError = false;
-        this.settingsService.getCtSetups()
+        this.settingsService.getCtSetups(inventoryId)
         .subscribe(res => {
             this.loadingData = false;
             this.originalCtSetup = res.body || [];
@@ -457,7 +461,13 @@ export class ConfigurationComponent implements OnInit {
         this.settingsService.getEquipments(this.configuration.store.id).subscribe(
             res => {
                 this.loadingEquipment = false;
-                this.equipments = res.body || [];
+                if (res.body && res.body.length === 0) {
+                    this.noEquipments = true;
+                    this.handleAddEquipment('')
+                } else {
+                    this.noEquipments = false;
+                    this.equipments = res.body || [];
+                }
                 this.cd.detectChanges();
             },
             err => {

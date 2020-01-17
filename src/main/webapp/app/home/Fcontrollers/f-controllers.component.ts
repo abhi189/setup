@@ -1,3 +1,4 @@
+import { IMAGE_URL } from './../../app.constants';
 import { Component, Input, Output, EventEmitter, ChangeDetectorRef, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { SettingsService } from '../settings/settings.service';
 import { forkJoin } from 'rxjs';
@@ -32,183 +33,10 @@ export class FcontrollersComponent implements OnInit {
     @Input() macAddress: string;
     @Input() configuration: any;
     @Output() onPreviousScreenClick = new EventEmitter();
-    public data = {
-        stores: [],
-        controllers: [
-            {
-                id: 3,
-                content: 'Facility Controller',
-                imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/FC.png',
-                code: 'FACILITY_CONTROLLER_MHA'
-            },
-            {
-                id: 2,
-                content: 'Network Router',
-                imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/Router.png',
-                code: 'NETWORK_ROUTER'
-            },
-            {
-                id: 1,
-                content: 'Smappee Meter',
-                imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/Smappee.png',
-                code: 'SMAPPEE'
-            }
-        ],
-        fcs: [
-            {
-                id: 1,
-                macAddress: '00:0a:95:9d:68:16',
-                imageUrl: 'http://d3rbhwp8vebia6.cloudfront.net/installersetupweb/FC.png'
-            }
-        ],
-        services: [
-            {
-                id: 1,
-                phase: 5,
-                content: 'Three Phase 120/208 or 277/480',
-                imageUrl: 'https://d3rbhwp8vebia6.cloudfront.net/installersetupweb/Three-phase.png'
-            },
-            {
-                id: 2,
-                phase: 3,
-                content: 'Split Phase 120/240',
-                imageUrl: 'https://d3rbhwp8vebia6.cloudfront.net/installersetupweb/Split-Phase.png'
-            }
-        ],
-        connections: [
-            {
-                id: 1,
-                type: 'WYE',
-                imageUrl: 'https://d3rbhwp8vebia6.cloudfront.net/installersetupweb/wye.png'
-            },
-            {
-                id: 2,
-                type: 'Delta',
-                imageUrl: 'https://d3rbhwp8vebia6.cloudfront.net/installersetupweb/delta.png'
-            }
-        ],
-        devices: [
-            {
-                id: 1,
-                type: 'HVAC'
-            },
-            {
-                id: 2,
-                type: 'Freezer'
-            },
-            {
-                id: 3,
-                type: 'Main'
-            },
-            {
-                id: 4,
-                type: 'Cooler'
-            },
-            {
-                id: 5,
-                type: 'Bread Oven'
-            },
-            {
-                id: 6,
-                type: 'Speed Oven'
-            },
-            {
-                id: 7,
-                type: 'Exhaust'
-            },
-            {
-                id: 8,
-                type: 'Lighting'
-            },
-            {
-                id: 9,
-                type: 'WaterHeater'
-            },
-            {
-                id: 10,
-                type: 'HeatPump'
-            },
-            {
-                id: 11,
-                type: 'PowerSoakStation'
-            },
-            {
-                id: 12,
-                type: 'POS'
-            }
-        ],
-        phases: [
-            {
-                id: 1,
-                type: '1'
-            },
-            {
-                id: 2,
-                type: '2'
-            },
-            {
-                id: 3,
-                type: '3'
-            }
-        ],
-        ctTypes: [
-            {
-                id: 1,
-                type: 'SCT02-T10/50A'
-            },
-            {
-                id: 2,
-                type: 'SCT02-T16/100A'
-            },
-            {
-                id: 3,
-                type: 'SCT02-T24/200A'
-            }
-        ],
-        ctSetup: [
-            {
-                id: 1,
-                type: 'CT Input: A'
-            },
-            {
-                id: 2,
-                type: 'CT Input: B'
-            },
-            {
-                id: 3,
-                type: 'CT Input: C'
-            },
-            {
-                id: 4,
-                type: 'CT Input: D'
-            },
-            {
-                id: 5,
-                type: 'CT Input: E'
-            },
-            {
-                id: 6,
-                type: 'CT Input: F'
-            }
-        ],
-        ctPhase: [
-            {
-                id: 1,
-                type: 'L1'
-            },
-            {
-                id: 2,
-                type: 'L2'
-            },
-            {
-                id: 3,
-                type: 'L3'
-            }
-        ]
-    };
     public allScreens: Array<string> = [];
     public loadingEquipment: boolean;
     public apiControllers: Array<any> = [];
+    public statusError: boolean;
     public apiControllersByCode: any = {};
     public showError: boolean;
     public deleteError: boolean;
@@ -255,10 +83,50 @@ export class FcontrollersComponent implements OnInit {
         );
     }
 
+    imageUrl = IMAGE_URL;
+    
     constructControllers(controllers): void {
         this.isNextEnabled = false;
         this.fcontrollers = Array.prototype.slice.call(controllers);
         this.cd.detectChanges();
+        this.fetchFCControllersStatus();
+    }
+
+    fetchFCControllersStatus(): void {
+        const fcontrollersWithStatus = [...this.fcontrollers];
+        const totalFcControllers = fcontrollersWithStatus.reduce((acc, curr) => curr && curr.inventoryItemTypeCode === 'FACILITY_CONTROLLER_MHA' ? acc + 1 : acc, 0)
+        let count = 0;
+        for (let i = 0; i < fcontrollersWithStatus.length;  i += 1) {
+            if (fcontrollersWithStatus[i].inventoryItemTypeCode !== 'FACILITY_CONTROLLER_MHA') continue;
+            fcontrollersWithStatus[i].isFc = true;
+            fcontrollersWithStatus[i].loading = true;
+            fcontrollersWithStatus[i].statusError = false;
+            this.cd.detectChanges();
+            setTimeout((i) => {
+                this.settingsService.getFcControllerStatus(fcontrollersWithStatus[i].id)
+                .subscribe(res => {
+                    fcontrollersWithStatus[i].loading = false;
+                    fcontrollersWithStatus[i].statusError = false;
+                    fcontrollersWithStatus[i].status = res.body;
+                    this.fcontrollers[i] = {
+                        ...fcontrollersWithStatus[i]
+                    };
+                    this.cd.detectChanges();
+                }, err => {
+                    fcontrollersWithStatus[i].loading = false;
+                    fcontrollersWithStatus[i].statusError = true;
+                    fcontrollersWithStatus[i].status = false;
+                    this.fcontrollers[i] = {
+                        ...fcontrollersWithStatus[i]
+                    };
+                    this.cd.detectChanges();
+                })
+            }, i * 100, i)
+        }
+    }
+
+    identify(fc) {
+        return fc.id;
     }
 
     constructNewEquipments(unConfiguredConterollers): void {
@@ -462,6 +330,7 @@ export class FcontrollersComponent implements OnInit {
                 this.cd.detectChanges();
             }
         );
+        delete this.formData['external_id']; //GA -- BDOG-288, Remove external_id value once the device with that externalId is created.
     }
 
     deleteFcController(controller) {

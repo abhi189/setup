@@ -16,8 +16,6 @@ export class Fcs implements OnInit {
     public id: string;
     public codeReader: any;
     public macAddress: string = '';
-    public fcController: boolean;
-    public ncController: boolean;
     public showScanner: boolean;
     public timeout: any;
 
@@ -64,7 +62,7 @@ export class Fcs implements OnInit {
         const firstDeviceId = devices.length ? devices[0].deviceId : undefined;
         let resultValue = undefined;
         this.codeReader
-            .decodeFromInputVideoDevice(firstDeviceId, 'video')
+            .decodeOnceFromVideoDevice(firstDeviceId, 'video')
             .then(result => {
                 this.macAddress = result.text;
                 this.stopScanning();
@@ -78,10 +76,10 @@ export class Fcs implements OnInit {
     }
 
     removeText(text: string) {
-        if (text.split(':').length > 1) {
-            return text.split(':')[1];
+        if (text.split(': ').length > 1) {
+            return text.split(': ')[1];
         }
-        return text.split(':')[0];
+        return text.split(': ')[0];
     }
 
     stopScanning(): void {
@@ -91,16 +89,12 @@ export class Fcs implements OnInit {
         }
     }
 
-    getScanType(): string {
-        const controller = this.formData.controller.code;
+    getFormat(): string {
+        const format = this.formData.controller.code;
 
-        switch (controller) {
+        switch (format) {
             case 'FACILITY_CONTROLLER_MHA':
-                return 'Mac Address';
-            case 'MODEM':
-                return 'IMEI NUMBNER';
-            default:
-                return 'Serial Number';
+                return '(Format: 00-00-00-00-00-00)';
         }
     }
 

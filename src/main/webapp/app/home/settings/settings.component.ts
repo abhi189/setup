@@ -1,3 +1,4 @@
+import { IMAGE_URL } from './../../app.constants';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { LoginService } from '../../core/login/login.service';
 import { SettingsService } from './settings.service';
@@ -94,6 +95,8 @@ export class SettingsComponent implements OnInit {
     async getAccountDetails() {
         const account = await  this.accountService.identity(true).then(account => account);
     }
+
+    imageUrl = IMAGE_URL;
 
     async getBudderflyId() {
         this.loadingStores = true;

@@ -43,7 +43,7 @@
             ></jhi-location-smappee>
             <jhi-location-fc
                 *ngSwitchCase="'fcs'"
-                [fcs]="data.fcs"
+                [fcs]="fcs"
                 [fcSelected]="formData.fc"
                 [formData]="formData"
                 [errorMessage]="incorrectMacAddressFormat ? 'Invalid Format' : macAddressNotFound ? 'ID Does Not Exist': idAlreadyExist ? 'Device Already Installed' : createFcError ? 'Something Went Wrong' :''"
@@ -67,10 +67,27 @@
                     Something went wrong. Please try again later
                 </div>
                 <div *ngIf="!showError && fcontrollers.length" class="config-list">
-                    <div *ngFor="let conf of fcontrollers" class="config-list-item" (click)="addDevices(conf)" [ngClass]="{'selected' : conf.id === selectedConf.id}">
+                    <div *ngFor="let conf of fcontrollers; trackBy: identify" class="config-list-item" (click)="addDevices(conf)" [ngClass]="{'selected' : conf.id === selectedConf.id}">
                         <strong>{{conf.name}}</strong> <br />
+                        <div *ngIf="conf.isFc" data-fc="conf.isFc">
+                            <div *ngIf="conf.loading">
+                                <div class="status-loader"></div>
+                            </div>
+                            <div *ngIf="!conf.loading" data-code="conf.inventoryItemTypeCode">
+                                <div *ngIf="conf.status" class="status">
+                                    <img src="{{imageUrl}}installersetupweb/online.png" alt="online">
+                                </div>
+                                <div *ngIf="!conf.status" class="status">
+                                    <img src="{{imageUrl}}installersetupweb/offline.png" alt="offline">
+                                </div>
+                                <div *ngIf="conf.statusError" class="status-error">
+                                    <img src="{{imageUrl}}installersetupweb/alert.png" alt="Status-Error">
+                                    <p>error</p>
+                                </div>
+                            </div>
+                        </div>
                         <p class="green">{{conf.externalId || '-'}}</p>
-                            <button (click)="deleteFcController(conf)" class="btn"><img src="../../../content/images/trash.png"></button>
+                            <button (click)="deleteFcController(conf)" class="btn"><img src="{{imageUrl}}installersetupweb/trash.png"></button>
                     </div>
                 </div>
             </div>

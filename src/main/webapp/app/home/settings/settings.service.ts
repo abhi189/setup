@@ -39,6 +39,10 @@ export class SettingsService {
         return this.http.delete(`/inventory/api/inventory-items/${payload}`, { observe: 'response' });
     }
 
+    getFcControllerStatus(fcId): Observable<any> {
+        return this.http.get(`${SERVER_API_URL}/inventory/api/inventory-items/status/${fcId}`, { observe: 'response' })
+    }
+
     getFcControllersBySmappee(budderflyId, inventoryId): Observable<HttpResponse<any>> {
         return this.http.get(`${SERVER_API_URL}/inventory/api/inventory-items?budderflyId.equals=${budderflyId}&inventoryItemTypeId.equals=${inventoryId}`, { observe: 'response'});
     }
@@ -48,7 +52,7 @@ export class SettingsService {
     }
 
     getEquipments(budderflyId): Observable<HttpResponse<any>> {
-        return this.http.get(`${SERVER_API_URL}/inventory/api/equipment/by-budderfly-id/${budderflyId}`, { observe: 'response' });
+        return this.http.get(`${SERVER_API_URL}/inventory/api/equipment/by-budderfly-id-and-without-monitor/${budderflyId}`, { observe: 'response' });
     }
 
     createEquipment(budderflyId, payload): Observable<any> {
@@ -71,8 +75,8 @@ export class SettingsService {
         return this.http.get(`${SERVER_API_URL}/inventory/api/load-configuration/ct-types`, { observe : 'response' });
     }
 
-    getCtSetups(): Observable<HttpResponse<any>> {
-        return this.http.get(`${SERVER_API_URL}/inventory/api/load-configuration/ct-setup`, { observe : 'response' });
+    getCtSetups(inventoryId): Observable<HttpResponse<any>> {
+        return this.http.get(`${SERVER_API_URL}/inventory/api/load-configuration/ct-setup/inventory-item-id/${inventoryId}`, { observe : 'response' });
     }
 
     getCtLinePhasess(): Observable<HttpResponse<any>> {

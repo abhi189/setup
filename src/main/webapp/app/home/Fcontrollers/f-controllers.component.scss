@@ -87,6 +87,19 @@ h4 {
     padding-top: 20px;
     border-top: 1px solid rgba(0, 0, 0, 0.5);
 }
+.status-loader {
+    border: 4px solid #85c441;
+    border-radius: 50%;
+    border-top: 4px solid #fff;
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    right: 1%;
+    top: 7%;
+    margin: 0 auto;
+    -webkit-animation: spin 2s linear infinite; /* Safari */
+    animation: spin 2s linear infinite;
+}
 .config-list {
     display: flex;
     flex: 1;
@@ -109,12 +122,29 @@ h4 {
         &.selected {
             border: 2px solid #009688;
         }
+        .status {
+            position: absolute;
+            bottom: 48px;
+            right: 0px;
+            font-size: 12px;
+            letter-spacing: 1px;
+            width: 45px;
+        }
+        .status-error {
+            position: absolute;
+            bottom: 20px;
+            right: -6px;
+            font-size: 12px;
+            letter-spacing: 1px;
+            width: 45px;
+        }
         .btn {
             position: absolute;
             bottom: -6px;
             right: -14px;
             font-size: 12px;
             letter-spacing: 1px;
+            width: 56px;
             &.add {
                 top: 5px;
                 bottom: unset;
