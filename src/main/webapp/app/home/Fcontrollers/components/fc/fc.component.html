@@ -1,8 +1,17 @@
 <div class="fcs-container">
-    <div class="header">Please enter or SCAN to assign {{formData.controller.name}}</div>
+    <div class="header">
+        <span>Please enter or SCAN to assign {{formData.controller.name}}</span>
+        <span *ngIf="showScanner">
+            <span>Switch Camera</span>
+            <label class="switch">
+                <input type="checkbox" [(ngModel)]="isRearCamera" [checked]="isRearCamera" (change)="switchCamera()">
+                <span class="slider round"></span>
+            </label>
+        </span>
+    </div>
     <div class="scanner-div" [ngClass]="{ 'show' : showScanner }">
-            <video id="video" width="100%" height="60%"></video>
-        </div>
+        <video id="video" width="100%" height="60%"></video>
+    </div>
     <div class="input-conatiner">
         <label>{{formData.controller.uniqueIdentifierDisplayName}}<small>*</small> {{getFormat()}}</label>
         <input type="text"

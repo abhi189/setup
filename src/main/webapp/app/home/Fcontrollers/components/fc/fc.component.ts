@@ -18,6 +18,8 @@ export class Fcs implements OnInit {
     public macAddress: string = '';
     public showScanner: boolean;
     public timeout: any;
+    public isRearCamera: boolean = true;
+    private videoElement: HTMLVideoElement;
 
     constructor(private cd: ChangeDetectorRef) {
         // const data = {
@@ -33,6 +35,7 @@ export class Fcs implements OnInit {
         this.showScanner = false;
         this.onItemSelected.next({ name: 'external_id', value: '' });
         this.codeReader = new BrowserMultiFormatReader();
+        this.isRearCamera = true;
     }
 
     startScanning(type): void {
@@ -49,6 +52,40 @@ export class Fcs implements OnInit {
         }, 0);
     }
 
+    getBackCamera(devices: any) {
+        if (devices.length === 1) return devices[0].deviceId;
+        let backCamera = undefined;
+
+        for (const device of devices) {
+            if (/back|rear|environment/gi.test(device.label)) {
+                backCamera = device;
+                break;
+            }
+        }
+        return backCamera ? backCamera.deviceId : devices[0].deviceId;
+    }
+
+    getFrontCamera(devices: any) {
+        if (devices.length === 1) return devices[0].deviceId;
+        let frontCamera = undefined;
+
+        for (const device of devices) {
+            if (/front|environment/gi.test(device.label)) {
+                frontCamera = device;
+                break;
+            }
+        }
+        return frontCamera ? frontCamera.deviceId : devices[0].deviceId;
+    }
+
+    enableTorch() {
+        if (this.videoElement && this.videoElement.srcObject) {
+            if ('getVideoTracks' in this.videoElement.srcObject) {
+                this.videoElement.srcObject.getVideoTracks()[0].applyConstraints({ advanced: [{ torch: true }] });
+            }
+        }
+    }
+
     startReading(type): void {
         this.codeReader
             .listVideoInputDevices()
@@ -58,21 +95,30 @@ export class Fcs implements OnInit {
             .catch(err => console.error(err));
     }
 
+    switchCamera(): void {
+        if (!this.showScanner) return;
+        this.isRearCamera = !this.isRearCamera;
+        this.stopScanning(false);
+        this.startReading('');
+    }
+
     scanDocument(devices: any = [], type): void {
-        const firstDeviceId = devices.length ? devices[0].deviceId : undefined;
+        const firstDeviceId = this.isRearCamera ? this.getBackCamera(devices) : this.getFrontCamera(devices);
         let resultValue = undefined;
         this.codeReader
             .decodeOnceFromVideoDevice(firstDeviceId, 'video')
             .then(result => {
                 this.macAddress = result.text;
-                this.stopScanning();
+                this.stopScanning(true);
                 if (result && result.text) {
                     resultValue = this.removeText(result.text);
                 }
                 this.onItemSelected.next({ name: 'external_id', value: resultValue });
                 this.cd.detectChanges();
             })
-            .catch(err => console.error(err));
+            .catch(err => {
+                console.error(err);
+            });
     }
 
     removeText(text: string) {
@@ -82,8 +128,8 @@ export class Fcs implements OnInit {
         return text.split(': ')[0];
     }
 
-    stopScanning(): void {
-        this.showScanner = false;
+    stopScanning(scanner): void {
+        if (scanner) this.showScanner = false;
         this.codeReader.reset();
         if (this.macAddress) {
         }
