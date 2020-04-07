@@ -3,6 +3,8 @@ import { Phases } from './components/phases/phases.component';
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
 import { SettingsService } from '../settings/settings.service';
 
+import { commonErrorCodes, commonErrorMessages } from '../../shared/constants/error-codes.constants';
+
 @Component({
     templateUrl: './configure.component.html',
     styleUrls: ['./configure.component.scss'],
@@ -22,7 +24,7 @@ export class ConfigurationComponent implements OnInit {
         phases: '',
         ctType: '',
         ctSetup: '',
-        ctPhases: '',
+        ctPhases: ''
     };
     public showNextButton: boolean;
     public currentScreen: string;
@@ -33,13 +35,23 @@ export class ConfigurationComponent implements OnInit {
     public storeSelected: any = {};
     public loadingEquipment: boolean;
     public showConfirmAdd: any = {};
-    public loadingControllers:boolean;
-    public showError: boolean;
+    public loadingControllers: boolean;
+    public confirmError: any;
+    public confirmErrorDetail: any;
+    public showError: any;
+    public showErrorDetail: any;
+    public deviceError: any;
+    public deviceErrorDetail: any;
+    public ctLineError: any;
+    public ctLineErrorDetail: any;
     public noEquipments: boolean;
     public configurations: any = [];
     public equipmentTypes: Array<any> = [];
     public equipments: Array<any>;
     public configurationDone: boolean;
+    public deletingDevice: boolean;
+    public showDeviceDeleteError: boolean;
+    public hideConfirmDelete: boolean;
     public data = {
         stores: [
             {
@@ -224,11 +236,14 @@ export class ConfigurationComponent implements OnInit {
         ctPhase: []
     };
     public allScreens: Array<string> = [];
+    public ctInputError: any;
+    public ctInputErrorDetail: any;
     public showDoneBtn: boolean;
     public showConfirmDelete: boolean;
     public phasesCount: number;
     public selectedCtPhases: Array<any> = [];
-    public deleteError: boolean;
+    public deleteError: any;
+    public deleteErrorDetail: any;
     public selectedCtSetups: Array<any> = [];
     @Input() sendToScreen: string;
     public creatingEquipment: boolean;
@@ -241,14 +256,14 @@ export class ConfigurationComponent implements OnInit {
     public originalCtPhases: any = [];
     public originalCtSetup: any = [];
     public configuringEquipmentError: string;
+    public configuringEquipmentErrorDetail: string;
     public configuringEquipment: boolean;
-    constructor(private settingsService: SettingsService, private cd: ChangeDetectorRef) {
-    }
+    constructor(private settingsService: SettingsService, private cd: ChangeDetectorRef) {}
 
     ngOnInit(): void {
         this.showNextButton = false;
         this.phasesCount = 1;
-        this.showDoneBtn = this.showPreviousButton = this.isPreviousEnabled =  true;
+        this.showDoneBtn = this.showPreviousButton = this.isPreviousEnabled = true;
         this.allScreens = Object.keys(this.steps);
         this.getConfiguredItems();
     }
@@ -291,80 +306,128 @@ export class ConfigurationComponent implements OnInit {
 
     updateCtSetups(ctSetup) {
         // if (!this.selectedCtSetups) return;
+        this.data.ctSetup = [];
         const currentCtSetups = ctSetup;
-        const updatedCtSetups = currentCtSetups.filter((ctSetup) => {
-            if (this.selectedCtSetups.find((elm) => elm.channel === ctSetup.channel)) {
+        const updatedCtSetups = currentCtSetups.filter(ctSetup => {
+            if (this.selectedCtSetups.find(elm => elm.channel === ctSetup.channel)) {
                 return false;
             }
             return true;
-        })
+        });
 
         this.data.ctSetup = [...updatedCtSetups];
+    }
+
+    getErrorMessage(code): string {
+        const errorKeyMessage = {
+            ...commonErrorMessages
+        };
+
+        return (
+            errorKeyMessage[code] ||
+            'There was an issue on the Server - Please try again. If the issue persists, Please contact customer support.'
+        );
+    }
+
+    getErrorDetail(code): string {
+        const dateString = this.settingsService.getUTCDateString();
+        const errorKeyMessage = {
+            ...commonErrorCodes,
+            'error.when.create.bacnet.device.on.mha': `${dateString} : BFE-1122009`
+        };
+
+        return errorKeyMessage[code] || `${dateString} : UNKNOWN`;
     }
 
     updateConfiguration() {
         this.configuringEquipment = true;
         this.configuringEquipmentError = '';
+        this.configuringEquipmentErrorDetail = '';
         let payload = {
             budderflyId: this.configuration.store.id,
             numberOfPhases: this.formData.phase.type,
             ctTypeCode: this.formData.ctType.code,
             equipmentId: this.formData.equipment ? this.formData.equipment.id : this.formData.device ? this.formData.device.id : '',
-            inventoryItemId: this.configuration.createdFc ? this.configuration.createdFc.id
-            : this.configuration.controller ? this.configuration.controller.id : '',
+            inventoryItemId: this.configuration.createdFc
+                ? this.configuration.createdFc.id
+                : this.configuration.controller
+                ? this.configuration.controller.id
+                : ''
         };
         const channels = ['A', 'B', 'C'];
-        
+
         if (this.configuration.smappeeController) {
-            payload['facilityControllerInventoryItemId'] =  this.configuration.smappeeController.id;
+            payload['facilityControllerInventoryItemId'] = this.configuration.smappeeController.id;
         }
         if (this.selectedCtSetups.length) {
             this.selectedCtSetups.forEach((setup, index) => {
                 payload[`ctInputPhase${channels[index]}`] = setup.channel;
-            })
+            });
         }
         if (this.selectedCtPhases.length) {
             this.selectedCtPhases.forEach((setup, index) => {
                 payload[`ctLinePhase${channels[index]}`] = setup.code;
-            })
+            });
         }
         console.log(this.configuration, this.formData);
-        this.settingsService.updateConfiguration(payload)
-        .subscribe(res => {
-            this.handleDoneClick();
-            this.configuringEquipment = false;
-            this.cd.detectChanges();
-        }, err => {
-            this.configuringEquipment = false;
-            this.configuringEquipmentError = 'Something went wrong';
-            this.cd.detectChanges();
-        })
+        this.settingsService.updateConfiguration(payload).subscribe(
+            res => {
+                this.handleDoneClick();
+                this.configuringEquipment = false;
+                this.cd.detectChanges();
+            },
+            ({ error }) => {
+                this.configuringEquipment = false;
+                this.configuringEquipmentError = this.getErrorMessage(error['message']);
+                this.configuringEquipmentErrorDetail = this.getErrorDetail(error['message'] || error['error']);
+                this.cd.detectChanges();
+            }
+        );
     }
 
     updateCtPhases(ctPhase) {
         // if (!this.selectedCtPhases) return;
         const currentCtPhases = ctPhase;
-        const updatedCtPhases = currentCtPhases.filter((CtPhase) => {
-            if (this.selectedCtPhases.find((elm) => elm.code === CtPhase.code)) {
+        const updatedCtPhases = currentCtPhases.filter(CtPhase => {
+            if (this.selectedCtPhases.find(elm => elm.code === CtPhase.code)) {
                 return false;
             }
             return true;
-        })
+        });
 
         this.data.ctPhase = [...updatedCtPhases];
     }
 
-    getEquipmentTypes(){
-        this.loadingEquipment = true
-        this.settingsService.getEquipmentType().subscribe(
+    deleteDevice(device) {
+        this.deletingDevice = true;
+        this.showDeviceDeleteError = this.hideConfirmDelete = false;
+        this.settingsService.deleteDevice(device).subscribe(
             res => {
-                this.loadingEquipment = false;
-                this.equipmentTypes = res.body;
+                this.hideConfirmDelete = true;
+                this.getEquipments();
                 this.cd.detectChanges();
             },
             err => {
+                this.deletingDevice = this.hideConfirmDelete = false;
+                this.showDeviceDeleteError = err;
+                this.cd.detectChanges();
+            }
+        );
+    }
+
+    getEquipmentTypes() {
+        this.loadingEquipment = true;
+        this.showError = false;
+        this.settingsService.getEquipmentType().subscribe(
+            res => {
+                this.loadingEquipment = true;
+                this.equipmentTypes = res.body;
+                this.cd.detectChanges();
+            },
+            ({ error }) => {
                 this.loadingEquipment = false;
-                this.showError = true;
+                this.showError = this.getErrorMessage(error['error']);
+                this.showErrorDetail = this.getErrorDetail(error['message'] || error['error']);
                 this.cd.detectChanges();
             }
         );
@@ -372,128 +435,198 @@ export class ConfigurationComponent implements OnInit {
 
     getConfiguredItems() {
         const { createdFc = {}, controller = {} } = this.configuration;
-
         this.loadingConfiguredItems = true;
         this.showError = false;
-        this.settingsService.getLoadedConfigurations(createdFc.id || controller.id || '')
-        .subscribe(res => {
-            this.loadingConfiguredItems = false;
-            this.configuredItems = res.body || [];
-            this.cd.detectChanges();
-        }, err => {
-            this.loadingConfiguredItems = false;
-            this.showError = true;
-            this.cd.detectChanges();
-        })
+        this.settingsService.getLoadedConfigurations(createdFc.id || controller.id || '').subscribe(
+            res => {
+                this.loadingConfiguredItems = false;
+                const configItems = res.body.length
+                    ? res.body.map(data => {
+                          return {
+                              ...data,
+                              configuration: data.configuration ? JSON.parse(data.configuration) : null
+                          };
+                      })
+                    : [];
+                this.configuredItems = this.sortConfigItems(configItems);
+                console.log('config:', this.configuredItems);
+                this.cd.detectChanges();
+            },
+            ({ error }) => {
+                this.loadingConfiguredItems = false;
+                this.showError = this.getErrorMessage(error['error']);
+                this.showErrorDetail = this.getErrorDetail(error['message'] || error['error']);
+                this.cd.detectChanges();
+            }
+        );
+    }
+
+    sortConfigItems(items) {
+        const keys = ['ctInputPhaseA', 'ctInputPhaseB', 'ctInputPhaseC'];
+        let keyFound = undefined;
+        for (let j = 0; j < keys.length; j += 1) {
+            const key = keys[j];
+            let count = 0;
+            for (var i = 0; i < items.length; i += 1) {
+                const conf = items[i].configuration;
+                if (!conf) continue;
+                const keysC = Object.keys(conf);
+
+                if (keysC.indexOf(key) !== -1 && count === i - 1) {
+                    count += 1;
+                    keyFound = key;
+                    break;
+                }
+            }
+            console.log('KeyFound: ', keyFound);
+            if (keyFound) break;
+        }
+        if (!keyFound) return items;
+
+        return items.sort(function(a, b) {
+            if (a.configuration && b.configuration) {
+                if (a.configuration[keyFound] && b.configuration[keyFound]) {
+                    return a.configuration[keyFound] - b.configuration[keyFound];
+                }
+            }
+            return 1;
+        });
     }
 
     continueDelete() {
         if (this.selectedConfiguredItem) {
-            this.deleteError= false;
-            this.settingsService.deleteConfiguredItem(this.selectedConfiguredItem)
-            .subscribe(res => {
-                this.showConfirmDelete = false;
-                this.getConfiguredItems();
-                this.cd.detectChanges();
-            },
-            err => {
-                this.deleteError = true;
-                this.cd.detectChanges();
-            })
+            this.deleteError = false;
+            let deleteObservable;
+            if (this.currentScreen === 'devices') {
+                deleteObservable = this.settingsService.deleteDevice(this.selectedConfiguredItem);
+            } else {
+                deleteObservable = this.settingsService.deleteConfiguredItem(this.selectedConfiguredItem);
+            }
+            deleteObservable.subscribe(
+                res => {
+                    this.showConfirmDelete = false;
+                    this.currentScreen === 'devices' ? this.getEquipments() : this.getConfiguredItems();
+                    this.cd.detectChanges();
+                },
+                ({ error }) => {
+                    this.deleteError = this.getErrorMessage(error['error']);
+                    this.deleteErrorDetail = this.getErrorDetail(error['message'] || error['error']);
+                    this.cd.detectChanges();
+                }
+            );
         }
+    }
+
+    setDeviceToDelete(device) {
+        this.selectedConfiguredItem = device;
+        this.showConfirmDelete = true;
     }
 
     getCtTypes() {
         this.loadingData = true;
         this.showError = false;
-        this.settingsService.getCtTypes()
-        .subscribe(res => {
-            this.loadingData = false;
-            this.originalCtTypes = res.body || [];
-            this.data.ctTypes = [...this.originalCtTypes]
-            this.cd.detectChanges();
-        }, err => {
-            this.loadingData = false
-            this.showError = true;
-            this.cd.detectChanges();
-        })
+        this.settingsService.getCtTypes().subscribe(
+            res => {
+                this.loadingData = false;
+                this.originalCtTypes = res.body || [];
+                this.data.ctTypes = [...this.originalCtTypes];
+                this.cd.detectChanges();
+            },
+            ({ error }) => {
+                this.loadingData = false;
+                this.showError = this.getErrorMessage(error['error']);
+                this.showErrorDetail = this.getErrorDetail(error['message'] || error['error']);
+                this.cd.detectChanges();
+            }
+        );
     }
 
     getCtSetups() {
-        const inventoryId = this.configuration.controller.id
-        this.loadingData = true
-        this.showError = false;
-        this.settingsService.getCtSetups(inventoryId)
-        .subscribe(res => {
-            this.loadingData = false;
-            this.originalCtSetup = res.body || [];
-            const ctSetup = [...this.originalCtSetup]
-            
-            this.updateCtSetups(ctSetup);
-            this.cd.detectChanges();
-        }, err => {
-            this.loadingData = false;
-            this.showError = true;
-            this.cd.detectChanges();
-        })
+        this.loadingData = true;
+        this.ctInputError = false;
+        this.settingsService
+            .getCtSetups(
+                this.configuration.createdFc
+                    ? this.configuration.createdFc.id
+                    : this.configuration.controller
+                    ? this.configuration.controller.id
+                    : ''
+            )
+            .subscribe(
+                res => {
+                    this.originalCtSetup = res.body || [];
+                    const ctSetup = [...this.originalCtSetup];
+                    this.updateCtSetups(ctSetup);
+                    this.loadingData = false;
+                    this.cd.detectChanges();
+                },
+                ({ error }) => {
+                    this.loadingData = false;
+                    this.ctInputError = this.getErrorMessage(error['error']);
+                    this.ctInputErrorDetail = this.getErrorDetail(error['message'] || error['error']);
+                    this.cd.detectChanges();
+                }
+            );
     }
 
     getCtLinePhases() {
         this.loadingData = true;
-        this.showError = false;
-        this.settingsService.getCtLinePhasess()
-        .subscribe(res => {
-            this.loadingData = false;
-            this.originalCtPhases = res.body || [];
-            const ctPhase = [...this.originalCtPhases];
-            this.updateCtPhases(ctPhase);
-            this.cd.detectChanges();
-        }, err => {
-            this.loadingData = false;
-            this.showError = true;
-            this.cd.detectChanges();
-        })
+        this.ctLineError = false;
+        this.settingsService.getCtLinePhasess().subscribe(
+            res => {
+                this.originalCtPhases = res.body || [];
+                const ctPhase = [...this.originalCtPhases];
+                this.updateCtPhases(ctPhase);
+                this.loadingData = false;
+                this.cd.detectChanges();
+            },
+            ({ error }) => {
+                this.loadingData = false;
+                this.ctLineError = this.getErrorMessage(error['error']);
+                this.ctLineErrorDetail = this.getErrorDetail(error['message'] || error['error']);
+                this.cd.detectChanges();
+            }
+        );
     }
 
-    getEquipments(){
-        this.loadingEquipment = true
-        this.showError = false;
-        this.settingsService.getEquipments(this.configuration.store.id).subscribe(
+    getEquipments() {
+        const budderflyId = this.configuration.store.id;
+        const inventoryItemTypeId =
+            this.configuration.controller.inventoryItemTypeId || this.configuration.createdFc.inventoryItemTypeId || '';
+        this.loadingEquipment = true;
+        this.equipments = [];
+        this.deviceError = false;
+        this.settingsService.getEquipments(budderflyId, inventoryItemTypeId).subscribe(
             res => {
                 this.loadingEquipment = false;
                 if (res.body && res.body.length === 0) {
                     this.noEquipments = true;
-                    this.handleAddEquipment('')
+                    this.handleAddEquipment('');
                 } else {
                     this.noEquipments = false;
                     this.equipments = res.body || [];
                 }
                 this.cd.detectChanges();
             },
-            err => {
+            ({ error }) => {
                 this.loadingEquipment = false;
-                this.showError = true;
+                this.deviceError = this.getErrorMessage(error['error']);
+                this.deviceErrorDetail = this.getErrorDetail(error['message'] || error['error']);
                 this.cd.detectChanges();
             }
         );
     }
 
     saveAndupdatectSetups(ctSetup) {
-        this.selectedCtSetups = [
-            ...this.selectedCtSetups,
-            ctSetup
-        ]
+        this.selectedCtSetups = [...this.selectedCtSetups, ctSetup];
     }
 
     saveAndUpdatectPhases(ctPhase) {
-        this.selectedCtPhases = [
-            ...this.selectedCtPhases,
-            ctPhase
-        ]
+        this.selectedCtPhases = [...this.selectedCtPhases, ctPhase];
     }
 
     countPhases() {
-        return this.phasesCount += 1;
+        return (this.phasesCount += 1);
     }
 
     updateForm({ name, value }) {
@@ -559,30 +692,46 @@ export class ConfigurationComponent implements OnInit {
 
     createEquipment() {
         this.creatingEquipment = true;
-        this.showConfirmModal =  Object.assign({}, {
-            enable: true,
-            showCancel: false,
-            equipment: undefined,
-        });
-        this.settingsService.createEquipment(this.configuration.store.id, { id : this.formData && this.formData['equipment'].id , code : this.formData && this.formData['equipment'].code } )
-        .subscribe(res => {
-            this.showConfirmModal =  Object.assign({}, {
+        this.showConfirmModal = Object.assign(
+            {},
+            {
                 enable: true,
                 showCancel: false,
-                equipment: res,
-            });
-            this.formData['equipment'] = res;
-            this.creatingEquipment = false;
-            this.cd.detectChanges();
-        }, err => {
-            this.showConfirmModal =  Object.assign({}, {
-                enable: true,
-                showCancel: true,
-                equipment: 'Something went wrong Please try again.'
-            });
-            this.creatingEquipment = false;
-            this.cd.detectChanges()
-        })
+                equipment: undefined
+            }
+        );
+        this.settingsService
+            .createEquipment(this.configuration.store.id, {
+                id: this.formData && this.formData['equipment'].id,
+                code: this.formData && this.formData['equipment'].code
+            })
+            .subscribe(
+                res => {
+                    this.showConfirmModal = Object.assign(
+                        {},
+                        {
+                            enable: true,
+                            showCancel: false,
+                            equipment: res
+                        }
+                    );
+                    this.formData['equipment'] = res;
+                    this.creatingEquipment = false;
+                    this.cd.detectChanges();
+                },
+                ({ error: err }) => {
+                    this.showConfirmModal = Object.assign(
+                        {},
+                        {
+                            enable: true,
+                            showCancel: true,
+                            equipment: this.getErrorMessage(err.error) + '<br />' + this.getErrorDetail(err.message || err.error)
+                        }
+                    );
+                    this.creatingEquipment = false;
+                    this.cd.detectChanges();
+                }
+            );
     }
 
     handlePreviousClick() {
@@ -599,7 +748,7 @@ export class ConfigurationComponent implements OnInit {
                     this.sendToPreviousModule.next('installers');
                     return;
                 }
-                if ( this.configuration.service && this.configuration.service.id === 2) {
+                if (this.configuration.service && this.configuration.service.id === 2) {
                     // this.showPreviousButton = false;
                     this.onPreviousStepClick.next('services');
                 } else {
@@ -613,15 +762,18 @@ export class ConfigurationComponent implements OnInit {
     }
 
     handleConfirmAddClick(event) {
-        this.showConfirmModal = Object.assign({}, {
-            enable: false,
-        });
+        this.showConfirmModal = Object.assign(
+            {},
+            {
+                enable: false
+            }
+        );
         if (event) {
             this.handleNextClick(true);
         }
     }
 
-    handleNextClick(pass ?: boolean) {
+    handleNextClick(pass?: boolean) {
         if (!pass && this.currentScreen === 'equipments') {
             this.createEquipment();
             return;

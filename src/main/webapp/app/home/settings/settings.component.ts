@@ -1,3 +1,4 @@
+import { commonErrorCodes, commonErrorMessages } from './../../shared/constants/error-codes.constants';
 import { IMAGE_URL } from './../../app.constants';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { LoginService } from '../../core/login/login.service';
@@ -21,7 +22,9 @@ export class SettingsComponent implements OnInit {
     public budderflyId: string;
     public storeSelected: any = {};
     public configurationDone: boolean;
-    public showError: boolean;
+    public showError: string;
+    public showErrorDetail: string;
+    imageUrl = IMAGE_URL;
     public data = {
         stores: [],
 
@@ -79,48 +82,56 @@ export class SettingsComponent implements OnInit {
     public loadingStores: boolean;
     public allScreens: Array<string> = [];
 
-    constructor(
-        private loginService: LoginService,
-        private settingsService: SettingsService,
-        private accountService: AccountService,
-    ) {}
+    constructor(private loginService: LoginService, private settingsService: SettingsService, private accountService: AccountService) {}
 
     ngOnInit(): void {
         this.currentScreen = 'location';
         this.showNextButton = true;
         this.allScreens = this.currentScreen === 'controllers' ? Object.keys(this.steps.controllers) : Object.keys(this.steps);
         this.getBudderflyId();
+        this.handleButtonState();
     }
-
-    async getAccountDetails() {
-        const account = await  this.accountService.identity(true).then(account => account);
-    }
-
-    imageUrl = IMAGE_URL;
 
     async getBudderflyId() {
         this.loadingStores = true;
-        this.showError = false;
-        const account = await  this.accountService.identity(true).then(account => account);
-        this.settingsService.getBudderflyId(account.login).subscribe(
+        this.showError = '';
+        this.settingsService.getAllStores().subscribe(
             res => {
-                this.settingsService.getStoreDetailsByIds(res.body)
-                .subscribe(res => {
+                this.settingsService.getStoreDetailsByIds(res.body.map(s => s.budderflyId)).subscribe(r => {
                     this.loadingStores = false;
-                    this.constructStores(res.map(res => res.body));
-                }, err => {
-                    this.loadingStores = false;
-                    this.showError = true;
+                    this.constructStores(r.map(a => a.body));
                 });
             },
-            err => {
+            ({ error }) => {
                 this.loadingStores = false;
-                this.showError = true;
+                this.showError = this.getErrorMessage(error['error']);
+                this.showErrorDetail = this.getErrorDetail(error['message'] || error['error']);
             }
         );
     }
+
+    getErrorMessage(code): string {
+        const errorKeyMessage = {
+            ...commonErrorMessages
+        };
+
+        return (
+            errorKeyMessage[code] ||
+            'There was an issue on the Server - Please try again. If the issue persists, Please contact customer support.'
+        );
+    }
+
+    getErrorDetail(code): string {
+        const errorKeyMessage = {
+            ...commonErrorCodes
+        };
+
+        return errorKeyMessage[code] || `${this.settingsService.getUTCDateString()} : UNKNOWN`;
+    }
     constructStores(stores: any = []): void {
-        if (!stores) return;
+        if (!stores) {
+            return;
+        }
         const finalStores = stores.map(store => {
             const { budderflyId, customerName, address, city, state, zip } = store;
             return {
@@ -157,6 +168,7 @@ export class SettingsComponent implements OnInit {
         this.currentScreen = 'location';
         this.showPreviousButton = false;
         this.getBudderflyId();
+        this.handleButtonState();
     }
 
     getPreviousStep() {

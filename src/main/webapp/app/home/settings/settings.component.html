@@ -34,7 +34,13 @@
                 [storeSelected]="formData.store"
                 (onItemSelected)="handleItemSelected($event)"
             ></jhi-location-stores>
-            <div class="alert alert-danger" *ngIf="showError">Something went wrong. Please try again later.</div>
+            <div *ngIf="showError">
+                <div class="alert alert-danger" role="alert">
+                    <p> {{showError}} </p>
+                     <hr>
+                     <p class="mb-0" style="font-size: x-small;">{{showErrorDetail}} </p>
+                 </div>
+            </div>
         </section>
         <div class="action-bar">
             <button [hidden]="!showPreviousButton" class="btn previous" 

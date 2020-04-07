@@ -10,7 +10,8 @@ export class Cttypes implements OnInit, OnChanges {
     @Input() ctTypes: Array<any>;
     @Input() ctTypeSelected: any = {};
     @Input() loading: boolean;
-    @Input() showError: boolean;
+    @Input() showError: string;
+    @Input() showErrorDetail: string;
     @Output() onItemSelected = new EventEmitter();
 
     constructor() {}
@@ -28,7 +29,7 @@ export class Cttypes implements OnInit, OnChanges {
     }
 
     ngOnInit() {
-       //  this.onCtTypeMount.next();
+        //  this.onCtTypeMount.next();
     }
 
     setSelectedCtType(ctType: any) {

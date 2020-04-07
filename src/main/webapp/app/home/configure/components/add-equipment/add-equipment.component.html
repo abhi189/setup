@@ -1,5 +1,5 @@
 <div class="controllers-container">
-    <div class="header">What equipment is connected to this load ?</div>
+    <div class="header">What equipment is connected to this load?</div>
     <div *ngIf="loading" class="loading">
             <div class="loader"></div>
     </div>
@@ -12,14 +12,21 @@
             <div>{{controller.name}}</div>
         </div>
     </div>
-    <div class="alert alert-primary" *ngIf="!loading && !controllers.length">
+    <div class="alert alert-primary" *ngIf="!showError && !loading && !controllers.length">
         No Equipments
     </div>
+    <div *ngIf="showError">
+        <div class="alert alert-danger" role="alert">
+            <p> {{showError}} </p>
+             <hr>
+             <p class="mb-0" style="font-size: x-small;">{{showErrorDetail}} </p>
+         </div>
+    </div> 
     <div *ngIf="showConfirmAdd" class="modal-open"></div>
     <div *ngIf="showConfirmAdd" class="confirm-container">
         <div class="content">
             <h3 *ngIf="creatingEquipment">Adding New Equipment</h3>
-            <h5 *ngIf="!creatingEquipment && !equipment.name" class="alert alert-danger">{{equipment}}</h5>
+            <h5 *ngIf="!creatingEquipment && !equipment.name" class="alert alert-danger" [innerHTML]="equipment"></h5>
             <h5 *ngIf="!creatingEquipment && equipment.name">Please label the breaker with <span class="equipment">[{{equipment.name}}]</span> for future reference.</h5>
             <div *ngIf="creatingEquipment" class="loading">
                 <div class="loader"></div>

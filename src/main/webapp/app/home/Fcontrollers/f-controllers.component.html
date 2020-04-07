@@ -15,7 +15,13 @@
 
     <div *ngIf="showConfirmDelete" class="confirm-container">
         <div class="content" >
-            <div class="alert alert-danger" *ngIf="deleteError">Something went wrong. Please try again later.</div>
+            <div *ngIf="deleteError">
+                <div class="alert alert-danger" role="alert">
+                    <p> {{deleteError}} </p>
+                     <hr>
+                     <p class="mb-0" style="font-size: x-small;">{{deleteErrorDetail}} </p>
+                </div>
+            </div>
             <h2>Are you sure you want to delete {{selectedController.name}}?</h2>
             <div class="btn-container">
                 <button class="btn btn-danger" (click)="continueDelete()">Confirm</button>
@@ -36,6 +42,8 @@
             <jhi-location-smappee
                 *ngSwitchCase="'smappee'"
                 [loading]="loadingControllers"
+                [FcError]="FcError"
+                [FcErrorDetail]="FcErrorDetail"
                 [controllers]="smappeeControllers"
                 [controllerSelected]="formData.smappeeController"
                 [formData]="formData"
@@ -46,27 +54,31 @@
                 [fcs]="fcs"
                 [fcSelected]="formData.fc"
                 [formData]="formData"
-                [errorMessage]="incorrectMacAddressFormat ? 'Invalid Format' : macAddressNotFound ? 'ID Does Not Exist': idAlreadyExist ? 'Device Already Installed' : createFcError ? 'Something Went Wrong' :''"
+                [errorMessage]="createFcError"
+                [errorMessageDetail]="createFcErrorDetail"
                 (onItemSelected)="handleItemSelected($event)"
+                (setIdentifier)="handleItemSelected($event)"
             ></jhi-location-fc>
             <div *ngSwitchDefault class="configure-container">
-                <div class="header">Install Budderfly Devices</div>
-                
                 <div class="configure-add" (click)="handleAddConfiguration($event)">
                     <div>+</div>
                     <div>Add New Budderfly Device</div>
                 </div>
                 <h4>Installed Budderfly Devices</h4>
-                <div *ngIf="!fcontrollers.length && !showError" class="config-list" class="alert alert-primary">
+                <div *ngIf="!fcontrollers.length && !showError && !loadingEquipment" class="config-list" class="alert alert-primary">
                     Currently No Budderfly Devices
                 </div>
                 <div *ngIf="loadingEquipment" class="loading">
                     <div class="loader"></div>
                 </div>
-                <div *ngIf="showError" class="alert alert-danger">
-                    Something went wrong. Please try again later
+                <div *ngIf="showError && !loadingEquipment">
+                    <div class="alert alert-danger" role="alert">
+                        <p> {{showError}} </p>
+                         <hr>
+                         <p class="mb-0" style="font-size: x-small;">{{showErrorDetail}} </p>
+                    </div>
                 </div>
-                <div *ngIf="!showError && fcontrollers.length" class="config-list">
+                <div *ngIf="!showError && fcontrollers.length && !loadingEquipment" class="config-list">
                     <div *ngFor="let conf of fcontrollers; trackBy: identify" class="config-list-item" (click)="addDevices(conf)" [ngClass]="{'selected' : conf.id === selectedConf.id}">
                         <strong>{{conf.name}}</strong> <br />
                         <div *ngIf="conf.isFc" data-fc="conf.isFc">

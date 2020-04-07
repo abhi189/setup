@@ -11,7 +11,7 @@
     }
     .header2 {
         color: rgba(0, 0, 0, 0.8);
-        font-size: 1.0em;
+        font-size: 1em;
         font-weight: 600;
         line-height: 1.4em;
         margin-bottom: 0px;
@@ -43,6 +43,12 @@
             }
         }
     }
+    .loading {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
     .devices-list {
         display: flex;
         flex: 1;
@@ -63,18 +69,18 @@
                 margin-right: 10px;
             }
             .connection-type {
-                position: absolute;
-                top: 7px;
+                position: relative;
             }
             .device-name {
-                position: absolute;
-                bottom: 5px;
-                left: 67px;
+                bottom: 11px;
+                margin-left: 15px;
+                margin-bottom: 10px;
             }
             .uniqueIdentifier {
-                position: absolute;
-                bottom: 21px;
-                font-weight: 600;
+                position: relative;
+                font-weight: bold;
+                font-size: 0.75rem;
+                left: 53px;
             }
             .externalId {
                 color: green;
@@ -113,7 +119,37 @@
             }
         }
     }
+    inv-list {
+        text-align: left;
+    }
     @media screen and (max-width: 600px) {
         padding: 30px 10px;
+    }
+}
+
+.device-del {
+    position: absolute;
+    right: 0px;
+    bottom: 1px;
+}
+
+.confirm-container {
+    position: fixed;
+    width: 300px;
+    padding: 20px;
+    height: 268px;
+    border-radius: 5px;
+    z-index: 9;
+    text-align: center;
+    top: 50%;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    h2 {
+        font-size: 20px;
+        margin-bottom: 24px;
     }
 }

@@ -3,11 +3,13 @@ import { Component, Input, Output, OnInit, OnChanges, EventEmitter, SimpleChange
 @Component({
     templateUrl: './smappee.component.html',
     styleUrls: ['./smappee.component.scss'],
-    selector: 'jhi-location-smappee',
+    selector: 'jhi-location-smappee'
 })
 export class Smappee implements OnChanges {
     @Input() controllers: Array<any>;
     @Input() loading: boolean;
+    @Input() FcError: string;
+    @Input() FcErrorDetail: string;
     @Input() controllerSelected: any = {};
     @Output() onItemSelected = new EventEmitter();
     public loadingControllers: boolean;

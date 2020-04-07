@@ -10,16 +10,21 @@ export class CtSetup {
     @Input() ctSetup: Array<any>;
     @Input() ctSetupSelected: any = {};
     @Input() loading: boolean;
-    @Input() showError: boolean;
+    @Input() ctInputError: string;
+    @Input() ctInputErrorDetail: string;
     @Output() onItemSelected = new EventEmitter();
 
     constructor() {}
 
     ngOnChanges(changes: SimpleChanges): void {
-        const { ctSetups, ctSetupSelected } = changes;
+        const { ctSetups, ctSetupSelected, loading } = changes;
 
         if (ctSetups && ctSetups.currentValue !== ctSetups.previousValue) {
             this.ctSetup = ctSetups.currentValue;
+        }
+
+        if (loading && loading.currentValue !== loading.previousValue) {
+            this.loading = loading.currentValue;
         }
 
         if (ctSetupSelected && ctSetupSelected.currentValue !== ctSetupSelected.previousValue) {

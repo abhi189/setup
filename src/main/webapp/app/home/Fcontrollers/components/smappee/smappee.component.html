@@ -1,5 +1,5 @@
 <div class="controllers-container">
-    <div class="header">Select Facility Controller to configure</div>
+    <div class="header">Select the Facility Controller the Smappee is wired to</div>
     <div *ngIf="loading" class="loading">
             <div class="loader"></div>
     </div>
@@ -13,7 +13,14 @@
             <div class="external-id">{{controller.externalId || '-' }}</div>
         </div>
     </div>
-    <div class="alert alert-primary" *ngIf="!loading && !controllers.length">
+    <div *ngIf="FcError && !loading && !controllers.length">
+        <div class="alert alert-danger" role="alert">
+            <p> {{FcError}} </p>
+             <hr>
+             <p class="mb-0" style="font-size: small;">{{FcErrorDetail}} </p>
+        </div>
+    </div> 
+    <div class="alert alert-primary" *ngIf="!loading && !controllers.length && !FcError">
         Please configure atleast One Facility Controller to configure Smappee
     </div>
 </div>

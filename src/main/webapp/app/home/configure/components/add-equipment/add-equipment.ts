@@ -3,11 +3,13 @@ import { Component, Input, Output, OnInit, OnChanges, EventEmitter, SimpleChange
 @Component({
     templateUrl: './add-equipment.component.html',
     styleUrls: ['./add-equipment.component.scss'],
-    selector: 'jhi-location-add-equipment',
+    selector: 'jhi-location-add-equipment'
 })
 export class AddEquipment implements OnChanges, OnInit {
     @Input() controllers: Array<any>;
     @Input() loading: boolean;
+    @Input() showError: any;
+    @Input() showErrorDetail: any;
     @Input() creatingEquipment: boolean;
     @Input() showConfirmModal: any = {};
     @Input() controllerSelected: any = {};
@@ -21,7 +23,7 @@ export class AddEquipment implements OnChanges, OnInit {
     constructor() {}
 
     ngOnChanges(changes: SimpleChanges): void {
-        const { controllers, controllerSelected, showConfirmModal, creatingEquipment } = changes;
+        const { controllers, controllerSelected, showConfirmModal, creatingEquipment, showError } = changes;
 
         if (controllers && controllers.currentValue !== controllers.previousValue) {
             this.controllers = controllers.currentValue;
@@ -33,14 +35,13 @@ export class AddEquipment implements OnChanges, OnInit {
 
         if (showConfirmModal && showConfirmModal.currentValue !== showConfirmModal.previousValue) {
             this.showConfirmAdd = showConfirmModal.currentValue ? showConfirmModal.currentValue.enable : false;
-            this.showCancel = showConfirmModal.currentValue ? showConfirmModal.currentValue.showCancel: false;
-            this.equipment = showConfirmModal.currentValue ? showConfirmModal.currentValue.equipment: null;
+            this.showCancel = showConfirmModal.currentValue ? showConfirmModal.currentValue.showCancel : false;
+            this.equipment = showConfirmModal.currentValue ? showConfirmModal.currentValue.equipment : null;
         }
 
         if (creatingEquipment && creatingEquipment.currentValue !== creatingEquipment.previousValue) {
             this.creatingEquipment = creatingEquipment.currentValue;
         }
-
     }
 
     ngOnInit() {
@@ -48,8 +49,7 @@ export class AddEquipment implements OnChanges, OnInit {
     }
 
     continueAdd() {
-        //this.onItemSelected.next({ name: 'equipment', value: this.selectedController });
-        this.onConfirmClick.next(true)
+        this.onConfirmClick.next(true);
         this.showConfirmAdd = false;
     }
 
@@ -63,4 +63,3 @@ export class AddEquipment implements OnChanges, OnInit {
         this.onItemSelected.next({ name: 'equipment', value: this.selectedController });
     }
 }
-

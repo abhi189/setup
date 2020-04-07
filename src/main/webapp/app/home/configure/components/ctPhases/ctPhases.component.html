@@ -5,7 +5,7 @@
                 <div class="loader"></div>
             </div>
         </div>
-        <div class="ctPhases-list">
+        <div *ngIf="!loading && !ctLineError" class="ctPhases-list">
             <div class="ctPhases-list-item" 
                 *ngFor="let ctPhase of ctPhase" 
                 [ngClass]="{'selected': ctPhaseSelected && ctPhase.code === ctPhaseSelected.code}"
@@ -14,7 +14,11 @@
                 <div class="connection-type">{{ctPhase.name}}</div>
             </div>
         </div>
-        <div class="alert alert-danger" *ngIf="showError">
-            Something went wrong! Please Try Again.
+        <div *ngIf="ctLineError">
+            <div class="alert alert-danger" role="alert">
+                <p> {{ctLineError}} </p>
+                 <hr>
+                 <p class="mb-0" style="font-size: x-small;">{{ctLineErrorDetail}} </p>
+             </div>
         </div>
     </div>

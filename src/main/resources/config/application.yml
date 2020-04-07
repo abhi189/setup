@@ -38,6 +38,9 @@ eureka:
             git-commit: ${git.commit.id.abbrev:}
             git-branch: ${git.branch:}
 ribbon:
+    MaxAutoRetries: 0
+    MaxAutoRetriesNextServer: 1
+    OkToRetryOnAllOperations: true
     ReadTimeout: 10000
     ConnectTimeout: 10000
     SocketTimeout: 10000
@@ -55,13 +58,61 @@ zuul: # those values must be configured depending on the application specific ne
         max-semaphores: 500
 
 # See https://github.com/Netflix/Hystrix/wiki/Configuration
+#ribbon.ConnectTimeout is 60000
+#ribbon.ReadTimeout is 60000
+#ribbon.MaxAutoRetries is 0 (default)
+#ribbon.MaxAutoRetriesNextServer is 1 (default)
+#
+# hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds = 40000 (default)
+# hystrixTimeout should be:
+#  (ConnectTimeout + ReadTimeout) * (MaxAutoRetriesNextServer + MaxAutoRetries) * (1 + 1)
+#  (10000 + 10000) * (1 + 0) * (1 + 1) =  40000ms
+#
 hystrix:
     command:
         default:
             execution:
                 isolation:
                     thread:
-                        timeoutInMilliseconds: 44000
+                        timeoutInMilliseconds: 40000
+        # hystrix service-specific configurations
+        inventory:
+            execution:
+                isolation:
+                    thread:
+                        timeoutInMilliseconds: 240000
+        sites:
+            execution:
+                isolation:
+                    thread:
+                        timeoutInMilliseconds: 240000
+
+# Service-specific configurations
+inventory:
+    ribbon:
+        ReadTimeout: 60000
+        ConnectTimeout: 60000
+    zuul:
+        retryable: true
+        sensitive-headers: Cookie,Set-Cookie
+        host:
+            connect-timeout-millis: 60000
+            socket-timeout-millis: 60000
+        semaphore:
+            max-semaphores: 500
+
+sites:
+    ribbon:
+        ReadTimeout: 60000
+        ConnectTimeout: 60000
+    zuul:
+        retryable: true
+        sensitive-headers: Cookie,Set-Cookie
+        host:
+            connect-timeout-millis: 60000
+            socket-timeout-millis: 60000
+        semaphore:
+            max-semaphores: 500
 
 management:
     endpoints:

@@ -3,7 +3,7 @@
     <div *ngIf="loading" class="loading">
         <div class="loader"></div>
     </div>
-    <div class="ctTypes-list">
+    <div *ngIf="!loading" class="ctTypes-list">
         <div class="ctTypes-list-item" 
             *ngFor="let ctType of ctTypes" 
             [ngClass]="{'selected': ctTypeSelected && ctType.code === ctTypeSelected.code}"
@@ -12,7 +12,11 @@
             <div class="connection-type">{{ctType.name}}</div>
         </div>
     </div>
-    <div class="alert alert-danger" *ngIf="showError">
-        Something went wrong! Please Try Again.
+    <div *ngIf="showError">
+        <div class="alert alert-danger" role="alert">
+            <p> {{showError}} </p>
+             <hr>
+             <p class="mb-0" style="font-size: x-small;">{{showErrorDetail}} </p>
+         </div>
     </div>
 </div>

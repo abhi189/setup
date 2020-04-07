@@ -2,6 +2,7 @@ import { IMAGE_URL } from './../../app.constants';
 import { Component, Input, Output, EventEmitter, ChangeDetectorRef, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { SettingsService } from '../settings/settings.service';
 import { forkJoin } from 'rxjs';
+import { commonErrorCodes, commonErrorMessages } from '../../shared/constants/error-codes.constants';
 
 @Component({
     templateUrl: './f-controllers.component.html',
@@ -26,10 +27,12 @@ export class FcontrollersComponent implements OnInit {
     public isPreviousEnabled: boolean;
     public formData: any = {};
     public controllersConfigured: boolean;
-    public createFcError: boolean;
+    public createFcError: any;
+    public createFcErrorDetail: any;
     public idAlreadyExist: boolean;
-    public macAddressNotFound: boolean;
-    public incorrectMacAddressFormat: boolean;
+    public serialNumberNotFound: boolean;
+    public serialNumberInvalidFormat: boolean;
+    public siteNotFound: boolean;
     @Input() macAddress: string;
     @Input() configuration: any;
     @Output() onPreviousScreenClick = new EventEmitter();
@@ -38,8 +41,12 @@ export class FcontrollersComponent implements OnInit {
     public apiControllers: Array<any> = [];
     public statusError: boolean;
     public apiControllersByCode: any = {};
-    public showError: boolean;
-    public deleteError: boolean;
+    public showError: any;
+    public showErrorDetail: any;
+    public deleteError: any;
+    public deleteErrorDetail: any;
+    public FcError: any;
+    public FcErrorDetail: any;
     public deleteController: boolean;
     public selectedController: any;
     public showConfirmDelete: boolean;
@@ -75,16 +82,17 @@ export class FcontrollersComponent implements OnInit {
                 this.constructNewEquipments(res[1].body);
                 this.cd.detectChanges();
             },
-            err => {
+            ({ error }) => {
                 this.loadingEquipment = false;
-                this.showError = true;
+                this.showError = this.getErrorMessage(error['error']);
+                this.showErrorDetail = this.getErrorDetail(error['message'] || error['error']);
                 this.cd.detectChanges();
             }
         );
     }
 
     imageUrl = IMAGE_URL;
-    
+
     constructControllers(controllers): void {
         this.isNextEnabled = false;
         this.fcontrollers = Array.prototype.slice.call(controllers);
@@ -94,34 +102,43 @@ export class FcontrollersComponent implements OnInit {
 
     fetchFCControllersStatus(): void {
         const fcontrollersWithStatus = [...this.fcontrollers];
-        const totalFcControllers = fcontrollersWithStatus.reduce((acc, curr) => curr && curr.inventoryItemTypeCode === 'FACILITY_CONTROLLER_MHA' ? acc + 1 : acc, 0)
+        const totalFcControllers = fcontrollersWithStatus.reduce(
+            (acc, curr) => (curr && curr.inventoryItemTypeCode === 'FACILITY_CONTROLLER_MHA' ? acc + 1 : acc),
+            0
+        );
         let count = 0;
-        for (let i = 0; i < fcontrollersWithStatus.length;  i += 1) {
+        for (let i = 0; i < fcontrollersWithStatus.length; i += 1) {
             if (fcontrollersWithStatus[i].inventoryItemTypeCode !== 'FACILITY_CONTROLLER_MHA') continue;
             fcontrollersWithStatus[i].isFc = true;
             fcontrollersWithStatus[i].loading = true;
             fcontrollersWithStatus[i].statusError = false;
             this.cd.detectChanges();
-            setTimeout((i) => {
-                this.settingsService.getFcControllerStatus(fcontrollersWithStatus[i].id)
-                .subscribe(res => {
-                    fcontrollersWithStatus[i].loading = false;
-                    fcontrollersWithStatus[i].statusError = false;
-                    fcontrollersWithStatus[i].status = res.body;
-                    this.fcontrollers[i] = {
-                        ...fcontrollersWithStatus[i]
-                    };
-                    this.cd.detectChanges();
-                }, err => {
-                    fcontrollersWithStatus[i].loading = false;
-                    fcontrollersWithStatus[i].statusError = true;
-                    fcontrollersWithStatus[i].status = false;
-                    this.fcontrollers[i] = {
-                        ...fcontrollersWithStatus[i]
-                    };
-                    this.cd.detectChanges();
-                })
-            }, i * 100, i)
+            setTimeout(
+                i => {
+                    this.settingsService.getFcControllerStatus(fcontrollersWithStatus[i].id).subscribe(
+                        res => {
+                            fcontrollersWithStatus[i].loading = false;
+                            fcontrollersWithStatus[i].statusError = false;
+                            fcontrollersWithStatus[i].status = res.body;
+                            this.fcontrollers[i] = {
+                                ...fcontrollersWithStatus[i]
+                            };
+                            this.cd.detectChanges();
+                        },
+                        err => {
+                            fcontrollersWithStatus[i].loading = false;
+                            fcontrollersWithStatus[i].statusError = true;
+                            fcontrollersWithStatus[i].status = false;
+                            this.fcontrollers[i] = {
+                                ...fcontrollersWithStatus[i]
+                            };
+                            this.cd.detectChanges();
+                        }
+                    );
+                },
+                i * 100,
+                i
+            );
         }
     }
 
@@ -194,7 +211,13 @@ export class FcontrollersComponent implements OnInit {
                 }
                 break;
             }
-            case 'fcs' || 'external_id': {
+            case 'fcs': {
+                if (this.formData['external_id']) {
+                    return true;
+                }
+                break;
+            }
+            case 'external_id': {
                 if (this.formData['external_id']) {
                     return true;
                 }
@@ -219,8 +242,9 @@ export class FcontrollersComponent implements OnInit {
 
     handlePreviousClick() {
         this.createFcError = false;
-        this.macAddressNotFound = false;
-        this.incorrectMacAddressFormat = false;
+        this.serialNumberNotFound = false;
+        this.serialNumberInvalidFormat = false;
+        this.siteNotFound = false;
         this.idAlreadyExist = false;
         if (!this.currentScreen || this.allScreens.indexOf(this.currentScreen) === 0) {
             this.onPreviousScreenClick.next();
@@ -237,8 +261,9 @@ export class FcontrollersComponent implements OnInit {
         const { controller } = this.formData;
 
         this.createFcError = false;
-        this.macAddressNotFound = false;
-        this.incorrectMacAddressFormat = false;
+        this.serialNumberInvalidFormat = false;
+        this.serialNumberInvalidFormat = false;
+        this.siteNotFound = false;
         this.idAlreadyExist = false;
         if (this.selectedConf && this.currentScreen === 'installers') {
             this.sendToScreen = this.currentScreen = 'configure';
@@ -262,7 +287,7 @@ export class FcontrollersComponent implements OnInit {
                 return;
             }
             if (controller.code === 'SMAPPEE' && this.formData['smappeeController'] && this.formData['external_id']) {
-                this.handleCreateFcController('configure');
+                this.handleCreateFcController('configure', true);
                 return;
             }
             this.currentScreen = currentScreen;
@@ -287,6 +312,7 @@ export class FcontrollersComponent implements OnInit {
     getSmappeeControllers() {
         this.currentScreen = 'smappee';
         this.loadingControllers = true;
+        this.FcError = false;
         this.settingsService
             .getFcControllersBySmappee(this.configuration.store.id, this.apiControllersByCode['FACILITY_CONTROLLER_MHA'].id)
             .subscribe(
@@ -295,26 +321,37 @@ export class FcontrollersComponent implements OnInit {
                     this.smappeeControllers = res.body;
                     this.cd.detectChanges();
                 },
-                err => {
+                ({ error }) => {
                     this.loadingControllers = false;
+                    this.FcError = this.getErrorMessage(error['error']);
+                    this.FcErrorDetail = this.getErrorDetail(error['message'] || error['error']);
                     this.cd.detectChanges();
                 }
             );
     }
 
-    handleCreateFcController(nextScreen): void {
+    handleCreateFcController(nextScreen, config?: boolean): void {
         const controller = this.apiControllersByCode[this.formData['controller']['code']];
         const payload = {
-            name: controller ? controller.name : 'NETWORK ROUTER',
+            name: controller ? controller.name : '',
             budderflyId: this.configuration.store.id,
-            inventoryItemTypeId: controller ? controller.id : 5,
+            inventoryItemTypeId: controller ? controller.id : '',
             externalId: this.formData['external_id']
         };
 
+        if (config) {
+            const conf = {
+                facilityController: this.formData['smappeeController']['externalId'],
+                identifier: this.formData['identifier'] || 61
+            };
+            payload['configuration'] = JSON.stringify(conf);
+        }
+
         this.createFcError = false;
-        this.macAddressNotFound = false;
+        this.serialNumberNotFound = false;
         this.idAlreadyExist = false;
-        this.incorrectMacAddressFormat = false;
+        this.serialNumberInvalidFormat = false;
+        this.siteNotFound = false;
         this.settingsService.createFCController(payload).subscribe(
             res => {
                 this.currentScreen = nextScreen;
@@ -325,8 +362,9 @@ export class FcontrollersComponent implements OnInit {
                 this.formData['createdFc'] = res;
                 this.cd.detectChanges();
             },
-            err => {
-                this.onError(err);
+            ({ error }) => {
+                this.createFcError = this.getErrorMessage(error['message'] || error['error']);
+                this.createFcErrorDetail = this.getErrorDetail(error['message'] || error['error']);
                 this.cd.detectChanges();
             }
         );
@@ -355,13 +393,45 @@ export class FcontrollersComponent implements OnInit {
                 this.getConfiguredEquipmentsAndUnconfigured();
                 this.cd.detectChanges();
             },
-            err => {
+            ({ error }) => {
                 this.showConfirmDelete = true;
                 this.deleteController = false;
-                this.deleteError = true;
+                this.deleteError = this.getErrorMessage(error['error']);
+                this.deleteErrorDetail = this.getErrorDetail(error['message'] || error['error']);
                 this.cd.detectChanges();
             }
         );
+    }
+
+    getErrorMessage(code): string {
+        const errorKeyMessage = {
+            ...commonErrorMessages,
+            'serial.number.invalid.format': 'Invalid Format',
+            'inventoryitem.with.externalid.already.exists': 'Device Already Exists',
+            'serial.number.not.found': 'Id not found',
+            'site.not.found': 'Site not Found',
+            'serial.number.null': 'Budderfly Id is NULL',
+            'modbus.address.already.used': 'Identifer already used'
+        };
+
+        return (
+            errorKeyMessage[code] ||
+            'There was an issue on the Server - Please try again. If the issue persists, Please contact customer support.'
+        );
+    }
+
+    getErrorDetail(code): string {
+        const errorKeyMessage = {
+            ...commonErrorCodes,
+            'modbus.address.already.used': `${this.settingsService.getUTCDateString()} : BFE-1122008`,
+            'serial.number.invalid.format': 'Please enter the correct format',
+            'inventoryitem.with.externalid.already.exists': 'Please enter the correct Id',
+            'serial.number.not.found': 'Cannot find the entered ID',
+            'site.not.found': 'Cannot find the Site',
+            'serial.number.null': 'Budderfly Id is NULL'
+        };
+
+        return errorKeyMessage[code] || `${this.settingsService.getUTCDateString()} : UNKNOWN`;
     }
 
     handleControllerPreviousClick(event) {
@@ -383,19 +453,5 @@ export class FcontrollersComponent implements OnInit {
     handleAddConfiguration(event) {
         this.currentScreen = 'controllers';
         event.stopPropagation();
-    }
-
-    private onError(error) {
-        const detail = error.error.detail;
-        const message = error.error.message;
-        if (message === 'mac.address.fc.not.found') {
-            this.macAddressNotFound = true;
-        } else if (message === 'mac.address.fc.incorrect.format') {
-            this.incorrectMacAddressFormat = true;
-        } else if (message === 'inventoryitem.with.externalid.already.exists' || detail.includes('query did not return a unique result')) {
-            this.idAlreadyExist = true;
-        } else {
-            this.createFcError = true;
-        }
     }
 }

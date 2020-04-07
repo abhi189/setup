@@ -6,15 +6,22 @@
             *ngSwitchCase="'devices'"
             [devices]="equipments"
             [loading]="loadingEquipment"
-            [showError]="showError"
+            [deviceError]="deviceError"
+            [deviceErrorDetail]="deviceErrorDetail"
             [deviceSelected]="formData.device"
+            [deletingDevice]="deletingDevice"
+            [hideConfirmDelete]="hideConfirmDelete"
+            [showDeviceDeleteError]="showDeviceDeleteError"
             (onItemSelected)="handleItemSelected($event)"
             (onAddEqupmentClicked)="handleAddEquipment($event)"
             (onDeviceComponentLoaded)="getEquipments()"
+            (onDeleteDeviceClick)="setDeviceToDelete($event)"
         ></jhi-configure-devices>
         <jhi-location-add-equipment
             *ngSwitchCase="'equipments'"
             [loading]="loadingControllers"
+            [showError]="showError"
+            [showErrorDetail]="showErrorDetail"
             [controllers]="equipmentTypes"
             [controllerSelected]="formData.equipment"
             [creatingEquipment]="creatingEquipment"
@@ -32,6 +39,7 @@
             *ngSwitchCase="'ctType'"
             [loading]="loadingData"
             [showError]="showError"
+            [showErrorDetail]="showErrorDetail"
             [ctTypes]="data.ctTypes"
             [ctTypeSelected]="formData.ctType"
             (onItemSelected)="handleItemSelected($event)"
@@ -39,7 +47,8 @@
         <jhi-configure-ctSetup
             *ngSwitchCase="'ctSetup'"
             [loading]="loadingData"
-            [showError]="showError"
+            [ctInputError]="ctInputError"
+            [ctInputErrorDetail]="ctInputErrorDetail"
             [ctSetup]="data.ctSetup"
             [ctSetupSelected]="formData.ctSetup"
             (onItemSelected)="handleItemSelected($event)"
@@ -47,18 +56,25 @@
         <jhi-configure-ctPhase
             *ngSwitchCase="'ctPhases'"
             [loading]="loadingData"
-            [showError]="showError"
+            [ctLineError]="ctLineError"
+            [ctLineErrorDetail]="ctLineErrorDetail"
             [ctPhase]="data.ctPhase"
             [ctPhaseSelected]="formData.ctPhase"
             (onItemSelected)="handleItemSelected($event)"
         ></jhi-configure-ctPhase>
         <div *ngIf="showConfirmDelete" class="confirm-container">
             <div class="content" >
-                <div class="alert alert-danger" *ngIf="deleteError">Something went wrong. Please try again later.</div>
+                <div *ngIf="deleteError">
+                    <div class="alert alert-danger" role="alert">
+                        <p> {{deleteError}} </p>
+                         <hr>
+                         <p class="mb-0" style="font-size: x-small;">{{deleteErrorDetail}} </p>
+                     </div>
+                </div>
                 <h2>Are you sure you want to delete {{selectedConfiguredItem.name}}?</h2>
                 <div class="btn-container">
                     <button class="btn btn-danger" (click)="continueDelete()">Confirm</button>
-                    <button class="btn btn-success" (click)="showConfirmDelete = false;">Cancel</button>
+                    <button class="btn btn-success" (click)="showConfirmDelete = false;deleteError = ''">Cancel</button>
                 </div>
             </div>
         </div>
@@ -68,11 +84,15 @@
                 <div class="loader"></div>
             </div>
             <div *ngIf="configuringEquipmentError" class="error-modal">
-                <p class="alert alert-danger">Something Went Wrong! Please try Again.</p>
+                <div class="alert alert-danger" role="alert">
+                   <p> {{configuringEquipmentError}} </p>
+                    <hr>
+                    <p class="mb-0" style="font-size: x-small;">{{configuringEquipmentErrorDetail}} </p>
+                </div>
                 <button class="btn btn-danger" (click)="handleDoneClick()">Go Back</button>
             </div>
         </div>
-        <div class="configure-container" *ngSwitchDefault>
+    <div class="configure-container" *ngSwitchDefault>
             <div class="configure-add" (click)="handleAddConfiguration($event)">
                 <div>+</div>
                 <div>Add New Load</div>
@@ -80,22 +100,56 @@
             <div *ngIf="!configuredItems.length && !showError" class="config-list" class="alert alert-primary">
                 No Loads Configured 
             </div>
-            <div *ngIf="showError" class="alert alert-danger">
-                Something went wrong. Please try again later
+            <div *ngIf="showError">
+                <div class="alert alert-danger" role="alert">
+                    <p> {{showError}} </p>
+                     <hr>
+                     <p class="mb-0" style="font-size: x-small;">{{showErrorDetail}} </p>
+                 </div>
             </div>
             <div *ngIf="loadingConfiguredItems" class="loading">
                 <div class="loader"></div>
             </div>
-            <div *ngIf="configuredItems.length" class="config-list">
+        <div *ngIf="configuredItems.length" class="config-list">
                 <h4>Configured Loads</h4>
-                <div class="configured-list">
-                    <div *ngFor="let conf of configuredItems" class="config-list-item">
-                        <strong>{{conf.name}}</strong> <br />configuration is done.
+            <div class="configured-list">
+                <div *ngFor="let conf of configuredItems" class="config-list-item">     
+                    <div class="load-left"> 
+                        <div
+                            *ngIf="conf.configuration && conf.configuration.ctInputPhaseALabel && conf.configuration.ctLinePhaseALabel"
+                            class="first-ct badge badge-pill"
+                            [ngClass]="{
+                                'badge-dark': conf.configuration.ctLinePhaseALabel === 'A' ,
+                                'badge-danger': conf.configuration.ctLinePhaseALabel === 'B',
+                                'badge-primary': conf.configuration.ctLinePhaseALabel === 'C'
+                            }"
+                        >{{conf.configuration?.ctInputPhaseALabel}} - {{conf.configuration?.ctLinePhaseALabel}}</div> <br />
+                        <div *ngIf="conf.configuration && conf.configuration.ctInputPhaseBLabel && conf.configuration.ctLinePhaseBLabel"
+                            class="secont-ct badge badge-pill"
+                            [ngClass]="{
+                                'badge-dark': conf.configuration.ctLinePhaseBLabel === 'A' ,
+                                'badge-danger': conf.configuration.ctLinePhaseBLabel === 'B',
+                                'badge-primary': conf.configuration.ctLinePhaseBLabel === 'C'
+                            }"
+                        >{{conf.configuration?.ctInputPhaseBLabel}} - {{conf.configuration?.ctLinePhaseBLabel}}</div> <br />
+                        <div *ngIf="conf.configuration && conf.configuration.ctInputPhaseCLabel && conf.configuration.ctLinePhaseCLabel"
+                            class="third-ct badge badge-pill"
+                            [ngClass]="{
+                                'badge-dark': conf.configuration.ctLinePhaseCLabel === 'A' ,
+                                'badge-danger': conf.configuration.ctLinePhaseCLabel === 'B',
+                                'badge-primary': conf.configuration.ctLinePhaseCLabel === 'C'
+                        }"
+                        >{{conf.configuration?.ctInputPhaseCLabel}} - {{conf.configuration?.ctLinePhaseCLabel}}</div>
+                    </div>  
+                    <div class="load-right">
+                        <div class="load-name">{{conf.name}}</div>
+                        <div>{{conf.configuration?.ctTypeCodeLabel}}</div>
+                    </div>      
                         <button (click)="selectedConfiguredItem = conf; showConfirmDelete = true" class="btn"><img src="{{imageUrl}}installersetupweb/trash.png"></button>
-                    </div>
                 </div>
             </div>
         </div>
+    </div>
     </section>
     <div class="action-bar">
         <button [hidden]="!showPreviousButton" class="btn previous" 

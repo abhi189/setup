@@ -10,13 +10,16 @@ export class Fcs implements OnInit {
     @Input() fcs: Array<any>;
     @Input() formData: any;
     @Input() errorMessage: string;
+    @Input() errorMessageDetail: string;
     public fcSelected: any = {};
     @Output() onItemSelected = new EventEmitter();
     @Output() setMacAddress = new EventEmitter<string>();
+    @Output() setIdentifier = new EventEmitter();
     public id: string;
     public codeReader: any;
     public macAddress: string = '';
     public showScanner: boolean;
+    public identifier: string;
     public timeout: any;
     public isRearCamera: boolean = true;
     private videoElement: HTMLVideoElement;
@@ -27,6 +30,10 @@ export class Fcs implements OnInit {
         // }
     }
 
+    onIdentifierChange(identifier: any) {
+        this.setIdentifier.next({ name: 'identifier', value: identifier.target.value });
+    }
+
     handleMacAddressChange(macAddress: string) {
         this.setMacAddress.emit(macAddress);
     }
@@ -34,14 +41,20 @@ export class Fcs implements OnInit {
     ngOnInit() {
         this.showScanner = false;
         this.onItemSelected.next({ name: 'external_id', value: '' });
-        this.codeReader = new BrowserMultiFormatReader();
+        this.setCodeReader(true);
         this.isRearCamera = true;
+    }
+
+    setCodeReader(create) {
+        if (!this.codeReader || create) {
+            this.codeReader = new BrowserMultiFormatReader();
+        }
     }
 
     startScanning(type): void {
         this.showScanner = !this.showScanner;
         if (!this.showScanner) {
-            this.stopScanning();
+            this.stopScanning(true);
             return;
         }
         if (this.timeout) {
@@ -78,14 +91,6 @@ export class Fcs implements OnInit {
         return frontCamera ? frontCamera.deviceId : devices[0].deviceId;
     }
 
-    enableTorch() {
-        if (this.videoElement && this.videoElement.srcObject) {
-            if ('getVideoTracks' in this.videoElement.srcObject) {
-                this.videoElement.srcObject.getVideoTracks()[0].applyConstraints({ advanced: [{ torch: true }] });
-            }
-        }
-    }
-
     startReading(type): void {
         this.codeReader
             .listVideoInputDevices()
@@ -99,7 +104,7 @@ export class Fcs implements OnInit {
         if (!this.showScanner) return;
         this.isRearCamera = !this.isRearCamera;
         this.stopScanning(false);
-        this.startReading('');
+        // this.startReading('');
     }
 
     scanDocument(devices: any = [], type): void {
@@ -112,6 +117,9 @@ export class Fcs implements OnInit {
                 this.stopScanning(true);
                 if (result && result.text) {
                     resultValue = this.removeText(result.text);
+                }
+                if (this.formData.controller && this.formData.controller.code === 'NETWORK_ROUTER') {
+                    resultValue = this.formatNetworkRouter(resultValue);
                 }
                 this.onItemSelected.next({ name: 'external_id', value: resultValue });
                 this.cd.detectChanges();
@@ -131,25 +139,41 @@ export class Fcs implements OnInit {
     stopScanning(scanner): void {
         if (scanner) this.showScanner = false;
         this.codeReader.reset();
+        if (!scanner)
+            setTimeout(() => {
+                this.setCodeReader(true);
+                this.startReading('');
+            }, 10);
         if (this.macAddress) {
         }
     }
 
-    getFormat(): string {
-        const format = this.formData.controller.code;
+    formatNetworkRouter(text) {
+        let formattedText = '',
+            textArr = text.replace(/[- )(]/g, '');
 
-        switch (format) {
-            case 'FACILITY_CONTROLLER_MHA':
-                return '(Format: 00-00-00-00-00-00)';
+        for (let i = 1, len = textArr.length; i <= len; i += 1) {
+            formattedText += textArr[i - 1];
+            if (i !== len && i % 4 === 0) {
+                formattedText += '-';
+            }
         }
+        return formattedText;
     }
 
     onTextChange(event: any): void {
         const value = event.target.value;
+        let resultValue = value;
 
         this.onItemSelected.next({ name: 'external_id', value: '' });
-        if (!value) return;
-        this.macAddress = value;
-        this.onItemSelected.next({ name: 'external_id', value });
+        if (!resultValue) return;
+        if (this.formData.controller && this.formData.controller.code === 'NETWORK_ROUTER' && value.length === 12) {
+            resultValue = this.formatNetworkRouter(value);
+        }
+        if (this.formData.controller && this.formData.controller.code === 'FACILITY_CONTROLLER_MHA') {
+            resultValue = this.removeText(value);
+        }
+        this.macAddress = resultValue;
+        this.onItemSelected.next({ name: 'external_id', value: resultValue });
     }
 }

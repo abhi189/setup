@@ -1,31 +1,47 @@
 <div class="devices-container">
-        <div *ngIf="loading" class="loading">
-            <div class="loader"></div>
-        </div>
-        <div class="header1">What equipment is connected to this load ?</div>    
-    <div class="header2">A Budderfly Device was previously installed at this location. The following equipment is already being monitored, but not has been configured for metering. Please align these with the correct load:</div>
-    <div class="devices-list">
-        <div class="devices-list-item" 
-            *ngFor="let device of devices" 
-            [ngClass]="{'selected': deviceSelected && device.id === deviceSelected.id}"
-            (click)=setSelectedDevice(device)
-        >
-            <div class="connection-type">{{device.name}}</div> <br />
-            <div class="device-name">
-                <span class="inventoryItemName badge badge-success">{{device.inventoryItemTypeName || '-'}}</span> &rarr;
-                <span class="uniqueIdentifier">{{device.uniqueIdentifierDisplayName}}</span>
-                <span class="externalId">{{device.externalId || '-'}}</span>
+    <div *ngIf="loading" class="loading">
+        <div class="loader"></div>
+    </div>
+    <div *ngIf="!loading"> 
+        <div class="header1">What equipment is connected to this load?</div>    
+        <div class="header2">A Budderfly Device was previously installed at this location. The following equipment is already being monitored, but not has been configured for metering. Please align these with the correct load:</div>
+        <div *ngIf="!loading && !deviceError" class="devices-list">
+            <div class="devices-list-item" 
+                *ngFor="let device of devices" 
+                [ngClass]="{'selected': deviceSelected && device.id === deviceSelected.id}"
+                (click)=setSelectedDevice(device)
+            >
+                <div class="connection-type">{{device.name}}</div> <br />
+                <div class="device-name" *ngIf="device.monitorModel && device.monitorModel.length">
+                    <div class="inv-list" *ngFor="let monitor of device.monitorModel; let i = index">
+                        <div *ngIf="i < 2">
+                            <span class="uniqueIdentifier">{{monitor.uniqueIdentifierDisplayName}}</span> <br />
+                            <span class="inventoryItemName badge badge-success">{{monitor.inventoryItemTypeName || '-'}}</span> &rarr;
+                            <span class="externalId">{{monitor.externalId || '-'}}</span>
+                            <div class="device-del {{i}}" *ngIf="i == 0 && !monitor.monitorId" (click)="deleteDevice($event, device)">
+                                <img src="{{imageUrl}}installersetupweb/trash.png"></button>
+                            </div>
+                        </div>
+                        <div *ngIf="i === 2">
+                            & more...
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="alert alert-primary" *ngIf="!loading && devices && !devices.length">
-            No Equipments
-    </div>
-    <div class="alert alert-danger" *ngIf="showError">
-        Something went wrong! Please Try Again.
-    </div>
-    <div class="configure-add" (click)="handleAddEquipment($event)">
-        <div>+</div>
-        <div>Other Equipment</div>
-    </div>
+        <div class="alert alert-primary" *ngIf="!loading && devices && !devices.length && !deviceError">
+                No Equipments
+        </div>
+        <div *ngIf="!loading && deviceError">
+            <div class="alert alert-danger" role="alert">
+                <p> {{deviceError}} </p>
+                <hr>
+                <p class="mb-0" style="font-size: x-small;">{{deviceErrorDetail}} </p>
+            </div>
+        </div>
+        <div class="configure-add" (click)="handleAddEquipment($event)">
+            <div>+</div>
+            <div>Other Equipment</div>
+        </div>
+    </div>    
 </div>
